@@ -1,0 +1,43 @@
+@font-face {
+	font-family: 'Solomon Sans';
+	src: url("../fonts/Solomon Sans Normal.otf");
+}
+
+h1, h2, h3{
+	font-family: 'Solomon Sans';
+}
+
+h4, h5, h6, p, a, label, button{
+	font-family: 'DM Sans';
+}
+
+#compe-title{
+	font-family: 'Solomon Sans';
+	font-weight: bold;
+}
+
+#hero-register{
+	color: #bc2300;
+	background-color: white;
+	border-color: #bc2300;
+	border-radius: 3px;
+}
+#hero-register:hover{
+	background-color: #bc2300;
+	color: white;
+}
+
+#hero-guide-book{
+	color: white;
+	background-color: #bc2300;
+	border-color: #bc2300;
+	border-radius: 3px;
+}
+#hero-guide-book:hover{
+	color: #bc2300;
+	background-color: white;
+}
+
+#about-content{
+	text-align: justify;
+}

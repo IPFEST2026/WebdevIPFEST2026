@@ -1,0 +1,10 @@
+.card-compe{
+	transition: all 0.3s;
+}
+.card-compe:hover{
+	background-color: aliceblue;
+	cursor: pointer;
+}
+.card-compe:focus{
+	background-color: aquamarine;
+}
