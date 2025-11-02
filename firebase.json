@@ -17,6 +17,7 @@
     }
   ],
   "hosting": {
+    "site" : "ipfest-itb-2026",
     "public": "public",
     "cleanUrls": true,
     "ignore": [

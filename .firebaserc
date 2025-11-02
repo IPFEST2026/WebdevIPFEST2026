@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "ipfest25web"
-  }
+    "default": "ipfest-2026"
+  },
+  "targets": {},
+  "etags": {}
 }
