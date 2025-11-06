@@ -780,10 +780,18 @@
     top: 44px;
     font-size: 16px;
     font-weight: 600;
-    color: #ff4a20;
+    background: linear-gradient(90deg, #F1A087 0%, #E45F75 28.41%, #4C41A9 70.25%, #7E62D9 100%);
+    mix-blend-mode: screen;
+    border: 1px solid #FFFFFF;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 35px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     text-transform: uppercase;
     letter-spacing: 1px;
     z-index: 1;
+    padding: 5px 10px;
 }
 
 .experience .timeline .timeline-item.left .timeline-date {
@@ -795,15 +803,24 @@
     text-align: right;
     right: calc(100% + 55px);
 }
-
+/* 
+background: linear-gradient(90deg, #F1A087 0%, #E45F75 28.41%, #4C41A9 70.25%, #7E62D9 100%);
+mix-blend-mode: screen;
+border: 1px solid #FFFFFF;
+box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 35px; */
 .experience .timeline .timeline-text {
     padding: 30px;
-    background: #ffffff;
+    background: linear-gradient(90deg, #F1A087 0%, #E45F75 28.41%, #4C41A9 70.25%, #7E62D9 100%);
     position: relative;
-    border-right: 5px solid #dddddd;
-    box-shadow: 0 0 60px rgba(0, 0, 0, .08);
+    mix-blend-mode: screen;
+    border: 1px solid #FFFFFF;
+    border-radius: 35px;
+    box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-
+.timeline-title {
+    color : #FFFFFF;
+}
 .experience .timeline .timeline-item.right .timeline-text {
     border-right: none;
     border-left: 5px solid #dddddd;
@@ -836,27 +853,27 @@
         width: 100%;
         padding-left: 38px;
     }
-    
+
     .experience .timeline .timeline-item.left {
         padding-right: 0;
     }
-    
+
     .experience .timeline .timeline-item.right {
         left: 0%;
         padding-left: 38px;
     }
 
-    .experience .timeline .timeline-item.left::after, 
+    .experience .timeline .timeline-item.left::after,
     .experience .timeline .timeline-item.right::after {
         left: 0;
     }
-    
+
     .experience .timeline .timeline-item.left::before,
     .experience .timeline .timeline-item.right::before {
         left: 18px;
         border-color: transparent #dddddd transparent transparent;
     }
-    
+
     .experience .timeline .timeline-item.left .timeline-date,
     .experience .timeline .timeline-item.right .timeline-date {
         position: relative;
@@ -865,8 +882,15 @@
         left: 0;
         text-align: left;
         margin-bottom: 10px;
+        color: #FFFFFF;
+        background: none;
+        -webkit-text-fill-color: #FFFFFF;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
     }
-    
+
     .experience .timeline .timeline-item.left .timeline-text,
     .experience .timeline .timeline-item.right .timeline-text {
         border-right: none;
