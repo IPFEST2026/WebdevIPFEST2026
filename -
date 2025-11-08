@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Paper & Poster Competition - IPFEST 2026</title>
+	<title>Smart Competition - IPFEST 2026</title>
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 	<meta content="" name="keywords">
 	<meta content="" name="description">
@@ -91,11 +91,11 @@
 			<li></li>
 		</ul>
 		<div class="container text-center py-1" style="max-width: 900px;">
-			<img src="../static/images/Icon/Competition/ppc.png" alt="" class="img-fluid w-25">
-			<h3 class="display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Paper & Poster Competition</h1>
+			<img src="../static/images/Icon/Competition/sc.png" alt="" class="img-fluid w-25">
+			<h3 class="display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Smart Competition</h1>
 			<figcaption class="blockquote-footer mt-3 text-muted fs-6">
-				Driving the Global Energy Revolution with Innovative Approaches to Secure
-				and Sustainable Energy
+				Empowering Youth Insights to Accelerate the Use of Sustainable
+				Energy Solutions
 			</figcaption>
 		</div>
 	</div>
@@ -109,12 +109,12 @@
 					<h4 class="text-primary mb-0">About</h4>
 					<h1 class="display-5 mt-0 mb-3">Get to Know <span style="color: #bc2300;">More</span></h1>
 					<p class="mb-0 fs-5">
-						Paper and Poster Competition is a competition that challenges participants to conduct scientific research to create high-quality papers with strong writing and analytical skills related to the energy industry, especially in the oil and gas industry. This also challenges participants to do creative and innovative skills on a poster (represent the paper). The poster will be presented in the upcoming event of IPCONVEX 2026. The competition will be divided into preliminary (abstract submission) and final round (paper and poster submission, final presentation, and poster exhibition). At the preliminary round, delegates were required to write an abstract of the paper with the specified format. This abstract would be presented in accordance with the Paper and Poster Competition IPFEST 2026 theme. There will be the top ten teams who will qualify for the final round. Ten teams that qualified for the final round are required to complete the paper and create a poster and presentation. At the D-Day Competition, the ten teams will be required to present the paper that has already been submitted, using a PowerPoint presentation. Also, the ten teams will be required to exhibit their poster in IPEXPO IPFEST 2026.
+						A Smart Competition is a rapid-fire question competition that tests participants' knowledge, problem-solving skills, and quick thinking which involves questions related to technical knowledge, industry trends, and case studies in the field of petroleum engineering.
 					</p>
-					<a href="https://drive.google.com/file/d/12YJZgSxnfj1_nLIA-AEbRyvlzYXBkzAw/view?usp=sharing" target="_blank" class="btn btn-outline-primary rounded-pill py-2 px-2 mt-3 mb-3" style="font-weight: 400;">Download Guidebook</a>
+					<a href="https://drive.google.com/file/d/18vfjJmlJ3DocF316MD6KAKcniTSnTlU4/view?usp=drivesdk" target="_blank" class="btn btn-outline-primary rounded-pill py-2 px-2 mt-3 mb-3" style="font-weight: 400;">Download Guidebook</a>
 				</div>
 				<div class="col-lg-5 d-flex justify-content-end wow fadeInLeft" data-wow-delay="0.3s">
-					<img src="../static/images/ppc.jpg" alt="" class="img-fluid w-100 rounded shadow" style="object-fit: cover; object-position: 50% 50%">
+					<img src="../static/images/sc.jpg" alt="" class="img-fluid w-100 rounded shadow" style="object-fit: cover; object-position: 50% 50%">
 				</div>
 			</div>
 		</div>
@@ -131,62 +131,50 @@
 					 <div class="timeline">
 							<div class="timeline-item left wow slideInLeft" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">November 9&ndash;15th 2025</div>
+									<div class="timeline-date">20 - 28 October 2025</div>
 									<h2 class="lead" style="color: #FFFFFF;">Early Bird Open Registration</h2>
 								</div>
 							</div>
 							<div class="timeline-item right wow slideInRight" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">November 16th&ndash;December 4th 2025</div>
-									<h2 class="lead" style="color: #FFFFFF;">Regular Open Registration</h2>
+									<div class="timeline-date">29 October - 11 November 2025</div>
+									<h2 class="lead" style="color: #FFFFFF;">Reguler Open Registration</h2>
 								</div>
 							</div>
 							<div class="timeline-item left wow slideInLeft" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">November 20th 2025</div>
-									<h2 class="lead" style="color: #FFFFFF;">Preliminary Round Case Release</h2>
+									<div class="timeline-date">29 November 2025</div>
+									<h2 class="lead" style="color: #FFFFFF;">Technical Meeting for Preliminary Round</h2>
 								</div>
 							</div>
 							<div class="timeline-item right wow slideInRight" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">December 12th 2025</div>
-									<h2 class="lead" style="color: #FFFFFF;">Preliminary Round Last Submission</h2>
+									<div class="timeline-date">30 November 2025</div>
+									<h2 class="lead" style="color: #FFFFFF;">Online Preliminary Round</h2>
 								</div>
 							</div>
 							<div class="timeline-item left wow slideInLeft" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">December 28th 2025</div>
+									<div class="timeline-date">27 December 2025</div>
 									<h2 class="lead" style="color: #FFFFFF;">Finalist Announcement</h2> 
 								</div>
 							</div>
 							<div class="timeline-item right wow slideInRight" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">January 5th 2026</div>
-									<h2 class="lead" style="color: #FFFFFF;">Final Round Case Release</h2>
+									<div class="timeline-date">12 February 2026</div>
+									<h2 class="lead" style="color: #FFFFFF;">Technical Meeting for Final Day</h2>
 								</div>
 							</div>
 							<div class="timeline-item left wow slideInLeft" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">February 5th 2026</div>
-									<h2 class="lead" style="color: #FFFFFF;">Final Round Submission Deadline</h2>
-								</div>
-							</div>
-							<div class="timeline-item right wow slideInRight" data-wow-delay="0.1s">
-								<div class="timeline-text">
-									<div class="timeline-date">February 12th 2026</div>
-									<h2 class="lead" style="color: #FFFFFF;">Technical Meeting</h2>
-								</div>
-							</div>
-						  	<div class="timeline-item left wow slideInLeft" data-wow-delay="0.1s">
-								<div class="timeline-text">
-									<div class="timeline-date">Friday, February 13th 2026</div>
-									<h2 class="lead" style="color: #FFFFFF;">Final Competition Day</h2>
+									<div class="timeline-date">13 February 2026</div>
+									<h2 class="lead" style="color: #FFFFFF;">Elimination Round, Semifinal Round, and Final Round</h2>
 								</div>
 					  		</div>
 							<div class="timeline-item right wow slideInRight" data-wow-delay="0.1s">
 								<div class="timeline-text">
-									<div class="timeline-date">Saturday, February 14th 2026</div>
-									<h2 class="lead" style="color: #FFFFFF;">Gala Dinner and Awarding</h2>
+									<div class="timeline-date">14 February 2026</div>
+									<h2 class="lead" style="color: #FFFFFF;">Competition Expo, Gala Dinner and Awarding</h2>
 								</div>
 					  		</div>
 					 </div>
@@ -205,41 +193,30 @@
 				<div class="text-center champions mx-auto mb-4 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 900px;">
 					<div class="champ-container col-12 mx-auto mb-5">
 						<span class="label">Champion</span>
-						<img src="../static/images/champions/champ_ppc_1.jpg" alt="" id="champion" class="rounded shadow">
+						<img src="../static/images/champions/champ_smart_1.jpg" alt="" id="champion" class="rounded shadow">
 						<div class="text-center">
-							<p class="lead text-dark mb-0 mt-1">SIX</p>
-							<p class="mt-0 mb-0"><a href="https://itb.ac.id/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Institut Teknologi Bandung</a></p>
-							<p class="mt-0">Bandung, Indonesia</p>
+							<p class="lead text-dark mb-0 mt-1">PEGASUS</p>
+							<p class="mt-0 mb-0"><a href="https://www.ui.ac.id/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Universitas Indonesia</a></p>
+							<p class="mt-0">Depok, Indonesia</p>
 						</div>
 					</div>
 					<div class="row runner-container g-5 mt-3">
 						<div class="first-runner col-6">
 							<span class="label">1st Runner-up</span>
-							<img src="../static/images/champions/champ_ppc_2.jpg" alt="" id="first-runner" class="rounded shadow">
+							<img src="../static/images/champions/champ_smart_2.jpg" alt="" id="first-runner" class="rounded shadow">
 							<div class="text-center">
-								<p class="lead text-dark mb-0 mt-1">JAWIRS</p>
-								<p class="mt-0 mb-0"><a href="https://itb.ac.id/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Institut Teknologi Bandung</a></p>
-								<p class="mt-0">Bandung, Indonesia</p>
+								<p class="lead text-dark mb-0 mt-1">THINK TANK TOE</p>
+								<p class="mt-0 mb-0"><a href="https://www.adamson.edu.ph/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Adamson University</a></p>
+								<p class="mt-0">Manila, Philippines</p>
 							</div>
 						</div>
 						<div class="second-runner col-6">
 							<span class="label">2nd Runner-up</span>
-							<img src="../static/images/champions/champ_ppc_3.jpg" alt="" id="second-runner" class="rounded shadow">
+							<img src="../static/images/champions/champ_smart_3.jpg" alt="" id="second-runner" class="rounded shadow">
 							<div class="text-center">
-								<p class="lead text-dark mb-0 mt-1">DANSA TERAKHIR</p>
-								<p class="mt-0 mb-0"><a href="https://www.its.ac.id/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Institut Teknologi Sepuluh Nopember</a></p>
-								<p class="mt-0">Surabaya, Indonesia</p>
-							</div>
-						</div>
-					</div>
-					<div class="row mt-3">
-						<div class="fav-winner mx-auto col-6">
-							<span class="label">Favorite</span>
-							<img src="../static/images/champions/champ_ppc_fav.jpg" alt="" id="second-runner" class="rounded shadow">
-							<div class="text-center">
-								<p class="lead text-dark mb-0 mt-1">JAWIRS</p>
-								<p class="mt-0 mb-0"><a href="https://itb.ac.id/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Institut Teknologi Bandung</a></p>
-								<p class="mt-0">Bandung, Indonesia</p>
+								<p class="lead text-dark mb-0 mt-1">ISOCHRONAL</p>
+								<p class="mt-0 mb-0"><a href="https://www.akamigas.ac.id/" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">PEM Akamigas Cepu</a></p>
+								<p class="mt-0">Blora, Indonesia</p>
 							</div>
 						</div>
 					</div>
@@ -257,7 +234,7 @@
 							<div class="accordion-item">
 							  	<h2 class="accordion-header">
 									<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-										<span class="display-6 text-secondary">IPFEST 2026 Finalist - PPC <i class="bi bi-chevron-double-right"></i></span>
+										<span class="display-6 text-secondary">IPFEST 2026 Finalist - SC <i class="bi bi-chevron-double-right"></i></span>
 									</button>
 							  	</h2>
 							  	<div id="flush-collapseOne" class="accordion-collapse collapse pb-2" data-bs-parent="#accordionFlushExample">
@@ -272,53 +249,93 @@
 										<tbody>
 											<tr>
 												<td>1</td>
-												<td>Sederhana</td>
-												<td>University of Indonesia</td>
-											</tr>
-											<tr>
-												<td>2</td>
-												<td>MULTIPOWER</td>
-												<td>Bandung Institute of Technology</td>
-											</tr>
-											<tr>
-												<td>3</td>
-												<td>Bakso Sapi</td>
-												<td>Gadjah Mada University</td>
-											</tr>
-											<tr>
-												<td>4</td>
-												<td>The ABC</td>
-												<td>Diponegoro University</td>
-											</tr>
-											<tr>
-												<td>5</td>
-												<td>Wompey</td>
-												<td>University of Indonesia<td>
-											</tr>
-											<tr>
-												<td>6</td>
-												<td>Abang's</td>
-												<td>Bandung Institute of Technology</td>
-											</tr>
-											<tr>
-												<td>7</td>
-												<td>Calon Cumlaude</td>
-												<td>Sepuluh Nopember Institute of Technology</td>
-											</tr>
-											<tr>
-												<td>8</td>
-												<td>ROTARIZZ</td>
-												<td>Sepuluh Nopember Institute of Technology</td>
-											</tr>
-											<tr>
-												<td>9</td>
-												<td>Triumphus</td>
+												<td>KANAERU</td>
 												<td>UPN "Veteran" Yogyakarta</td>
 											</tr>
 											<tr>
+												<td>2</td>
+												<td>SERENDIPITY</td>
+												<td>University of Indonesia</td>
+											</tr>
+											<tr>
+												<td>3</td>
+												<td>SIRIUS</td>
+												<td>Bandung Institute of Technology</td>
+											</tr>
+											<tr>
+												<td>4</td>
+												<td>Partyan Regen</td>
+												<td>University of Indonesia</td>
+											</tr>
+											<tr>
+												<td>5</td>
+												<td>Petróleo</td>
+												<td>Adamson University</td>
+											</tr>
+											<tr>
+												<td>6</td>
+												<td>BonChiJa</td>
+												<td>Pertamina University</td>
+											</tr>
+											<tr>
+												<td>7</td>
+												<td>BANTENG CANTIK</td>
+												<td>Pertamina University</td>
+											</tr>
+											<tr>
+												<td>8</td>
+												<td>Geosurvivor</td>
+												<td>Gadjah Mada University</td>
+											</tr>
+											<tr>
+												<td>9</td>
+												<td>Apotek Tutup</td>
+												<td>Padjadjaran University</td>
+											</tr>
+											<tr>
 												<td>10</td>
-												<td>MAVERICKS</td>
-												<td>UPN "Veteran Yogyakarta</td>
+												<td>AYBER</td>
+												<td>Gadjah Mada University</td>
+											</tr>
+											<tr>
+												<td>11</td>
+												<td>Krudo</td>
+												<td>Adamson University</td>
+											</tr>
+											<tr>
+												<td>12</td>
+												<td>DEUZ</td>
+												<td>UPN "Veteran" Yogyakarta</td>
+											</tr>
+											<tr>
+												<td>13</td>
+												<td>Arshaka Vyatra</td>
+												<td>PEM Akamigas</td>
+											</tr>
+											<tr>
+												<td>14</td>
+												<td>Gambris</td>
+												<td>Padjadjaran University</td>
+											</tr>
+											<tr>
+												<td>15</td>
+												<td>GALAKSI</td>
+												<td>Padjadjaran University</td>
+											</tr>
+											<tr>
+												<td>16</td>
+												<td>PGG</td>
+												<td>Bandung Institute of Technology</td>
+											</tr>
+											<tr>
+												<td>17</td>
+												<td>RESTU IBU</td>
+												<td>Sepuluh Nopember Institute of Technology</td>
+											</tr>
+											<tr>
+												<td>18</td>
+												<td>Hambali Racing</td>
+												<td>Sepuluh Nopember Institute of Technology</td>
 											</tr>
 										</tbody>
 									</table>
@@ -392,11 +409,11 @@
 					<div class="row">
 						<div class="col-md-12 col-sm-6 col-12">
 							<ul style="list-style-type: none;">
-								<li><h5 class="lead text-light">Manager of Paper & Poster Competition</h5></li>
-								<li><h5 class="text-light fs-6">Ibra Rabbani Dahlan</h5></li>
-								<li><h5 class="fs-6">Email: nasyaudrey@gmail.com</h5></li>
-								<li><a href="https://wa.me/+6282159428077" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-									Phone: +6285259932632
+								<li><h5 class="lead text-light">Manager of Smart Competition</h5></li>
+								<li><h5 class="text-light fs-6">Daniel Matthew Christian Sagala</h5></li>
+								<li><h5 class="fs-6">Email: amanda.fionisha@gmail.com</h5></li>
+								<li><a href="https://wa.me/+6281385751913" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
+									Phone: +6288225882743
 								</a></li>
 							</ul>
 						</div>
