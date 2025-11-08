@@ -6,7 +6,7 @@
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 	<meta content="" name="keywords">
 	<meta content="" name="description">
-	<link rel="icon" href="../static/images/logo.png">
+	<link rel="icon" href="../static/images/ipfest_2026_logo.svg">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Rubik:wght@400;500&display=swap" rel="stylesheet"> 
@@ -18,7 +18,7 @@
 	<link href="../static/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../static/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body class="dashboard-theme">
 	<!-- Spinner Start -->
    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -37,10 +37,10 @@
 
    <!-- Navbar & Hero Start -->
 	<div class="container-fluid p-0">
-		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
-			<a href="" class="navbar-brand p-0 d-flex align-items-center">
-				<img src="../static/images/logo.png" alt="Logo">
-				<h1 class="fs-5 text-primary m-0"><strong>IPFEST 2025</strong></h1>
+		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0 dashboard-navbar">
+			<a href="" class="navbar-brand p-0 d-flex align-items-center gap-3">
+				<img src="../static/images/ipfest_2026_logo.svg" alt="IPFEST 2026 Flame" width="69" height="69" class="brand-mark">
+				<img src="../static/images/ipfest_2026_text.svg" alt="IPFEST 2026" width="94" height="53" class="brand-wordmark">
 			</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
 				<span class="fa fa-bars"></span>
@@ -83,12 +83,12 @@
    <!-- Navbar & Hero End -->
 
 	<!-- Main -->
-	<main class="container-fluid py-5" style="min-height: 90vh;">
+	<main class="container-fluid py-5 dashboard-stage">
 		<div class="container d-flex py-5">
 			<section class="col-lg-10 col-md-11 col-sm-12 mx-auto">
 				<div class="tab-content" id="nav-tabContent" style="padding: 1rem;">
 					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="row g-3">
 								<div class="mb-2">
 									<h1 class="display-4 text-primary lead" id="del-team-name"></h1>
@@ -105,12 +105,7 @@
 											<div class="row">
 												<div class="col-md-6 col-12">
 													<label for="final-leader-payment-submit" class="form-label">Upload payment proof</label>
-													<input type="file" name="final-leader-payment-submit" id="final-leader-payment-submit" class="form-control" placeholder="Your Payment Proof" aria-label="Final Payment Proof">
-													<style>
-														#final-leader-payment-submit:hover{
-															cursor: pointer;
-														}
-													</style>
+                                        <input type="file" name="final-leader-payment-submit" id="final-leader-payment-submit" class="form-control" placeholder="Your Payment Proof" aria-label="Final Payment Proof">
 												</div>
 												<div class="col-md-6 col-12">
 													<label for="leader-hospitality-type" class="form-label">Hospitality:</label>
@@ -226,12 +221,23 @@
 											</div>
 										</div>
 									</div>
+									<div class="col-sm-9 col-md-6 col-lg-4">
+										<div class="card shadow pt-3 mb-2" data-bs-toggle="tooltip" data-bs-title="Leader">
+											<div class="card-body">
+												<div class="text-center">
+													<svg style="height: 4rem;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.97,17.758A1,1,0,0,0,19,17h-.536c-1.377-1.76-1.87-5.044-2-7H17a1,1,0,0,0,0-2h-.064a5.145,5.145,0,0,0,.314-1.75,5.25,5.25,0,0,0-10.5,0A5.145,5.145,0,0,0,7.064,8H7a1,1,0,0,0,0,2h.533c-.127,1.956-.62,5.24-2,7H5a1,1,0,0,0-.97.758l-1,4A1,1,0,0,0,4,23H20a1,1,0,0,0,.97-1.242ZM12,3a3.254,3.254,0,0,1,3.25,3.25A3.158,3.158,0,0,1,14.72,8H9.28a3.158,3.158,0,0,1-.53-1.75A3.254,3.254,0,0,1,12,3ZM9.536,10h4.928a18.915,18.915,0,0,0,1.641,7H7.9A18.915,18.915,0,0,0,9.536,10ZM5.281,21l.5-2H18.219l.5,2Z"/></svg>
+													<p class="lead text-primary mt-3"></p>
+													<h4 class="card-title text-primary fs-3"><span id="del-leader-name"></span></h4>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
-						</main>
+						</div>
 					</div>
 					<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="">
 								<h1 class="display-5 text-primary lead">Preliminary Submission</h1>
 							</div>
@@ -261,13 +267,8 @@
 									<label for="preliminary-submit" class="form-label">Upload your submission file:</label>
 									<div class="col-md-8 col-12">
 										<div class="input-group">
-											<input type="file" name="preliminary-submit" id="preliminary-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-file-prem" required>
-											<button class="btn btn-secondary text-white" type="button" id="delete-file-prem">Delete File</button>
-											<style>
-												#preliminary-submit:hover{
-													cursor: pointer;
-												}
-											</style>
+                                    <input type="file" name="preliminary-submit" id="preliminary-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-file-prem" required>
+                                    <button class="btn btn-secondary text-white" type="button" id="delete-file-prem">Delete File</button>
 										</div>
 									</div>
 									<div class="form-check mt-3">
@@ -302,10 +303,10 @@
 								<p class="fs-5">Last Additional Abstract Submission: <span class="text-secondary" id="add-abstract-file-time-sub"></span></p>
 								<p class="fs-5" id="abstract-file-time-status">Status: <span class="text-success"></span></p>
 							</div>
-						</main>
+						</div>
 					</div>
 					<div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="row">
 								<div class="alert alert-warning alert-dismissible fade show" role="alert" id="final-alert">
 									<?xml version="1.0" ?><svg style="width: 4rem" data-name="Layer 1" id="Layer_1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#efcc00;}.cls-2{fill:#353535;}</style></defs><title/><path class="cls-1" d="M30.16,11.51,6.84,51.9a2.13,2.13,0,0,0,1.84,3.19H55.32a2.13,2.13,0,0,0,1.84-3.19L33.84,11.51A2.13,2.13,0,0,0,30.16,11.51Z"/><path class="cls-2" d="M29,46a3,3,0,1,1,3,3A2.88,2.88,0,0,1,29,46Zm1.09-4.66-.76-15h5.26l-.73,15Z"/></svg>
@@ -330,13 +331,8 @@
 									<label for="final-submit" class="form-label">Upload your submission file:</label>
 									<div class="col-md-8 col-12">
 										<div class="input-group">
-											<input type="file" name="final-submit" id="final-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-file-final" accept=".zip, .rar" required>
-											<button class="btn btn-secondary text-white" type="button" id="delete-file-final">Delete File</button>
-											<style>
-												#final-submit:hover{
-													cursor: pointer;
-												}
-											</style>
+                                    <input type="file" name="final-submit" id="final-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-file-final" accept=".zip, .rar" required>
+                                    <button class="btn btn-secondary text-white" type="button" id="delete-file-final">Delete File</button>
 										</div>
 									</div>
 									<div class="form-check mt-3">
@@ -399,13 +395,8 @@
 										<label for="final-model-submit" class="form-label">Upload your model file:</label>
 										<div class="col-md-8 col-12">
 											<div class="input-group">
-												<input type="file" name="final-model-submit" id="final-model-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-model-file-final" required>
-												<button class="btn btn-secondary text-white" type="button" id="delete-model-file-final">Delete File</button>
-												<style>
-													#final-model-submit:hover{
-														cursor: pointer;
-													}
-												</style>
+                                    <input type="file" name="final-model-submit" id="final-model-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-model-file-final" required>
+                                    <button class="btn btn-secondary text-white" type="button" id="delete-model-file-final">Delete File</button>
 											</div>
 										</div>
 										<div class="form-check mt-3">
@@ -466,13 +457,8 @@
 										<label for="final-ppt-submit" class="form-label">Upload your PPT file:</label>
 										<div class="col-md-8 col-12">
 											<div class="input-group">
-												<input type="file" name="final-ppt-submit" id="final-ppt-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-ppt-file-final" required>
-												<button class="btn btn-secondary text-white" type="button" id="delete-ppt-file-final">Delete File</button>
-												<style>
-													#final-ppt-submit:hover{
-														cursor: pointer;
-													}
-												</style>
+                                    <input type="file" name="final-ppt-submit" id="final-ppt-submit" class="form-control" placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-ppt-file-final" required>
+                                    <button class="btn btn-secondary text-white" type="button" id="delete-ppt-file-final">Delete File</button>
 											</div>
 										</div>
 										<div class="form-check mt-3">
@@ -525,7 +511,7 @@
 									<p class="fs-5" id="file-time-status">Status: </p>
 								</div>
 							</div>
-						</main>
+						</div>
 					</div>
 				</div>
 			</section>

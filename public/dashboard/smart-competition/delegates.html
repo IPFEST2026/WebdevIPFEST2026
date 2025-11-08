@@ -6,7 +6,7 @@
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 	<meta content="" name="keywords">
 	<meta content="" name="description">
-	<link rel="icon" href="../../static/images/logo.png">
+	<link rel="icon" href="../../static/images/ipfest_2026_logo.svg">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Rubik:wght@400;500&display=swap" rel="stylesheet"> 
@@ -18,7 +18,7 @@
 	<link href="../../static/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../../static/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body class="dashboard-theme">
 	<!-- Spinner Start -->
    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -29,10 +29,10 @@
 
    <!-- Navbar & Hero Start -->
 	<div class="container-fluid p-0">
-		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
-			<a href="" class="navbar-brand p-0 d-flex align-items-center">
-				<img src="../../static/images/logo.png" alt="Logo">
-				<h1 class="fs-5 text-primary m-0"><strong>IPFEST 2025</strong></h1>
+		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0 dashboard-navbar">
+			<a href="" class="navbar-brand p-0 d-flex align-items-center gap-3">
+				<img src="../../static/images/ipfest_2026_logo.svg" alt="IPFEST 2026 Flame" width="69" height="69" class="brand-mark">
+				<img src="../../static/images/ipfest_2026_text.svg" alt="IPFEST 2026" width="94" height="53" class="brand-wordmark">
 			</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
 				<span class="fa fa-bars"></span>
@@ -72,12 +72,12 @@
    <!-- Navbar & Hero End -->
 
 	<!-- Main -->
-	<main class="container-fluid py-5" style="min-height: 90vh;">
+	<main class="container-fluid py-5 dashboard-stage">
 		<div class="container d-flex py-5">
 			<section class="col-lg-10 col-md-11 col-sm-12 mx-auto">
 				<div class="tab-content" id="nav-tabContent" style="padding: 1rem;">
 					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="row g-3">
 								<div class="mb-2">
 									<h1 class="display-4 text-primary lead" id="del-team-name"></h1>
@@ -107,6 +107,17 @@
 													<svg style="height: 4rem" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 														<path d="M256 112c30.88 0 56-25.12 56-56S286.9 0 256 0S199.1 25.12 199.1 56S225.1 112 256 112zM511.1 197.4c0-5.178-2.509-10.2-7.096-13.26L476.4 168.2c-2.5-1.75-5.497-2.62-8.497-2.62c-5.501 .125-10.63 2.87-13.75 7.245c-9.001 12-23.16 19.13-38.16 19.13c-3.125 0-6.089-.2528-9.089-.8778c-23.13-4.25-38.88-26.25-38.88-49.75C367.1 134 361.1 128 354.6 128h-38.75c-6.001 0-11.63 4-12.88 9.875C298.2 160.1 278.7 176 255.1 176c-22.75 0-42.25-15.88-47-38.12C207.7 132 202.2 128 196.1 128h-38.75C149.1 128 143.1 134 143.1 141.4c0 18.49-13.66 50.62-47.95 50.62c-15.13 0-29.3-7.118-38.3-19.24C54.6 168.4 49.66 165.7 44.15 165.6c-3 0-5.931 .8951-8.432 2.645l-28.63 16C2.509 187.2 0 192.3 0 197.4c0 2.438 .5583 4.901 1.72 7.185L109.9 432h53.13L69.85 236.4C78.35 238.8 87.11 240 95.98 240c2.432 0 56.83 1.503 84.76-52.5C198.1 210.5 226.6 224 255.9 224c29.38 0 57.01-13.38 75.26-36.25C336.1 197.6 360.6 240 416 240c8.751 0 17.5-1.125 26-3.5L349 432h53.13l108.1-227.4C511.4 202.3 511.1 199.8 511.1 197.4zM424 464H87.98c-13.26 0-24 10.75-24 23.1S74.72 512 87.98 512h336c13.26 0 24-10.75 24-23.1S437.3 464 424 464z"/>
 													</svg>
+													<p class="lead text-primary mt-3"></p>
+													<h4 class="card-title text-primary fs-3"><span class="del-member-name"></span></h4>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-9 col-md-6 col-lg-4">
+										<div class="card shadow pt-3 mb-2" data-bs-toggle="tooltip" data-bs-title="Member">
+											<div class="card-body">
+												<div class="text-center">
+													<svg style="height: 4rem;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.97,17.758A1,1,0,0,0,19,17h-.536c-1.377-1.76-1.87-5.044-2-7H17a1,1,0,0,0,0-2h-.064a5.145,5.145,0,0,0,.314-1.75,5.25,5.25,0,0,0-10.5,0A5.145,5.145,0,0,0,7.064,8H7a1,1,0,0,0,0,2h.533c-.127,1.956-.62,5.24-2,7H5a1,1,0,0,0-.97.758l-1,4A1,1,0,0,0,4,23H20a1,1,0,0,0,.97-1.242ZM12,3a3.254,3.254,0,0,1,3.25,3.25A3.158,3.158,0,0,1,14.72,8H9.28a3.158,3.158,0,0,1-.53-1.75A3.254,3.254,0,0,1,12,3ZM9.536,10h4.928a18.915,18.915,0,0,0,1.641,7H7.9A18.915,18.915,0,0,0,9.536,10ZM5.281,21l.5-2H18.219l.5,2Z"/></svg>
 													<p class="lead text-primary mt-3"></p>
 													<h4 class="card-title text-primary fs-3"><span class="del-member-name"></span></h4>
 												</div>
@@ -154,10 +165,10 @@
 									</div>
 								</div>
 							</div>
-						</main>
+						</div>
 					</div>
 					<div class="tab-pane fade" id="nav-final" role="tabpanel" aria-labelledby="nav-final-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="" id="del-final-payment">
 								<div class="d-flex justify-content-between align-items-center">
 									<h3 class="lead display-5 text-primary fw-bold">Final Payment:</h3>
@@ -222,7 +233,7 @@
 									<button type="submit" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4 mt-4">Submit</button>
 								</form>
 							</div>
-						</main>
+						</div>
 					</div>
 				</div>
 			</section>

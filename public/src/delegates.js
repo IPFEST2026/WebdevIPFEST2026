@@ -101,14 +101,15 @@ function writeTeamMembersName(leader, members) {
 
 // WA group for delegates
 const WAGroup = {
-	"BCC": "https://chat.whatsapp.com/GOwmV4E0UAB0tGita3caAH",
-	"GDPC": "https://chat.whatsapp.com/FuUNKqwNZM8ITmm7VF9r2Q",
-	"PPC": "https://chat.whatsapp.com/CbMnR5BSRbTE4UPVKHfCK3",
-	"ORDC": "https://chat.whatsapp.com/CqLB448f2Ki1HejjjvN0jp",
-	"SC": "https://chat.whatsapp.com/Ls7inoRzdHVFPb32JvBkO6",
-	"MIC": "https://chat.whatsapp.com/HratZHxZZfvCDT0loIUQM9",
-	"PODC": "https://chat.whatsapp.com/DCaz24tLNPu8Q1vjiIk2LG",
-	"WDC": "https://chat.whatsapp.com/JFhAkcd7UTDANhVcphzZRh"
+	"BCC": "https://chat.whatsapp.com/LQIOCCbVfYhJaJyPl5w9XV?mode=wwt",
+	"GDPC": "https://chat.whatsapp.com/GIELYdRnXdP09pVcgjqPiB?mode=wwt",
+	"PPC": "https://chat.whatsapp.com/Hew4NHXzrFgBM3C6QmBRkx?mode=wwt",
+	"ORDC": "https://chat.whatsapp.com/EjGDGrF5ldGFDyLVoz50vO?mode=wwt",
+	"SC": "https://chat.whatsapp.com/H4ReXpGuRPHHuke5CUIWiu?mode=wwt",
+	"MIC": "https://chat.whatsapp.com/GIhNevsM6HW2xDUirbLGUo?mode=wwt",
+	"PODC": "https://chat.whatsapp.com/DCYjX4rejsqLKZAdKVqeQi?mode=wwt",
+	"WDC": "https://chat.whatsapp.com/L96OCbDm3sq7CvvbhNyz7U?mode=wwt",
+	"HC": "https://chat.whatsapp.com/BxMDdoC9aWG0MKx8cWZTqz?mode=wwt"
 }
 
 function writePaymentStatus(status) {
@@ -141,27 +142,30 @@ function decomposeDelName(firstname, lastname) {
 }
 
 let competitionName = {
-	"BCC": ["Business Case", "https://drive.google.com/file/d/1CwahpU53Opv7nfHctb_cYbRoJP8Aw-8G/view?usp=sharing"],
-	"GDPC": ["Geothermal Development Plan", "https://drive.google.com/file/d/1Dg-spOAOsyGZIwLz3047mxjZi5lLBWB5/view?usp=sharing"],
-	"MIC": ["Mud Innovation", "https://drive.google.com/file/d/1wGc_58eQoC1seeZ3jJdsCiGcr7amgm0l/view?usp=sharing"],
-	"ORDC": ["Oil Rig Design", "https://drive.google.com/file/d/1L2Ss-TM_2r2u2zy6wx2aICLjootORfBI/view?usp=sharing"],
-	"PPC": ["Paper and Poster", "https://drive.google.com/file/d/12YJZgSxnfj1_nLIA-AEbRyvlzYXBkzAw/view?usp=sharing"],
-	"PODC": ["Plan of Development", "https://drive.google.com/file/d/1vxO5iy_CYuq3RWAyWQHOr8VBDlLLY0ay/view?usp=sharing"],
-	"SC": ["Smart Competition", "https://drive.google.com/file/d/18vfjJmlJ3DocF316MD6KAKcniTSnTlU4/view?usp=drivesdk"],
-	"WDC": ["Well Design", "https://drive.google.com/file/d/1s1NJBuJ9_puE5PXxVU4XXiisB91V2RIU/view?usp=sharing"]
+	"BCC": ["Business Case", "https://drive.google.com/file/d/1UI4jGySj6asIUHRUbgVkDgI4zfKuNAP9/view?usp=drive_link"],
+	"GDPC": ["Geothermal Development Plan", "https://drive.google.com/file/d/1h13PetzYZIlkE4-NRZFcYCTuQ81I0ft7/view?usp=drive_link"],
+	"MIC": ["Mud Innovation", "https://drive.google.com/file/d/18y_snK6CiK4zQz6XA-D9OTkX4wZua-pt/view?usp=drive_link"],
+	"ORDC": ["Oil Rig Design", "https://drive.google.com/file/d/1b27MbLf4uARbmwOgTNSqcHZJaKY-ScsJ/view?usp=drive_link"],
+	"PPC": ["Paper and Poster", "https://drive.google.com/file/d/1-BfuDiX9e9hpPQI73CN395f7wyPLOvLT/view?usp=drive_link"],
+	"PODC": ["Plan of Development", "https://drive.google.com/file/d/1PQArM5lSdExnKH39FiCdkeYB06Gz6D7W/view?usp=drive_link"],
+	"SC": ["Smart Competition", "https://drive.google.com/file/d/1MH0raIJYni8wuBYUZMx2t9H3zSNUX1Vn/view?usp=drive_link"],
+	"WDC": ["Well Design", "https://drive.google.com/file/d/1To-cSoflWFLrrFqzS-n85h9UM4UzBi0d/view?usp=drive_link"],
+	"HC": ["Hackathon", "https://drive.google.com/file/d/1hPczUYNxHH7tjNBKOD3prEBtdbJWjbFk/view?usp=drive_link"]
 }
 
 // Submission Section
 // Case Distribution Section
 const caseStorageCollection = {
-	"BCC": "CbSOFYjoVdePrI0UhCoo",
-	"GDPC": "gGcOgb5oX48TKh1GQ1HI",
-	"MIC": "HHstMkNyuF1s6hIj3ZmB",
-	"ORDC": "V5M61p3Vu8vWt09BC5u6",
-	"PODC": "PWLclyXnFIUgwLsJKau3",
-	"PPC": "GCCkfsxoMeXj6WSm0d94",
-	"WDC": "U9TU4pmkiMCqsLlt7n71"
+	"BCC": "TKNSFPMRQ6GGLdVurLCv",
+	"GDPC": "u5XFl4812coW1J6yMqrm",
+	"MIC": "pHlZbe6UyXpKpO35LInb",
+	"ORDC": "yRP8ZxRSXbIlJx0vcoO3",
+	"PODC": "G9gLvFCkxiviK2UDc5qX",
+	"PPC": "BzdUKfPbIbyRYlLJmk1c",
+	"WDC": "YgdwqPY6IIhqSDY45UMH",
+	"Hackathon": "6gRhBNQ5yjBMg1tbK66d"
 }
+
 // Preliminary
 const preliminaryForm = document.getElementById("preliminary-form")
 const prelimSubmitBtn = document.getElementById("prelim-submit-btn")
@@ -201,7 +205,7 @@ deleteFileBtnFinal.addEventListener("click", () => { finalFileInput.value = '' }
 // })
 
 function overdueStatus() {
-	let deadline = new Date('Dec 23, 2024 00:00:00').getTime()
+	let deadline = new Date('Dec 12, 2025 00:00:00').getTime()
    let now = new Date().getTime()
 
    return now > deadline
@@ -213,31 +217,34 @@ function finalOverdueStatus(compe) {
 
 	switch (compe) {
 		case 'BCC':
-			deadline = new Date('Feb 5, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'GDPC':
-			deadline = new Date('Feb 8, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'MIC':
-			deadline = new Date('Feb 9, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'ORDC':
-			deadline = new Date('Feb 5, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'PODC':
-			deadline = new Date('Feb 8, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'PODC-Model':
-			deadline = new Date('Feb 9, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'PODC-PPT':
-			deadline = new Date('Feb 19, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'PPC':
-			deadline = new Date('Feb 5, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 		case 'WDC':
-			deadline = new Date('Feb 5, 2025 00:00:00').getTime()
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
+			break
+		case 'HC':
+			deadline = new Date('Feb 5, 2026 00:00:00').getTime()
 			break
 	}
 
@@ -517,7 +524,7 @@ function summaryAbstractShowStatus(user) {
 
 // Deadline countdown
 function abstractOverdueStatus() {
-	let deadline = new Date('Dec 24, 2024 00:00:00').getTime()
+	let deadline = new Date('Dec 12, 2025 00:00:00').getTime()
    let now = new Date().getTime()
 
 	return now > deadline
@@ -563,7 +570,7 @@ function showAbsSubmission() {
 					<div class="">
 						<input class="form-check-input" type="checkbox" value="" id="have-read" required>
 							<label class="form-check-label" for="have-read">
-								I have read the <a href="https://drive.google.com/file/d/1O5XV_cz7GPNUvsUz3vSdTDW4Sio-F-gl/view?usp=drive_link" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" target="_blank" id="competition-guide-book" style="text-decoration: underline;">Guide Book</a> of <span class="del-team-competition"></span> and I'm willing to face consequences if I break the rules. 
+								I have read the <a href="https://drive.google.com/file/d/1m6Cf0w0ox1Jo8WHl_Zrh7w9NJ2XgoQTy/view?usp=drive_link" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" target="_blank" id="competition-guide-book" style="text-decoration: underline;">Guide Book</a> of <span class="del-team-competition"></span> and I'm willing to face consequences if I break the rules. 
 							</label>
 						<div class="invalid-feedback">
 							You must agree before submitting.
@@ -1002,14 +1009,14 @@ function showDelegatesFinalStatus(container, status) {
 			alertCont = `
 				<div class="alert alert-success" role="alert">
 					<h4 class="alert-heading fw-bold">PASSED</h4>
-					<p>Aww yeah! Congratulations on advancing to the finals—your hard work and dedication have truly paid off, and we’re excited to see you shine in this next stage!</p>									 
+					<p>Aww yeah! Congratulations on advancing to the finals—your hard work and dedication have truly paid off, and we're excited to see you shine in this next stage!</p>									 
 				</div>
 			`
 		} else {
 			alertCont = `
 				<div class="alert alert-danger" role="alert">
 					<h4 class="alert-heading fw-bold">FAILED</h4>
-					<p>Although you didn’t make it to the finals, your effort and dedication have been truly commendable—keep striving, as this is just one step in your journey to success!</p>									 
+					<p>Although you didn't make it to the finals, your effort and dedication have been truly commendable—keep striving, as this is just one step in your journey to success!</p>									 
 				</div>
 			`
 		}

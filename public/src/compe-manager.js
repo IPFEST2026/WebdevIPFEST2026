@@ -20,14 +20,15 @@ let isPODC = false
 const managerName = document.querySelector("#manager-name")
 const managerCompetition = document.querySelector("#manager-competition")
 const compeManagerEmail = {
-	"PODC": "podc.ipfest2025@gmail.com",
-	"SC": "sc.ipfest2025@gmail.com",
-	"MIC": "mic.ipfest2025@gmail.com",
-	"PPC": "ppc.ipfest2025@gmail.com",
-	"ORDC": "ordc.ipfest2025@gmail.com",
-	"BCC": "bcc.ipfest2025@gmail.com",
-	"GDPC": "gdpc.ipfest2025@gmail.com",
-	"WDC": "wdc.ipfest2025@gmail.com"
+	"PODC": "podc.ipfest2026@gmail.com",
+	"SC": "sc.ipfest2026@gmail.com",
+	"MIC": "mic.ipfest2026@gmail.com",
+	"PPC": "ppc.ipfest2026@gmail.com",
+	"ORDC": "ordc.ipfest2026@gmail.com",
+	"BCC": "bcc.ipfest2026@gmail.com",
+	"GDPC": "gdpc.ipfest2026@gmail.com",
+	"WDC": "wdc.ipfest2026@gmail.com",
+	"HC": "hc.ipfest2026@gmail.com"
 }
 
 onAuthStateChanged(AUTH, (user) => {
@@ -35,27 +36,27 @@ onAuthStateChanged(AUTH, (user) => {
 		switch (user.email) {
 			case compeManagerEmail['BCC']:
 				switchCompetition = 'BCC'
-				managerName.textContent = 'Maestro'
+				managerName.textContent = 'Muhammad Raihan Fadillah'
 				managerCompetition.textContent = 'Bussiness Case'
 				break
 			case compeManagerEmail['GDPC']:
 				switchCompetition = 'GDPC'
-				managerName.textContent = 'Dhanni'
+				managerName.textContent = 'Iman Fath Hatta Rohaedi'
 				managerCompetition.textContent = 'Geothermal Development Plan'
 				break
 			case compeManagerEmail['MIC']:
 				switchCompetition = 'MIC'
-				managerName.textContent = 'Yoga'
+				managerName.textContent = 'Nafidz Rayyan Hidayat'
 				managerCompetition.textContent = 'Mud Innovation'
 				break
 			case compeManagerEmail['ORDC']:
 				switchCompetition = 'ORDC'
-				managerName.textContent = 'Darris'
+				managerName.textContent = 'Muhammad Ferris Rahardian'
 				managerCompetition.textContent = 'Oil Rig Design'
 				break
 			case compeManagerEmail['PODC']:
 				switchCompetition = 'PODC'
-				managerName.textContent = 'Firzan'
+				managerName.textContent = 'Jonathan Denen'
 				managerCompetition.textContent = 'Plan of Development'
 				isPODC = true
 				document.getElementById("submission-table").style.width = '120vw'
@@ -94,18 +95,23 @@ onAuthStateChanged(AUTH, (user) => {
 				break
 			case compeManagerEmail['PPC']:
 				switchCompetition = 'PPC'
-				managerName.textContent = 'Nasya'
+				managerName.textContent = 'Ibra Rabbani Dahlan'
 				managerCompetition.textContent = 'Paper and Poster'
 				break
 			case compeManagerEmail['SC']:
 				switchCompetition = 'SC'
-				managerName.textContent = 'Fio'
+				managerName.textContent = 'Daniel Matthew Christian Sagala'
 				managerCompetition.textContent = 'Smart Competition'
 				break
 			case compeManagerEmail['WDC']:
 				switchCompetition = 'WDC'
-				managerName.textContent = 'Vianda'
+				managerName.textContent = 'Jiro Adika Faruq'
 				managerCompetition.textContent = 'Well Design'
+				break
+			case compeManagerEmail['HC']:
+				switchCompetition = 'HDC'
+				managerName.textContent = 'Audrey Hillary Tamba'
+				managerCompetition.textContent = 'Hackathon Competition'
 				break
 			default:
 				window.location.href = "../login.html"
@@ -511,13 +517,14 @@ onSnapshot(Submission_Status, (snap) => {
 
 // Case Distribution Section
 const caseStorageCollection = {
-	"BCC": "CbSOFYjoVdePrI0UhCoo",
-	"GDPC": "gGcOgb5oX48TKh1GQ1HI",
-	"MIC": "HHstMkNyuF1s6hIj3ZmB",
-	"ORDC": "V5M61p3Vu8vWt09BC5u6",
-	"PODC": "PWLclyXnFIUgwLsJKau3",
-	"PPC": "GCCkfsxoMeXj6WSm0d94",
-	"WDC": "U9TU4pmkiMCqsLlt7n71"
+	"BCC": "TKNSFPMRQ6GGLdVurLCv",
+	"GDPC": "u5XFl4812coW1J6yMqrm",
+	"MIC": "pHlZbe6UyXpKpO35LInb",
+	"ORDC": "yRP8ZxRSXbIlJx0vcoO3",
+	"PODC": "G9gLvFCkxiviK2UDc5qX",
+	"PPC": "BzdUKfPbIbyRYlLJmk1c",
+	"WDC": "YgdwqPY6IIhqSDY45UMH",
+	"Hackathon": "6gRhBNQ5yjBMg1tbK66d"
 }
 
 const caseStorage = ref(STORAGE, 'Case')

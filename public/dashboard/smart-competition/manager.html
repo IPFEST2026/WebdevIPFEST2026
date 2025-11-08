@@ -6,7 +6,7 @@
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 	<meta content="" name="keywords">
 	<meta content="" name="description">
-	<link rel="icon" href="../../static/images/logo.png">
+	<link rel="icon" href="../../static/images/ipfest_2026_logo.svg">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Rubik:wght@400;500&display=swap" rel="stylesheet"> 
@@ -18,7 +18,7 @@
 	<link href="../../static/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../../static/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body class="dashboard-theme">
 	<!-- Spinner Start -->
    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
       <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -29,10 +29,10 @@
 
    <!-- Navbar & Hero Start -->
 	<div class="container-fluid p-0">
-		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
-			<a href="" class="navbar-brand p-0 d-flex align-items-center">
-				<img src="../../static/images/logo.png" alt="Logo">
-				<h1 class="fs-5 text-primary m-0"><strong>IPFEST 2025</strong></h1>
+		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0 dashboard-navbar">
+			<a href="" class="navbar-brand p-0 d-flex align-items-center gap-3">
+				<img src="../../static/images/ipfest_2026_logo.svg" alt="IPFEST 2026 Flame" width="69" height="69" class="brand-mark">
+				<img src="../../static/images/ipfest_2026_text.svg" alt="IPFEST 2026" width="94" height="53" class="brand-wordmark">
 			</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
 				<span class="fa fa-bars"></span>
@@ -83,12 +83,12 @@
    <!-- Navbar & Hero End -->
 
 	<!-- Main -->
-	<main class="container-fluid py-5" style="min-height: 90vh;">
+	<main class="container-fluid py-5 dashboard-stage">
 		<div class="container d-flex py-5">
 			<section class="col-lg-10 col-md-11 col-sm-12 mx-auto">
 				<div class="tab-content" id="nav-tabContent" style="padding: 1rem;">
 					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="">
 								<div class="mb-5">
 									<h1 class="display-6 text-primary lead">Wassup, <span id="manager-name"></span></h1>
@@ -123,10 +123,10 @@
 							<div class="mt-4">
 								<button class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4" id="excel-convert">Download</button>
 							</div>
-						</main>
+						</div>
 					</div>
 					<div class="tab-pane fade" id="nav-preliminary" role="tabpanel" aria-labelledby="nav-preliminary-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="d-flex justify-content-center">
 								<form id="compe-manager-privilage-prelim">
 									<div class="w-100 overflow-auto" style="max-height: 80vh;">
@@ -147,10 +147,10 @@
 									</div>
 								</form>
 							</div>
-						</main>
+						</div>
 					</div>
 					<div class="tab-pane fade" id="nav-case" role="tabpanel" aria-labelledby="nav-case-tab" tabindex="0">
-						<main class="container">
+						<div class="dashboard-panel">
 							<div class="row mt-5" id="final-case-dist">
 								<h3 class="display-5 text-secondary lead">Final Booklet Distribution</h3>
 								<form id="final-booklet-distribution">
@@ -176,7 +176,7 @@
 									</div>
 								</form>
 							</div>
-						</main>
+						</div>
 					</div>
 				</div>
 			</section>

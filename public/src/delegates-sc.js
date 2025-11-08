@@ -153,7 +153,7 @@ function showDelegatesFinalStatus(container, status) {
 			alertCont = `
 				<div class="alert alert-success" role="alert">
 					<h4 class="alert-heading fw-bold">PASSED</h4>
-					<p>Aww yeah! Congratulations on advancing to the finals—your hard work and dedication have truly paid off, and we’re excited to see you shine in this next stage!</p>
+					<p>Aww yeah! Congratulations on advancing to the finals—your hard work and dedication have truly paid off, and we're excited to see you shine in this next stage!</p>
 					<hr>
 					<p>Get your SC Final Booklet <a href="https://firebasestorage.googleapis.com/v0/b/ipfest25web.appspot.com/o/Case%2FSC%2FSC%20Final%20Booklet%202025.docx%20(1).pdf?alt=media&token=c0888335-cf34-4cb0-87c4-c03b77775df8" class="link-info" target="_blank">here</a>!</p>		 
 				</div>
@@ -162,7 +162,7 @@ function showDelegatesFinalStatus(container, status) {
 			alertCont = `
 				<div class="alert alert-danger" role="alert">
 					<h4 class="alert-heading fw-bold">FAILED</h4>
-					<p>Although you didn’t make it to the finals, your effort and dedication have been truly commendable—keep striving, as this is just one step in your journey to success!</p>									 
+					<p>Although you didn't make it to the finals, your effort and dedication have been truly commendable—keep striving, as this is just one step in your journey to success!</p>									 
 				</div>
 			`
 		}
@@ -177,7 +177,7 @@ function decomposeDelName(firstname, lastname) {
 }
 
 let competitionName = {
-	"SC": ["Smart Competition", "https://drive.google.com/file/d/18vfjJmlJ3DocF316MD6KAKcniTSnTlU4/view?usp=drivesdk"]
+	"SC": ["Smart Competition", "https://drive.google.com/file/d/1MH0raIJYni8wuBYUZMx2t9H3zSNUX1Vn/view?usp=drive_link"]
 }
 
 // Final Payment Handle

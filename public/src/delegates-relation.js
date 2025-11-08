@@ -15,7 +15,7 @@ import { DB, AUTH } from './index.js'
 // check auth
 onAuthStateChanged(AUTH, (user) => {
 	if (user) {
-		if (user.email !== "officialdelegates.ipfest2025@gmail.com") {
+		if (user.email !== "officialdelegates.ipfest2026@gmail.com") {
 			window.location.href = "../login.html"
 		}
 	} else {
@@ -40,7 +40,7 @@ const Submission_Status = collection(DB, 'Submission_Status')
 
 // Dashboard Tab Section
 const totalDelPerCompe = document.querySelectorAll(".total-del")
-const Competition = ["BCC", "GDPC", "MIC", "ORDC", "PPC", "PODC", "SC", "WDC"]
+const Competition = ["BCC", "GDPC", "MIC", "ORDC", "PPC", "PODC", "SC", "WDC", "HC"]
 // Database Tab Section
 const delRelList = document.getElementById("delrel-team-list")
 // Final Pay Sect
