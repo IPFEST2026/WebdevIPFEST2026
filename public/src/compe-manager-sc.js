@@ -19,10 +19,10 @@ const managerCompetition = document.querySelector("#manager-competition")
 // Check user auth
 onAuthStateChanged(AUTH, (user) => {
 	if (user) {
-		if (user.email !== 'sc.ipfest2025@gmail.com' || user.uid !== 'tfRjtv1VxgMfsGx0ik3PjAx0wTA3') {
+		if (user.email !== 'sc.ipfest2026@gmail.com' || user.uid !== 'z9BeNeMCDvMqi6DJRYsDnp1g0Tx2') {
 			window.location.href = '../../login.html'
 		} else {
-			managerName.textContent = 'Fio'
+			managerName.textContent = 'Daniel Matthew Christian Sagala'
 			managerCompetition.textContent = 'Smart Competition'
 		}
 	} else {
