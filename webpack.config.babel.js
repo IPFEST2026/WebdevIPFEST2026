@@ -18,7 +18,7 @@ export default {
     ct_finish: './public/src/ct-finish.js',
     gi_start: './public/src/gi-start.js',
     gi_finish: './public/src/gi-finish.js',
-    event_attendance: '/public/src/event-attendance.js'
+    event_attendance: './public/src/event-attendance.js'
   },
   output: {
     filename: '[name].bundle.js',
