@@ -16,14 +16,15 @@ import { AUTH, STORAGE, DB } from './index.js'
 
 // Handle team member
 let teamMemberCondition = {
-   "PODC": [4, 5],
-   "SC": [2, 3],
-   "MIC": [2, 3],
-   "PPC": [2, 3],
-   "ORDC": [4, 5],
-   "BCC": [3],
-   "GDPC": [4],
-   "WDC": [4, 5]
+   "plan of development": [4, 5],
+   "smart competition": [2, 3],
+   "mud inovation": [2, 3],
+   "paper and poster": [2, 3],
+   "oil rig design": [4, 5],
+   "business case": [3],
+   "geothermal development plan": [4],
+   "well design": [4, 5],
+   "hackaton": [3]
 }
 
 function generateTeamMemberOption(competition, container){
@@ -139,59 +140,97 @@ function generateMemberEntry(entry, count){
 const studentCard = ref(STORAGE, 'Student Card')
 const paymentStorage = ref(STORAGE, 'Payment')
 
-const registrationForm = document.querySelector("#registration-form")
-const submitBtn = document.getElementById("submit-btn-ipfest")
-const leaderForm = registrationForm.querySelector("#leader")
-const memberForm = registrationForm.querySelector("#member")
-const competitionForm = registrationForm.querySelector("#competition")
-const paymentForm = registrationForm.querySelector("#payment")
-const agreementForm = registrationForm.querySelector("#check-agreement")
-const paymentMethod = paymentForm.querySelector(".payment-method").querySelectorAll("button")
+document.addEventListener("DOMContentLoaded", () => {
+    const registrationForm = document.querySelector("#registration-form")
+    const leaderForm = registrationForm.querySelector("#leader")
+    const memberForm = registrationForm.querySelector("#member")
+    const competitionForm = registrationForm.querySelector("#competition")
+    const paymentForm = registrationForm.querySelector("#payment")
+    const agreementForm = registrationForm.querySelector("#invalidCheck")
+    const compeInput = document.querySelector('#choosen-competition')
+    const memberCount = document.getElementById("memberCount")
+    const entryContainer = memberForm.querySelector("#entry")
+    
+    document.querySelectorAll(".card-compe").forEach(card => {
+        card.addEventListener("click", () => {
+            let value = this.dataset.value;
+            console.log("Klik:", value);
 
-const entryContainer = memberForm.querySelector("#entry")
-const memberCount = leaderForm.querySelector('select[name="memberCount"]')
+            let selectedCompetition = card.dataset.value
+            compeInput.value = selectedCompetition
 
-const overlay = document.querySelector(".overlay")
+            leaderForm.classList.remove("d-none")
+            memberForm.classList.remove("d-none")
+            paymentForm.classList.remove("d-none")
+            agreementForm.classList.remove("d-none")
 
-document.querySelectorAll(".card").forEach(card => card.addEventListener("click", () => {
-   let selectedCompetition = competitionForm.querySelector('input[name="compe"]').value
-   leaderForm.classList.remove("d-none")
-   memberForm.classList.remove("d-none")
-   paymentForm.classList.remove("d-none")
-   agreementForm.classList.remove("d-none")
-   generateTeamMemberOption(selectedCompetition, memberCount)
-   generateMemberEntry(entryContainer, parseInt(memberCount.value, 10))
-}))
+            generateTeamMemberOption(selectedCompetition, memberCount)
+            generateMemberEntry(entryContainer, parseInt(memberCount.value, 10))
+        })
+    })
 
-generateMemberEntry(entryContainer, parseInt(memberCount.value, 10))
+    generateMemberEntry(entryContainer, parseInt(memberCount.value, 10))
 
-memberCount.addEventListener('change', () => {
-   generateMemberEntry(entryContainer, parseInt(memberCount.value, 10))
+    memberCount.addEventListener('change', () => {
+        generateMemberEntry(entryContainer, parseInt(memberCount.value, 10))
+    })
 })
 
-let payMethod = "Bank Mandiri"
-paymentMethod.forEach(method => method.addEventListener('click', () => {
-   payMethod = method.textContent
-   console.log(payMethod)
-   
-   if (method.textContent == "Paypal"){
-      paymentForm.querySelector('input[name="payment-proof"]').removeAttribute('required')
-   }else{
-      paymentForm.querySelector('input[name="payment-proof"]').setAttribute('required', 'true')
-   }
-}))
-
 function earlybirdStatus() {
-   let earlybirdDeadline = new Date('Nov 15, 2024 00:00:00').getTime()
-   let now = new Date().getTime()
-   let distance = earlybirdDeadline - now
-
-   if (distance > 0) {
-      return true
-   } else {
-      return false
-   }
+   const earlybirdDeadline = new Date('Nov 16, 2025 00:00:00').getTime()
+   const now = Date.now()
+   return now < earlybirdDeadline
 }
+
+let payMethod = ""
+const paymentForm = document.querySelector("#payment-form")
+const rekeningBox = paymentForm.querySelector(".rekening-info")
+const proofInput  = paymentForm.querySelector('input[name="payment-proof"]')
+
+const paymentMethod = document.querySelectorAll(".payment-method .nav-link")
+
+paymentMethod.forEach(method => method.addEventListener('click', () => {
+    payMethod = method.dataset.method
+
+    const isEarly = earlybirdStatus()
+
+    let indoPrice  = isEarly ? "IDR 200.000" : "IDR 250.000"
+    let intlPrice  = isEarly ? "USD 17"      : "USD 20"
+
+    switch (payMethod) {
+        case "Bank BCA":
+            rekeningBox.innerHTML = `
+                <p>BCA - 2650508800 (Mochammad Rafly Ghazany A)</p>
+                <small>${indoPrice}</small>
+            `
+            proofInput.required = true
+            break
+
+        case "Gopay":
+            rekeningBox.innerHTML = `
+                <p>085655226900 (Rafly Ghazany)</p>
+                <small>${indoPrice}</small>
+            `
+            proofInput.required = true
+            break
+
+        case "Dana":
+            rekeningBox.innerHTML = `
+                <p>085655226900 (Rafly Ghazany)</p>
+                <small>${indoPrice}</small>
+            `
+            proofInput.required = true
+            break
+
+        case "Paypal":
+            rekeningBox.innerHTML = `
+                <p><a href="https://www.paypal.me/RaflyGhazany" target="_blank">paypal.me/RaflyGhazany</a></p>
+                <small>${intlPrice}</small>
+            `
+            proofInput.required = false
+            break
+    }
+}))
 
 // Check password
 const pass = document.querySelector("input[name='password']")
@@ -258,6 +297,11 @@ async function getDelegatesData() {
       "USR/IDR": "IDR",
       nominal: earlybirdStatus() ? 200000 : 250000,
       method: payMethod
+   }
+
+   if (payMethod.toLowerCase() === "paypal") {
+   team_data["USR/IDR"] = "USD"
+   team_data.nominal = earlybirdStatus() ? 17 : 20
    }
 
    memberIMG = []
@@ -347,6 +391,16 @@ registrationForm.addEventListener('submit', async (e) => {
             const paymentSnap = await uploadBytes(paymentProof, paymentIMG);
             const paymentDownloadUrl = await getDownloadURL(paymentSnap.ref);
             await updateDoc(doc(DB, 'Team', user.uid), { p_url: paymentDownloadUrl })
+
+            const twibbonProof = ref(paymentStorage, `${user.uid}_${Date.now()}_${twibbonIMG.name}`)
+            const twibbonSnap = await uploadBytes(twibbonProof, twibbonIMG)
+            const twibbonURL = await getDownloadURL(twibbonSnap.ref)
+            await updateDoc(doc(DB, 'Team', user.uid), { twibbon_url: twibbonURL })
+
+            const followProof = ref(paymentStorage, `${user.uid}_${Date.now()}_${followIMG.name}`)
+            const followSnap = await uploadBytes(followProof, followIMG)
+            const followURL = await getDownloadURL(followSnap.ref)
+            await updateDoc(doc(DB, 'Team', user.uid), { follow_url: followURL })
 
             localStorage.setItem('signupSuccess', 'true')
 
