@@ -4,7 +4,7 @@ import { onSnapshot, collection } from 'firebase/firestore'
 
 import { DB, AUTH } from './index.js'
 
-import { setToastAlert } from '../static/js/alert'
+import { setToastAlert } from '../static/js/alert.js'
 
 // Check auth
 onAuthStateChanged(AUTH, (user) => {
