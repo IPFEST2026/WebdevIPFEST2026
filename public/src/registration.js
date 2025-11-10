@@ -1,381 +1,296 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Registration - IPFEST 2026</title>
-	<link rel="stylesheet" href="./static/css/register.css">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-</head>
-<body>
-	<nav class="navbar">
-		<div class="container-lg my-2">
-			<a href="index.html" class="navbar-brand p-0 d-flex align-items-center">
-				<img src="static/images/ipfest_2026_logo.svg" alt="Logo">
-				<img src="static/images/ipfest_2026_text.svg" alt="Logo">
-			</a>
-		</div>
-	</nav>
-	<main class="container-lg">
-		<form action="" id="registration-form" class="container-fluid col-md-12 needs-validation" novalidate>
-			<section class="row g-3" id="leader" style="margin-bottom: 5rem;">
-				<h3 class="lead fs-2">Leader</h3>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="firstName" class="form-label">First Name: </label>
-						<input type="text" name="firstName" id="firstName" class="form-control" required>
-						<div class="invalid-feedback">Please add your first name</div>	
-					</div>
-					<div class="col-md-6">
-						<label for="lastName" class="form-label">Last Name: </label>
-						<input type="text" name="lastName" id="lastName" class="form-control" required>
-						<div class="invalid-feedback">Please add your last name</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="major" class="form-label">Major: </label>
-						<input type="text" name="major" id="major" class="form-control" required>
-						<div class="invalid-feedback">Please add your major</div>
-					</div>
-					<div class="col-md-6">
-						<label for="batch" class="form-label">Batch: </label>
-						<select name="batch" id="batch" class="form-select" required>
-							<option value="2023" selected>2023</option>
-							<option value="2022">2022</option>
-							<option value="2021">2021</option>
-							<option value="0">Other</option>
-						</select>
-						<input type="text" name="other-batch" id="" class="d-none form-control" placeholder="your batch">
-						<div class="invalid-feedback">Please add your batch</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="teamName" class="form-label">Team Name: </label>
-						<input type="text" name="teamName" id="teamName" class="form-control" required>
-						<div class="invalid-feedback">Please choose your team name</div>
-					</div>
-					<div class="col-md-6">
-						<label for="memberCount" class="form-label">Team member: </label>
-						<select name="memberCount" id="memberCount" class="form-select" required>
-							<option value="2" selected>2 people</option>
-							<option value="3">3 people</option>
-							<option value="4">4 people</option>
-							
-						</select>
-						<div class="invalid-feedback">Please provide the number of member in your team</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="idCard" class="form-label">ID(NIK/Pasport): </label>
-						<input type="text" name="idCard" id="idCard" class="form-control" required>
-						<div class="invalid-feedback">Please provide valid ID</div>
-					</div>
-					<div class="col-md-6">
-						<label for="studentId" class="form-label">Student ID: </label>
-						<input type="text" name="studentId" id="studentId" class="form-control" required>
-						<div class="invalid-feedback">Please add your student ID</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="email" class="form-label">Email: </label>
-						<input type="email" name="email" id="email" class="form-control" required>
-						<div class="invalid-feedback">Please provide valid email</div>
-					</div>
-					<div class="col-md-6">
-						<label for="phoneNo" class="form-label">Phone number: </label>
-						<input type="tel" name="phoneNo" id="phoneNo" class="form-control" required>
-						<div class="invalid-feedback">Please add your phone number</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="password" class="form-label">Password: </label>
-						<input type="password" name="password" id="password" class="form-control" required>
-						<div class="invalid-feedback">Password must be at least 8 character</div>
-					</div>
-					<div class="col-md-6">
-						<label for="confirmPassword" class="form-label">Confirm Your Password: </label>
-						<input type="password" name="confirmPassword" id="confirmPassword" class="form-control" required>
-						<div class="invalid-feedback">Please provide valid password</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="university" class="form-label">University: </label>
-						<input type="text" name="university" id="university" class="form-control" required>
-						<div class="invalid-feedback">Please add your university</div>
-					</div>
-				</div>
-				<div class="row my-1">
-					<div class="col-md-6">
-						<label for="studentCardPhoto" class="form-label">Student Card Photo: </label>
-						<input type="file" name="studentCardPhoto" id="studentCardPhoto" class="form-control" required>
-						<div class="invalid-feedback">Please upload your student card photo</div>
-					</div>
-				</div>
-			</section>
-			<section id="member" class="row g-3" style="margin-bottom: 3rem;">
-				<div id="entry">
-					<h3 class="lead fs-2 mt-6">Member 1</h3>
-					<div class="member-entry" style="margin-bottom: 2rem;">
-						<div class="row my-1">
-							<div class="col-md-6">
-								<label for="firstName1" class="form-label">First Name: </label>
-								<input type="text" name="firstName1" id="firstName1" class="form-control" required>
-								<div class="invalid-feedback">Please add your member 1 first name</div>
-							</div>
-							<div class="col-md-6">
-								<label for="lastName1" class="form-label">Last Name: </label>
-								<input type="text" name="lastName1" id="lastName1" class="form-control" required>
-								<div class="invalid-feedback">Please add your member 1 last name</div>
-							</div>
-						</div>
-						<div class="row my-1">
-							<div class="col-md-6">
-								<label for="major1" class="form-label">Major: </label>
-								<input type="text" name="major1" id="major1" class="form-control" required>
-								<div class="invalid-feedback">Please add your member 1 major</div>
-							</div>
-							<div class="col-md-6">
-								<label for="batch1" class="form-label">Batch: </label>
-								<select name="batch1" id="batch1" class="form-select" required>
-									<option value="2023" selected>2023</option>
-									<option value="2022">2022</option>
-									<option value="2021">2021</option>
-									<option value="0">Other</option>
-								</select>
-								<input type="text" name="batch1" id="" class="d-none form-control" placeholder="your batch">
-								<div class="invalid-feedback">Please add your member 1 batch</div>
-							</div>
-						</div>
-						<div class="row my-1">
-							<div class="col-md-6">
-								<label for="idCard1" class="form-label">ID(NIK/Pasport): </label>
-								<input type="text" name="idCard1" id="idCard1" class="form-control" required>
-								<div class="invalid-feedback">Please add your member 1 ID</div>
-							</div>
-							<div class="col-md-6">
-								<label for="studentId1" class="form-label">Student ID: </label>
-								<input type="text" name="studentId1" id="studentId1" class="form-control" required>
-								<div class="invalid-feedback">Please add your member 1 student ID</div>
-							</div>
-						</div>
-						<div class="row my-1">
-							<div class="col-md-6">
-								<label for="email1" class="form-label">Email: </label>
-								<input type="email" name="email1" id="email1" class="form-control" required>
-								<div class="invalid-feedback">Please provide your member 1 valid email</div>
-							</div>
-							<div class="col-md-6">
-								<label for="phoneNo1" class="form-label">Phone number: </label>
-								<input type="tel" name="phoneNo1" id="phoneNo1" class="form-control" required>
-								<div class="invalid-feedback">Please add your member 1 phone number</div>
-							</div>
-						</div>
-						<div class="row my-1">
-							<div class="col-md-6">
-								<label for="password1" class="form-label">Password: </label>
-								<input type="password" name="password1" id="password1" class="form-control" required>
-								<div class="invalid-feedback">Password must be at least 8 character</div>
-							</div>
-							<div class="col-md-6">
-								<label for="confirmPassword1" class="form-label">Confirm Your Password: </label>
-								<input type="password" name="confirmPassword1" id="confirmPassword1" class="form-control" required>
-								<div class="invalid-feedback">Password must be same</div>
-							</div>
-						</div>
-						<div class="row my-1">
-							<div class="col-md-6">
-								<label for="studentCardPhoto1" class="form-label">Student Card Photo: </label>
-								<input type="file" name="studentCardPhoto1" id="studentCardPhoto1" class="form-control" required>
-								<div class="invalid-feedback">Please upload your member 1 student card photo</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-            <section id="competition" class="row" style="margin-bottom: 5rem;">
-                <h3 class="lead fs-2">Competition</h3>
-                <input type="hidden" name="compe" id="choosen-competition" value="">
-                <div class="compe-container">
-                    <div class="row">
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="business case">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/bc.png" alt="Business Case" style="width: 5rem;">
-                                    <h5 class="card-title">Business Case Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+import {
+	createUserWithEmailAndPassword,
+	sendEmailVerification,
+	updateProfile,
+} from 'firebase/auth'
+import {
+	serverTimestamp,
+	doc, onSnapshot, setDoc,
+	updateDoc,
+} from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="geothermal development plan">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/geothermal.png" alt="Geothermal Development Plan" style="width: 5rem;">
-                                    <h5 class="card-title">Geothermal Development Plan Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+// Import Firebase SDK initialization
+import { AUTH, STORAGE, DB } from './index.js'
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="mud inovation">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/mud.png" alt="Mud Innovation" style="width: 5rem;">
-                                    <h5 class="card-title">Mud Inovation Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="oil rig design">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/ordc.png" alt="Oil Rig Design" style="width: 5rem;">
-                                    <h5 class="card-title">Oil Rig Design Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+// Handle team member
+let teamMemberCondition = {
+	"plan of development": [4, 5],
+	"smart competition": [2, 3],
+	"mud inovation": [2, 3],
+	"paper and poster": [2, 3],
+	"oil rig design": [4, 5],
+	"business case": [3],
+	"geothermal development plan": [4],
+	"well design": [4, 5],
+	"hackaton": [3]
+}
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="paper and poster">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/ppc.png" alt="Paper and Poster" style="width: 5rem;">
-                                    <h5 class="card-title">Paper and Poster Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+function generateTeamMemberOption(competition, container) {
+	if (!container || !teamMemberCondition[competition]) return
+	container.innerHTML = ''
+	let optionContainer = ''
+	teamMemberCondition[competition].forEach(m => {
+		optionContainer += `<option value="${m}">${m} people</option>`
+	})
+	container.innerHTML = optionContainer
+}
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="plan of development">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/pod.png" alt="Plan of Development" style="width: 5rem;">
-                                    <h5 class="card-title">Plan of Development Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+function generateMemberEntry(entry, count) {
+	if (!entry) return
+	entry.innerHTML = ''
+	for (let i = 0; i < count - 1; i++) {
+		let memberEntry = document.createElement('div')
+		memberEntry.innerHTML = `
+		 <h3 class="lead fs-2 mt-6" style="color: #f1A087;">Member ${i+1}</h3>
+      <div class="member-entry" style="margin-bottom: 2rem;">
+         <div class="row my-1">
+            <div class="col-md-6">
+               <label for="firstName${i+1}" class="form-label">First Name: </label>
+               <input type="text" name="firstName${i+1}" id="firstName${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please add your member ${i+1} first name</div>
+            </div>
+            <div class="col-md-6">
+               <label for="lastName${i+1}" class="form-label">Last Name: </label>
+               <input type="text" name="lastName${i+1}" id="lastName${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please add your member ${i+1} last name</div>
+            </div>
+         </div>
+         <div class="row my-1">
+            <div class="col-md-6">
+               <label for="major${i+1}" class="form-label">Major: </label>
+               <input type="text" name="major${i+1}" id="major${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please add your member ${i+1} major</div>
+            </div>
+            <div class="col-md-6 batch-parent">
+               <label for="batch${i+1}" class="form-label">Batch: </label>
+               <select name="batch${i+1}" id="batch${i+1}" class="form-select student-batch" purpose="batch" required>
+                  <option value="2024" selected>2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                  <option value="2021">2021</option>
+                  <option value="2020">2020</option>
+                  <option value="2019">2019</option>
+                  <option value="2018">2018</option>
+                  <option value="2017">2017</option>
+                  <option value="2016">2016</option>
+               </select>
+               <div class="invalid-feedback">Please add your member ${i+1} batch</div>
+            </div>
+         </div>
+         <div class="row my-1">
+            <div class="col-md-6">
+               <label for="idCard${i+1}" class="form-label">ID(NIK/Pasport): </label>
+               <input type="text" name="idCard${i+1}" id="idCard${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please add your member ${i+1} ID</div>
+            </div>
+            <div class="col-md-6">
+               <label for="studentId${i+1}" class="form-label">Student ID: </label>
+               <input type="text" name="studentId${i+1}" id="studentId${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please add your member ${i+1} student ID</div>
+            </div>
+         </div>
+         <div class="row my-1">
+            <div class="col-md-6">
+               <label for="email${i+1}" class="form-label">Email: </label>
+               <input type="email" name="email${i+1}" id="email${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please provide your member ${i+1} valid email</div>
+            </div>
+            <div class="col-md-6">
+               <label for="phoneNo${i+1}" class="form-label">Phone number: </label>
+               <input type="tel" name="phoneNo${i+1}" id="phoneNo${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please add your member ${i+1} phone number</div>
+            </div>
+         </div>
+         <div class="row my-1">
+            <div class="col-md-6">
+               <label for="gender${i+1}" class="form-label">Gender: </label>
+               <select name="gender${i+1}" id="gender${i+1}" class="form-select" required>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+               </select>
+            </div>
+            <div class="col-md-6">
+               <label for="studentCardPhoto${i+1}" class="form-label">Student Card Photo: </label>
+               <input type="file" name="studentCardPhoto${i+1}" id="studentCardPhoto${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please upload your member ${i+1} student card photo</div>
+            </div>
+         </div>
+         <div class="row my-1">
+            <div class="col-md-6">
+               <label for="twibbon${i+1}" class="form-label">Proof for Uploading Twibbon: </label>
+               <input type="file" name="twibbon${i+1}" id="twibbon${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please upload your twibbon proof</div>
+            </div>
+            <div class="col-md-6">
+               <label for="follow-ig${i+1}" class="form-label">Proof for Following IPFEST 2025 Instagram: </label>
+               <input type="file" name="follow-ig${i+1}" id="follow-ig${i+1}" class="form-control" required>
+               <div class="invalid-feedback">Please upload the proof that you are following IPFEST 2025 Instagram</div>
+            </div>
+         </div>
+      </div>
+	  `
+		entry.append(memberEntry)
+	}
+}
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="smart competition">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/sc.png" alt="Smart Competition" style="width: 5rem;">
-                                    <h5 class="card-title">Smart Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="well design">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/well.png" alt="Well Design" style="width: 5rem;">
-                                    <h5 class="card-title">Well Design Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+document.addEventListener("DOMContentLoaded", () => {
+	const registrationForm = document.querySelector("#registration-form")
+	if (!registrationForm) return console.warn("registration-form not found!")
 
-                        <div class="col-lg-4 col-sm-6 col-12 mb-4">
-                            <div class="card card-compe" data-value="hackaton">
-                                <div class="card-body">
-                                    <img src="static/images/Icon/Competition/Hackathon v3.png" alt="Hackaton" style="width: 5rem;">
-                                    <h5 class="card-title">Hackaton Competition</h5>
-                                    <a class="icon-link icon-link-hover" style="--bs-link-hover-color-rgb: 25, 135, 84;" href="">
-                                        Learn more
-                                        <svg class="bi" aria-hidden="true"><use xlink:href="#arrow-right"></use></svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+	const leaderForm = registrationForm.querySelector("#leader")
+	const memberForm = registrationForm.querySelector("#member")
+	const competitionForm = registrationForm.querySelector("#competition")
+	const paymentForm = registrationForm.querySelector("#payment")
+	const agreementForm = registrationForm.querySelector("#invalidCheck")
+	const compeInput = document.querySelector('#choosen-competition')
+	const memberCount = document.getElementById("memberCount")
+	const entryContainer = memberForm ? memberForm.querySelector("#entry") : null
 
-			<section id="payment" class="row" style="margin-bottom: 2rem;">
-				<h3 class="lead fs-2" style="color: #f1A087;">Payment</h3>
-				<p class="text-body-tertiary text-muted" style="color: #ffff !important;">
-					Select your payment method	
-				</p>
-				<nav>
-					<div class="nav nav-tabs payment-method" id="nav-tab" role="tablist">
-					  	<button class="nav-link active" data-method="Bank BCA" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true" >Bank BCA</button>
-					  	<button class="nav-link" data-method="Gopay" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false" >Gopay</button>
-					  	<button class="nav-link" data-method="Paypal" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Paypal</button>
-					</div>
-				</nav>
-				<div class="tab-content border border-top-0" id="nav-tabContent" style="padding: 1rem;" >
-					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0" style="color: #ffff !important;">
-						This is BCA
-					</div>
-					<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0" style="color: #ffff !important;">
-						This is Gopay
-					</div>
-					<div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0" style="color: #ffff !important;">
-						This is Paypal
-					</div>
-				</div>
-				<div class="mt-3 col-6">
-					<label for="payment-proof" class="form-label">Payment Proof</label>
-					<input type="file" name="payment-proof" id="payment-proof" class="form-control" required>
-					<div class="invalid-feedback">Please upload your payment proof</div>
-				</div>
-			</section>
-			<section>
-				<div class="col-12" style="margin-bottom: 2rem;">
-					<div class="form-check">
-						  <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-						  <label class="form-check-label" for="invalidCheck">
-							 	Agree to terms and conditions
-						  </label>
-						  <div class="invalid-feedback">
-								You must agree before submitting.
-						  </div>
-					</div>
-				</div>
-				<div class="col-12">
-					<button class="btn btn-primary" type="submit">Register</button>
-				</div>
-			</section>		  
-		</form>
-	</main>
-	
-	<script src="static/js/validation.js"></script>
-	<script src="static/js/card.js"></script>
-	<script src="dist/index.bundle.js"></script>
-	<script src="dist/registration.bundle.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
-</html>
+	// Pastikan semua elemen ditemukan
+	if (!leaderForm || !memberForm || !competitionForm || !paymentForm || !agreementForm) {
+		console.warn("Some form sections not found.")
+		return
+	}
+
+   
+	document.querySelectorAll(".card-compe").forEach(card => {
+		card.addEventListener("click", () => {
+			let selectedCompetition = card.dataset.value || "unknown"
+			console.log("Selected competition:", selectedCompetition)
+
+			compeInput.value = selectedCompetition
+			leaderForm.classList.remove("d-none")
+			memberForm.classList.remove("d-none")
+			paymentForm.classList.remove("d-none")
+			agreementForm.classList.remove("d-none")
+
+			generateTeamMemberOption(selectedCompetition, memberCount)
+			generateMemberEntry(entryContainer, parseInt(memberCount.value || 1, 10))
+		})
+	})
+
+	// Regenerate form ketika jumlah anggota berubah
+	if (memberCount) {
+		memberCount.addEventListener('change', () => {
+			generateMemberEntry(entryContainer, parseInt(memberCount.value || 1, 10))
+		})
+	}
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+  function earlybirdStatus() {
+    const earlybirdDeadline = new Date('Nov 16, 2025 00:00:00').getTime();
+    return Date.now() < earlybirdDeadline;
+  }
+ 
+  let payMethod = "";
+  const paymentMethod = document.querySelectorAll(".payment-method .nav-link");
+  const tabPanes = document.querySelectorAll(".tab-pane");
+ 
+  paymentMethod.forEach(method => {
+    method.addEventListener('click', () => {
+      payMethod = method.dataset.method;
+ 
+      // ubah tombol aktif
+      paymentMethod.forEach(btn => btn.classList.remove('active'));
+      method.classList.add('active');
+ 
+      // sembunyikan semua tab-pane
+      tabPanes.forEach(pane => {
+        pane.classList.remove('show', 'active');
+      });
+ 
+      // ambil target pane (pakai data-bs-target)
+      const targetSelector = method.dataset.bsTarget;
+      const targetPane = document.querySelector(targetSelector);
+ 
+      if (!targetPane) {
+        console.error("Elemen tab tidak ditemukan untuk:", targetSelector);
+        return;
+      }
+ 
+      targetPane.classList.add('show', 'active');
+ 
+      // ubah isi tab-pane
+      const isEarly = earlybirdStatus();
+      let indoPrice = isEarly ? "IDR 200.000" : "IDR 250.000";
+      let intlPrice = isEarly ? "USD 17" : "USD 20";
+ 
+      switch (payMethod) {
+        case "Bank BCA":
+          targetPane.innerHTML = `
+            <p>BCA - 2650508800 (Mochammad Rafly Ghazany A)</p>
+            <small>${indoPrice}</small>
+          `;
+          break;
+ 
+        case "Gopay":
+          targetPane.innerHTML = `
+            <p>085655226900 (Rafly Ghazany)</p>
+            <small>${indoPrice}</small>
+          `;
+          break;
+ 
+        case "Paypal":
+          targetPane.innerHTML = `
+            <p><a href="https://www.paypal.me/RaflyGhazany" target="_blank">paypal.me/RaflyGhazany</a></p>
+            <small>${intlPrice}</small>
+          `;
+          break;
+      }
+    });
+  });
+});
+
+
+const pass = document.querySelector("input[name='password']")
+const confirmPass = document.querySelector("input[name='confirmPassword']")
+const invalidFeedback = document.querySelector(".not-same-password")
+let passwordIsValid = false
+
+function checkPassword(pass, confirmPass, feedback) {
+	if (pass !== confirmPass) {
+		if (feedback) feedback.classList.remove("d-none")
+		return false
+	}
+	if (feedback) feedback.classList.add("d-none")
+	return true
+}
+
+if (confirmPass) {
+	confirmPass.addEventListener("input", () => {
+		passwordIsValid = checkPassword(pass.value, confirmPass.value, invalidFeedback)
+	})
+}
+
+const registrationForm = document.querySelector("#registration-form")
+if (registrationForm) {
+	registrationForm.addEventListener('submit', async (e) => {
+		e.preventDefault()
+		const submitBtn = registrationForm.querySelector("button[type='submit']")
+		const overlay = document.querySelector("#overlay")
+		if (!submitBtn) return
+
+		submitBtn.disabled = true
+		submitBtn.innerText = 'Processing...'
+
+		try {
+			if (!passwordIsValid) throw new Error("Password not valid")
+
+			const { user } = await createUserWithEmailAndPassword(AUTH, "example@mail.com", "password123")
+			await setDoc(doc(DB, 'Team', user.uid), { join_on: serverTimestamp(), status: "ok" })
+			await sendEmailVerification(user)
+
+			submitBtn.innerText = 'Success!'
+			window.location.href = 'login.html'
+		} catch (err) {
+			console.error("Registration failed:", err)
+			submitBtn.disabled = false
+			submitBtn.innerText = 'Submit'
+			if (overlay) overlay.classList.add("d-none")
+		}
+	})
+}
