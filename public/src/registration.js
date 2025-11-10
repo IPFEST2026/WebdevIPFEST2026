@@ -277,10 +277,43 @@ if (registrationForm) {
 		submitBtn.disabled = true
 		submitBtn.innerText = 'Processing...'
 
-		try {
-			if (!passwordIsValid) throw new Error("Password not valid")
+		// Function to show error alert
+		const showError = (message) => {
+			const alertContainer = document.querySelector("#alertContainer")
+			if (alertContainer) {
+				alertContainer.innerHTML = `
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						${message}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				`
+			}
+		}
 
-			const { user } = await createUserWithEmailAndPassword(AUTH, "example@mail.com", "password123")
+		try {
+			if (!passwordIsValid) {
+				throw new Error("Passwords do not match")
+			}
+			
+			const email = registrationForm.querySelector("input[type='email']").value
+			const password = pass.value
+
+			if (!email || !password) {
+				throw new Error("Email and password are required")
+			}
+
+			// Basic email validation
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+			if (!emailRegex.test(email)) {
+				throw new Error("Please enter a valid email address")
+			}
+
+			// Password strength validation
+			if (password.length < 8) {
+				throw new Error("Password must be at least 8 characters long")
+			}
+
+			const { user } = await createUserWithEmailAndPassword(AUTH, email, password)
 			await setDoc(doc(DB, 'Team', user.uid), { join_on: serverTimestamp(), status: "ok" })
 			await sendEmailVerification(user)
 
@@ -291,6 +324,31 @@ if (registrationForm) {
 			submitBtn.disabled = false
 			submitBtn.innerText = 'Submit'
 			if (overlay) overlay.classList.add("d-none")
+
+			// Handle specific Firebase Auth errors
+			let errorMessage = "Registration failed. "
+			if (err.code) {
+				switch (err.code) {
+					case 'auth/email-already-in-use':
+						errorMessage += "This email is already registered. Please try logging in or use a different email."
+						break
+					case 'auth/invalid-email':
+						errorMessage += "Please enter a valid email address."
+						break
+					case 'auth/operation-not-allowed':
+						errorMessage += "Email/password registration is not enabled. Please contact support."
+						break
+					case 'auth/weak-password':
+						errorMessage += "Please choose a stronger password."
+						break
+					default:
+						errorMessage += err.message || "An unexpected error occurred."
+				}
+			} else {
+				errorMessage += err.message || "An unexpected error occurred."
+			}
+			
+			showError(errorMessage)
 		}
 	})
 }
