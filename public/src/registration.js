@@ -266,6 +266,21 @@ if (confirmPass) {
 	})
 }
 
+// Handle competition selection
+const competitionCards = document.querySelectorAll('.card-compe')
+const choosenCompetition = document.querySelector('#choosen-competition')
+
+competitionCards.forEach(card => {
+    card.addEventListener('click', () => {
+        // Remove active class from all cards
+        competitionCards.forEach(c => c.classList.remove('active'))
+        // Add active class to clicked card
+        card.classList.add('active')
+        // Set the chosen competition value
+        choosenCompetition.value = card.dataset.value
+    })
+})
+
 const registrationForm = document.querySelector("#registration-form")
 if (registrationForm) {
 	registrationForm.addEventListener('submit', async (e) => {
@@ -273,6 +288,13 @@ if (registrationForm) {
 		const submitBtn = registrationForm.querySelector("button[type='submit']")
 		const overlay = document.querySelector("#overlay")
 		if (!submitBtn) return
+
+		// Validate competition selection
+		const selectedCompetition = choosenCompetition.value
+		if (!selectedCompetition) {
+			showError("Please select a competition first")
+			return
+		}
 
 		submitBtn.disabled = true
 		submitBtn.innerText = 'Processing...'
@@ -295,11 +317,19 @@ if (registrationForm) {
 				throw new Error("Passwords do not match")
 			}
 			
+			// Get all required form data
 			const email = registrationForm.querySelector("input[type='email']").value
 			const password = pass.value
+			const firstName = registrationForm.querySelector("#firstName")?.value
+			const lastName = registrationForm.querySelector("#lastName")?.value
+			const major = registrationForm.querySelector("#major")?.value
+			const batch = registrationForm.querySelector("#batch")?.value
+			const university = registrationForm.querySelector("#university")?.value
+			const phone = registrationForm.querySelector("#phone")?.value
 
-			if (!email || !password) {
-				throw new Error("Email and password are required")
+			// Validate required fields
+			if (!email || !password || !firstName || !lastName || !major || !batch || !university || !phone) {
+				throw new Error("All fields are required")
 			}
 
 			// Basic email validation
@@ -313,8 +343,96 @@ if (registrationForm) {
 				throw new Error("Password must be at least 8 characters long")
 			}
 
+			// Function to upload file and get download URL
+			const uploadFile = async (file, path) => {
+				if (!file) return null
+				const fileRef = ref(STORAGE, path)
+				await uploadBytes(fileRef, file)
+				return await getDownloadURL(fileRef)
+			}
+
+			// Get payment proof file
+			const paymentFile = registrationForm.querySelector("#payment-proof")?.files[0]
+			
+			// Create authentication user
 			const { user } = await createUserWithEmailAndPassword(AUTH, email, password)
-			await setDoc(doc(DB, 'Team', user.uid), { join_on: serverTimestamp(), status: "ok" })
+
+			// Prepare team data
+			const teamData = {
+				leader: {
+					firstName,
+					lastName,
+					email,
+					major,
+					batch,
+					university,
+					phone
+				},
+				competition: choosenCompetition.value,
+				members: [],
+				join_on: serverTimestamp(),
+				status: "pending",
+				payment_status: "unpaid"
+			}
+
+			// Upload payment proof if exists
+			if (paymentFile) {
+				const fileName = `payments/${user.uid}/${paymentFile.name}`
+				const paymentProofUrl = await uploadFile(paymentFile, fileName)
+				teamData.payment = {
+					proofUrl: paymentProofUrl,
+					uploadedAt: serverTimestamp(),
+					fileName: paymentFile.name
+				}
+				teamData.payment_status = "pending_verification"
+			}
+
+			// Get and validate member data if exists
+			const memberCount = parseInt(registrationForm.querySelector("#member-count")?.value || "0")
+			if (memberCount > 1) {
+				for (let i = 1; i < memberCount; i++) {
+					const memberData = {
+						firstName: registrationForm.querySelector(`#firstName${i}`)?.value,
+						lastName: registrationForm.querySelector(`#lastName${i}`)?.value,
+						email: registrationForm.querySelector(`#email${i}`)?.value,
+						major: registrationForm.querySelector(`#major${i}`)?.value,
+						batch: registrationForm.querySelector(`#batch${i}`)?.value,
+						university: registrationForm.querySelector(`#university${i}`)?.value,
+						phone: registrationForm.querySelector(`#phone${i}`)?.value
+					}
+
+					// Validate member data
+					const missingFields = Object.entries(memberData)
+						.filter(([_, value]) => !value)
+						.map(([key]) => key)
+
+					if (missingFields.length > 0) {
+						throw new Error(`Member ${i} is missing required fields: ${missingFields.join(", ")}`)
+					}
+
+					// Upload member files if any
+					const memberFiles = registrationForm.querySelector(`#member${i}-files`)?.files
+					if (memberFiles?.length > 0) {
+						memberData.files = []
+						for (let file of memberFiles) {
+							const fileName = `team-files/${user.uid}/member${i}/${file.name}`
+							const fileUrl = await uploadFile(file, fileName)
+							memberData.files.push({
+								name: file.name,
+								url: fileUrl,
+								uploadedAt: serverTimestamp()
+							})
+						}
+					}
+
+					teamData.members.push(memberData)
+				}
+			}
+			
+			// Save complete team data to Firestore
+			await setDoc(doc(DB, 'Team', user.uid), teamData)
+			
+			// Send verification email
 			await sendEmailVerification(user)
 
 			submitBtn.innerText = 'Success!'
