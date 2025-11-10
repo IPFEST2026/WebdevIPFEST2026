@@ -124,9 +124,9 @@ function generateMemberEntry(entry, count) {
                <div class="invalid-feedback">Please upload your twibbon proof</div>
             </div>
             <div class="col-md-6">
-               <label for="follow-ig${i+1}" class="form-label">Proof for Following IPFEST 2025 Instagram: </label>
+               <label for="follow-ig${i+1}" class="form-label">Proof for Following IPFEST 2026 Instagram: </label>
                <input type="file" name="follow-ig${i+1}" id="follow-ig${i+1}" class="form-control" required>
-               <div class="invalid-feedback">Please upload the proof that you are following IPFEST 2025 Instagram</div>
+               <div class="invalid-feedback">Please upload the proof that you are following IPFEST 2026 Instagram</div>
             </div>
          </div>
       </div>
