@@ -549,6 +549,7 @@ const caseStorageCollection = {
 }
 
 const caseStorage = ref(STORAGE, 'Case')
+const CASE_RELEASE_TIMESTAMP = new Date('2025-11-30T00:00:00+07:00').getTime()
 
 const prelimCaseDist = document.getElementById("prelim-case-distribution")
 const caseInput = prelimCaseDist.querySelector("input")
@@ -563,6 +564,12 @@ prelimCaseDist.addEventListener("submit", (e) => {
 	prelimCaseDist.querySelectorAll("button")[1].disabled = true
 
 	try{
+		if (Date.now() < CASE_RELEASE_TIMESTAMP) {
+			alert("Study case hanya bisa diunggah setelah 30 Nov 2025 00.00 WIB")
+			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+			prelimCaseDist.querySelectorAll("button")[1].disabled = false
+			return
+		}
 		const file = caseInput.files[0]
 		const folderRef = ref(caseStorage, switchCompetition)
 		const fileRef = ref(folderRef, `${file.name}`)
@@ -608,6 +615,12 @@ finalCaseDist.addEventListener("submit", (e) => {
 	finalCaseDist.querySelectorAll("button")[1].disabled = true
 
 	try{
+		if (Date.now() < CASE_RELEASE_TIMESTAMP) {
+			alert("Study case hanya bisa diunggah setelah 30 Nov 2025 00.00 WIB")
+			finalCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+			finalCaseDist.querySelectorAll("button")[1].disabled = false
+			return
+		}
 		const file = finalCaseInput.files[0]
 		const folderRef = ref(caseStorage, switchCompetition)
 		const fileRef = ref(folderRef, `${file.name}`)
