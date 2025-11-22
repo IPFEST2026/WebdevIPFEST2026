@@ -20,6 +20,8 @@ let isPODC = false
 const managerName = document.querySelector("#manager-name")
 const managerCompetition = document.querySelector("#manager-competition")
 
+const normalizeCompetition = (value = '') => value.trim().toLowerCase()
+
 const compeManagerEmail = {
     "plan of development": "podc.ipfest2026@gmail.com",
     "smart competition": "sc.ipfest2026@gmail.com",
@@ -137,12 +139,14 @@ const Teams = collection(DB, 'Team')
 const delRelList = document.getElementById("delrel-team-list")
 
 onSnapshot(Teams, (snap) => {
-    let teamDocs = snap.docs
+	if (!switchCompetition) return
+	const teamDocs = snap.docs
+	const activeCompetition = normalizeCompetition(switchCompetition)
 
-    let compeSize = teamDocs.filter(doc => {
-        const d = doc.data()
-        return (d.competition || "").toLowerCase() === switchCompetition.toLowerCase()
-    })
+	const compeSize = teamDocs.filter(doc => {
+		const d = doc.data()
+		return normalizeCompetition(d.competition || '') === activeCompetition
+	})
 
     delRelList.innerHTML = ''
 
@@ -427,9 +431,11 @@ function createFinalPODCSubmissionTable(table, teamId, rowNo, teamName, univ, su
 }
 
 onSnapshot(Submission_Status, (snap) => {
-	let submissionDocs = snap.docs
-	let currentCompe = submissionDocs.filter(doc => doc.data().competition === switchCompetition)
-	let currentCompeFinal = currentCompe.filter(doc => doc.data().final === true)
+	if (!switchCompetition) return
+	const submissionDocs = snap.docs
+	const activeCompetition = normalizeCompetition(switchCompetition)
+	const currentCompe = submissionDocs.filter(doc => normalizeCompetition(doc.data().competition || '') === activeCompetition)
+	const currentCompeFinal = currentCompe.filter(doc => doc.data().final === true)
 	
 	submissionTablePrelim.innerHTML = ''
 	submissionTableFinal.innerHTML = ''
