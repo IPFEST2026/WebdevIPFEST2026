@@ -538,14 +538,14 @@ onSnapshot(Submission_Status, (snap) => {
 
 // Case Distribution Section
 const caseStorageCollection = {
-	"BCC": "TKNSFPMRQ6GGLdVurLCv",
-	"GDPC": "u5XFl4812coW1J6yMqrm",
-	"MIC": "pHlZbe6UyXpKpO35LInb",
-	"ORDC": "yRP8ZxRSXbIlJx0vcoO3",
-	"PODC": "G9gLvFCkxiviK2UDc5qX",
-	"PPC": "BzdUKfPbIbyRYlLJmk1c",
-	"WDC": "YgdwqPY6IIhqSDY45UMH",
-	"Hackathon": "6gRhBNQ5yjBMg1tbK66d"
+	"business case": "TKNSFPMRQ6GGLdVurLCv",
+	"geothermal development plan": "u5XFl4812coW1J6yMqrm",
+	"mud inovation": "pHlZbe6UyXpKpO35LInb",
+	"oil rig design": "yRP8ZxRSXbIlJx0vcoO3",
+	"plan of development": "G9gLvFCkxiviK2UDc5qX",
+	"paper and poster": "BzdUKfPbIbyRYlLJmk1c",
+	"well design": "YgdwqPY6IIhqSDY45UMH",
+	"hackaton": "6gRhBNQ5yjBMg1tbK66d"
 }
 
 const caseStorage = ref(STORAGE, 'Case')
