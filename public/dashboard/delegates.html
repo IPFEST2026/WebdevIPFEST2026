@@ -243,6 +243,115 @@
 							<div class="">
 								<h1 class="display-5 text-primary lead">Preliminary Submission</h1>
 							</div>
+
+							<div class="row">
+								<div class="alert alert-warning my-2" id="preliminary-alert">
+									<div class="alert-heading">
+										<?xml version="1.0" ?>
+										<svg style="width: 4rem" data-name="Layer 1" id="Layer_1" viewBox="0 0 64 64"
+											xmlns="http://www.w3.org/2000/svg">
+											<defs>
+												<style>
+													.cls-1 {
+														fill: #efcc00;
+													}
+
+													.cls-2 {
+														fill: #353535;
+													}
+												</style>
+											</defs>
+											<title />
+											<path class="cls-1"
+												d="M30.16,11.51,6.84,51.9a2.13,2.13,0,0,0,1.84,3.19H55.32a2.13,2.13,0,0,0,1.84-3.19L33.84,11.51A2.13,2.13,0,0,0,30.16,11.51Z" />
+											<path class="cls-2"
+												d="M29,46a3,3,0,1,1,3,3A2.88,2.88,0,0,1,29,46Zm1.09-4.66-.76-15h5.26l-.73,15Z" />
+										</svg>
+
+										<h1 class="fs-5">Reminder</h1>
+										<p class="fs-6">
+											Before submitting your file, please carefully review all the content you have entered.
+											Although you can edit your files again after sending,
+											please still pay attention to the submission deadline,
+											as you may experience a bad network connection.
+										</p>
+										<hr>
+										<p><strong>The file that will be assessed is the last file you sent</strong></p>
+									</div>
+								</div> <!-- FIXED: close #preliminary-alert -->
+							</div> <!-- FIXED: close row -->
+
+							<div class="row my-2">
+								<a href="#" id="del-case-prelim-download" class="text-info fs-5" style="text-decoration: underline;" target="_blank">
+									Download Case
+								</a>
+							</div>
+
+							<div class="row">
+								<form id="preliminary-form" class="needs-validation" novalidate>
+									<label for="preliminary-submit" class="form-label">Upload your submission file:</label>
+
+									<div class="col-md-8 col-12">
+										<div class="input-group">
+											<input type="file" name="preliminary-submit" id="preliminary-submit" class="form-control"
+												placeholder="Your File" aria-label="Delegates Submission" aria-describedby="delete-file-prem"
+												required>
+											<button class="btn btn-secondary text-white" type="button" id="delete-file-prem">Delete File</button>
+										</div>
+									</div>
+
+									<div class="form-check mt-3">
+										<div class="">
+											<input class="form-check-input" type="checkbox" value="" id="have-read" required>
+											<label class="form-check-label" for="have-read">
+												I have read the <a href="#"
+													class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+													target="_blank" id="competition-guide-book" style="text-decoration: underline;">Guide Book</a>
+												of <span class="del-team-competition"></span> and I'm willing to face consequences if I break the
+												rules.
+											</label>
+											<div class="invalid-feedback">
+												You must agree before submitting.
+											</div>
+										</div>
+									</div>
+
+									<button type="submit" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4 mt-4"
+										id="prelim-submit-btn">Submit</button>
+								</form>
+							</div>
+
+							<div class="row" id="del-submission-summary">
+								<h3 class="display-6 text-black lead">Summary</h3>
+								<p class="fs-5">Last Submission: <span class="text-secondary" id="file-time-sub"></span></p>
+								<p class="fs-5" id="file-time-status">Status: <span class="text-success"></span></p>
+								<p class="fs-5"><span class="text-secondary" id="file-url"></span></p>
+
+								<div class="col-lg-4 col-sm-12 col-md-6">
+									<button id="del-edit-submission"
+										class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4 mt-4">
+										Edit My Submission
+									</button>
+								</div>
+							</div>
+
+							<!-- Khusus PODC -->
+							<!--<div class="abs-sub-ui"></div>
+							<div class="row d-none mt-5" id="del-abstract-submission-summary">
+								<h3 class="display-6 text-black lead">Summary</h3>
+								<p class="fs-5">Category: <span id="file-team-name" class="text-secondary"></span> - <span id="file-competition" class="text-primary"></span> - Abstract</p>
+								<p class="fs-5">Last Abstract Submission: <span class="text-secondary" id="abstract-file-time-sub"></span></p>
+								<p class="fs-5">Last Additional Abstract Submission: <span class="text-secondary" id="add-abstract-file-time-sub"></span></p>
+								<p class="fs-5" id="abstract-file-time-status">Status: <span class="text-success"></span></p>
+							</div>-->
+						</div>
+					</div>
+
+					<!-- <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+						<div class="dashboard-panel">
+							<div class="">
+								<h1 class="display-5 text-primary lead">Preliminary Submission</h1>
+							</div>
 							<div class="row">
 								<div class="alert alert-warning my-2" id="preliminary-alert">
 									<div class="alert-heading">
@@ -260,7 +369,7 @@
 								</div>
 							</div>
 							<div class="row my-2">
-								<a href="" id="del-case-prelim-download" class="text-info fs-5" style="text-decoration: underline;" target="_blank">
+								<a href="#" id="del-case-prelim-download" class="text-info fs-5" style="text-decoration: underline;" target="_blank">
 									Download Case
 								</a>
 							</div>
@@ -289,24 +398,53 @@
 							</div>
 							<div class="row" id="del-submission-summary">
 								<h3 class="display-6 text-black lead">Summary</h3>
-								<p class="fs-5">Category: <span id="file-team-name" class="text-secondary"></span> - <span id="file-competition" class="text-primary"></span> - Preliminary</p>
 								<p class="fs-5">Last Submission: <span class="text-secondary" id="file-time-sub"></span></p>
 								<p class="fs-5" id="file-time-status">Status: <span class="text-success"></span></p>
+								<p class="fs-5"><span class="text-secondary" id="file-url"></span></p>
 								<div class="col-lg-4 col-sm-12 col-md-6">
 									<button id="del-edit-submission" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4 mt-4">Edit My Submission</button>
 								</div>
 							</div>
+							<div class="modal fade" id="editConfirmModal" tabindex="-1" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title fw-bold">Confirm Edit</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+										</div>
+										<div class="modal-body">
+											<p class="mb-2">
+											You are about to <b>edit your previous submission</b>.
+											</p>
+											<p>
+											Please ensure your updated file is accurate before resubmitting.<br>
+											🔥 <i>Let's make it even better!</i>
+											</p>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+											Cancel
+											</button>
+											<button type="button" class="btn btn-primary" id="confirmEditBtn">
+											Yes, Edit Submission
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
 							<!-- Khusus PODC -->
-							<div class="abs-sub-ui"></div>
+							<!--<div class="abs-sub-ui"></div>
 							<div class="row d-none mt-5" id="del-abstract-submission-summary">
 								<h3 class="display-6 text-black lead">Summary</h3>
 								<p class="fs-5">Category: <span id="file-team-name" class="text-secondary"></span> - <span id="file-competition" class="text-primary"></span> - Abstract</p>
 								<p class="fs-5">Last Abstract Submission: <span class="text-secondary" id="abstract-file-time-sub"></span></p>
 								<p class="fs-5">Last Additional Abstract Submission: <span class="text-secondary" id="add-abstract-file-time-sub"></span></p>
 								<p class="fs-5" id="abstract-file-time-status">Status: <span class="text-success"></span></p>
-							</div>
-						</div>
-					</div>
+							</div>-->
+						<!--</div>
+					</div> -->
 					<div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
 						<div class="dashboard-panel">
 							<div class="row">
@@ -532,6 +670,33 @@
 		</div>
 	</div>
 	 
+	<div class="modal fade" id="editConfirmModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title fw-bold">Confirm Edit</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<p class="mb-2">
+						You are about to <b>edit your previous submission</b>.
+					</p>
+					<p>
+						Please ensure your updated file is accurate before resubmitting.<br>
+						🔥 <i>Let's make it even better!</i>
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+						Cancel
+					</button>
+					<button type="button" class="btn btn-primary" id="confirmEditBtn">
+						Yes, Edit Submission
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>

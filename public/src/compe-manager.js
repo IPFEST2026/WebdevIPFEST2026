@@ -5,7 +5,8 @@ import {
     collection,
     updateDoc, doc,
     deleteField,
-    serverTimestamp
+    serverTimestamp,
+	getDocs
 } from 'firebase/firestore'
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -15,7 +16,7 @@ import { DB, AUTH, STORAGE } from './index.js'
 import { setToastAlert } from '../static/js/alert.js'
 
 // check auth
-let switchCompetition
+let switchCompetition = null
 let isPODC = false
 const managerName = document.querySelector("#manager-name")
 const managerCompetition = document.querySelector("#manager-competition")
@@ -66,39 +67,39 @@ onAuthStateChanged(AUTH, (user) => {
                 managerName.textContent = 'Jonathan Denen'
                 managerCompetition.textContent = 'Plan of Development'
                 isPODC = true
-                document.getElementById("submission-table").style.width = '120vw'
-                document.getElementById("submission-table").querySelector("tr").innerHTML = `
-                    <tr>
-                        <th scope="col">No.</th>
-                        <th scope="col">Team Name</th>
-                        <th scope="col">University</th>
-                        <th scope="col">Last Submission</th>
-                        <th scope="col">Overdue</th>
-                        <th scope="col">Submission</th>
-                        <th scope="col">L.A.S</th>
-                        <th scope="col">Abstract</th>
-                        <th scope="col">L.A.A.S</th>
-                        <th scope="col">Add. Abstract</th>
-                        <th scope="col">Final</th>
-                    </tr>
-                `
-                document.getElementById('submission-table-final').style.width= '100vw'
-                document.getElementById('submission-table-final').querySelector("tr").innerHTML = `
-                    <tr>
-                        <th scope="col">No.</th>
-                        <th scope="col">Team Name</th>
-                        <th scope="col">University</th>
-                        <th scope="col">Last Submission</th>
-                        <th scope="col">Overdue</th>
-                        <th scope="col">Submission</th>
-                        <th scope="col">Last Model</th>
-                        <th scope="col">Overdue</th>
-                        <th scope="col">Model</th>
-                        <th scope="col">Last PPT</th>
-                        <th scope="col">Overdue</th>
-                        <th scope="col">PPT</th>
-                    </tr>
-                `
+                // document.getElementById("submission-table").style.width = '120vw'
+                // document.getElementById("submission-table").querySelector("tr").innerHTML = `
+                //     <tr>
+                //         <th scope="col">No.</th>
+                //         <th scope="col">Team Name</th>
+                //         <th scope="col">University</th>
+                //         <th scope="col">Last Submission</th>
+                //         <th scope="col">Overdue</th>
+                //         <th scope="col">Submission</th>
+                //         <th scope="col">L.A.S</th>
+                //         <th scope="col">Abstract</th>
+                //         <th scope="col">L.A.A.S</th>
+                //         <th scope="col">Add. Abstract</th>
+                //         <th scope="col">Final</th>
+                //     </tr>
+                // `
+                // document.getElementById('submission-table-final').style.width= '100vw'
+                // document.getElementById('submission-table-final').querySelector("tr").innerHTML = `
+                //     <tr>
+                //         <th scope="col">No.</th>
+                //         <th scope="col">Team Name</th>
+                //         <th scope="col">University</th>
+                //         <th scope="col">Last Submission</th>
+                //         <th scope="col">Overdue</th>
+                //         <th scope="col">Submission</th>
+                //         <th scope="col">Last Model</th>
+                //         <th scope="col">Overdue</th>
+                //         <th scope="col">Model</th>
+                //         <th scope="col">Last PPT</th>
+                //         <th scope="col">Overdue</th>
+                //         <th scope="col">PPT</th>
+                //     </tr>
+                // `
                 break
                 
 
@@ -222,325 +223,264 @@ excelConvertBtn.addEventListener("click", () => {
 
 
 // Submission Section
-const Submission_Status = collection(DB, 'Submission_Status')
+const Submission_Status = collection(DB, 'Team')
+const submissionTablePrelim = document.getElementById("del-submission-list-prelim");
+const compeManagerPrivilage = document.getElementById("compe-manager-privilage");
 
 // Prelim Submission
-const submissionTablePrelim = document.getElementById("del-submission-list-prelim")
-const compeManagerPrivilage = document.getElementById("compe-manager-privilage")
+function createPrelimSubmissionRow(table, teamId, rowNo, teamData) {
+    const prelim = teamData.sub_preliminary || {};
+    const submission = prelim.fileURL || null;
+    const overdue = prelim.overdue !== undefined ? prelim.overdue : "Haven't Submitted";
+    const status = prelim.status !== undefined ? prelim.status : false;
+    const lastSubmit = prelim.submittedAt ? prelim.submittedAt.toDate() : null;
 
-function createSubmissionTable(table, teamId, rowNo, teamName, univ, submission, status, overdue, lastSubmit, finalStatus) {
-	let submitRow = document.createElement("tr")
-	submitRow.setAttribute("id", teamId)
+    let URLSubmit = submission
+        ? `<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">Download</a>`
+        : "No Data";
 
-	let URLSubmit = `
-		<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
+    // Dropdown final status
+    let finalPassingStatus = `
+        <select class="compe-manager-confirm form-select text-black bg-opacity-25 bg-light">
+            <option value="0" ${prelim.final === undefined ? "selected" : ""}>Pending</option>
+            <option value="-1" ${prelim.final === false ? "selected" : ""}>Failed</option>
+            <option value="1" ${prelim.final === true ? "selected" : ""}>Passed</option>
+        </select>
+    `;
 
-	let finalPassingStatus
-	switch (finalStatus) {
-		case true:
-			finalPassingStatus = `
-				<select class="compe-manager-confirm form-select text-white bg-opacity-25 bg-success">
-					<option value="0">Pending</option>
-					<option value="-1">Failed</option>
-					<option value="1" selected>Passed</option>
-				</select>
-			`
-			break
-		case false:
-			finalPassingStatus = `
-				<select class="compe-manager-confirm form-select text-white bg-opacity-25 bg-danger">
-					<option value="0">Pending</option>
-					<option value="-1" selected>Failed</option>
-					<option value="1">Passed</option>
-				</select>
-			`
-			break
-		default:
-			finalPassingStatus = `
-				<select class="compe-manager-confirm form-select text-black bg-opacity-25 bg-light">
-					<option value="0" selected>Pending</option>
-					<option value="-1">Failed</option>
-					<option value="1">Passed</option>
-				</select>
-			`
-			break
-	}
-
-	submitRow.innerHTML = `
-		<td>${rowNo}</td>
-		<td>${teamName}</td>
-		<td>${univ}</td>
-		<td>${status ? lastSubmit.toDate().toLocaleString() : "No Data"}</td>
-		<td>${status ? overdue : "No Data"}</td>
-		<td>${status ? URLSubmit : "No Data"}</td>
-		<td>${finalPassingStatus}</td>
-	`
-	table.append(submitRow)
+    let row = document.createElement("tr");
+    row.setAttribute("id", teamId);
+    row.innerHTML = `
+        <td>${rowNo}</td>
+        <td>${teamData.teamName || "No Name"}</td>
+        <td>${teamData.leader.university || "No Univ"}</td>
+        <td>${status && lastSubmit ? lastSubmit.toLocaleString() : "No Data"}</td>
+        <td>${status ? (overdue ? "On Time" : "Late") : "Haven't Submitted"}</td>
+        <td>${status ? URLSubmit : "Haven't Submitted"}</td>
+        <td>${finalPassingStatus}</td>
+    `;
+    table.append(row);
 }
 
-function createPODCSubmissionTable(table, teamId, rowNo, teamName, univ, submission, status, overdue, lastSubmit, finalStatus, absSub, addAbsSub, absStat, addAbsStat, lastAbs, lastAddAbs) {
-	let submitRow = document.createElement("tr")
-	submitRow.setAttribute("id", teamId)
+// =========================
+// Load data Teams & tampilkan tabel (sesuai competition)
+// =========================
+onSnapshot(collection(DB, "Team"), (snap) => {
+    if (!switchCompetition) return;
 
-	let URLSubmit = `
-		<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
-	let URLAbsSub = `
-		<a href="${absSub}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
-	let URLAddAbsSub = `
-		<a href="${addAbsSub}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
+    const activeCompetition = normalizeCompetition(switchCompetition);
+    const filteredTeams = snap.docs.filter(doc =>
+        normalizeCompetition(doc.data().competition || '') === activeCompetition
+    );
 
-	let finalPassingStatus
-	switch (finalStatus) {
-		case true:
-			finalPassingStatus = `
-				<select class="compe-manager-confirm form-select text-white bg-opacity-25 bg-success">
-					<option value="0">Pending</option>
-					<option value="-1">Failed</option>
-					<option value="1" selected>Passed</option>
-				</select>
-			`
-			break
-		case false:
-			finalPassingStatus = `
-				<select class="compe-manager-confirm form-select text-white bg-opacity-25 bg-danger">
-					<option value="0">Pending</option>
-					<option value="-1" selected>Failed</option>
-					<option value="1">Passed</option>
-				</select>
-			`
-			break
-		default:
-			finalPassingStatus = `
-				<select class="compe-manager-confirm form-select text-black bg-opacity-25 bg-light">
-					<option value="0" selected>Pending</option>
-					<option value="-1">Failed</option>
-					<option value="1">Passed</option>
-				</select>
-			`
-			break
-	}
+    submissionTablePrelim.innerHTML = '';
+    filteredTeams.forEach((docSnap, index) => {
+        createPrelimSubmissionRow(submissionTablePrelim, docSnap.id, index + 1, docSnap.data());
+    });
+});
 
-	submitRow.innerHTML = `
-		<td>${rowNo}</td>
-		<td>${teamName}</td>
-		<td>${univ}</td>
-		<td>${status ? lastSubmit.toDate().toLocaleString() : "No Data"}</td>
-		<td>${status ? overdue : "No Data"}</td>
-		<td>${status ? URLSubmit : "No Data"}</td>
-		<td>${absStat ? lastAbs.toDate().toLocaleString() : "No Data"}</td>
-		<td>${absStat ? URLAbsSub : "No Data"}</td>
-		<td>${addAbsStat ? lastAddAbs.toDate().toLocaleString() : "No Data"}</td>
-		<td>${addAbsStat ? URLAddAbsSub : "No Data"}</td>
-		<td>${finalPassingStatus}</td>
-	`
-	table.append(submitRow)
-}
 
-compeManagerPrivilage.addEventListener("submit", (e) => {
-	e.preventDefault()
+// =========================
+// Event listener simpan final status
+// =========================
+compeManagerPrivilage.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const rows = submissionTablePrelim.querySelectorAll("tr");
 
-	submissionTablePrelim.querySelectorAll("tr").forEach(row => {
-		let selectedValue = row.querySelector("select")
-		const docRef = doc(DB, 'Submission_Status', row.getAttribute("id"))
+    for (let row of rows) {
+        const select = row.querySelector("select");
 		
-		switch (selectedValue.value) {
-			case "1":
-				updateDoc(docRef, { final: true })
-				break
-			case "-1":
-				updateDoc(docRef, { final: false })
-				break
-			default:
-				updateDoc(docRef, { final: deleteField() })
-				break
-		}
-	})
-	setToastAlert('success', 'Saving success!')
-})
+        const teamId = row.getAttribute("id");
+        const teamRef = doc(DB, "Team", teamId);
 
-// Final Submission
-const submissionTableFinal = document.getElementById("del-submission-list-final")
+        switch (select.value) {
+            case "1":
+                await updateDoc(teamRef, { "sub_preliminary.final": true });
+                break;
+            case "-1":
+                await updateDoc(teamRef, { "sub_preliminary.final": false });
+                break;
+            default:
+                await updateDoc(teamRef, { "sub_preliminary.final": deleteField() });
+                break;
+        }
+    }
 
-function createFinalSubmissionTable(table, teamId, rowNo, teamName, univ, submission, status, overdue, lastSubmit) {
-	let submitRow = document.createElement("tr")
-	submitRow.setAttribute("id", teamId)
+    setToastAlert("success", "Saving success!");
+});
 
-	let URLSubmit = `
-		<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
-	submitRow.innerHTML = `
-		<td>${rowNo}</td>
-		<td>${teamName}</td>
-		<td>${univ}</td>
-		<td>${status ? lastSubmit.toDate().toLocaleString() : "No Data"}</td>
-		<td>${status ? overdue : "No Data"}</td>
-		<td>${status ? URLSubmit : "No Data"}</td>
-	`
-	table.append(submitRow)
-}
 
-function createFinalPODCSubmissionTable(table, teamId, rowNo, teamName, univ, submission, status, overdue, overdueModel, overdueppt, lastSubmit, absSub, addAbsSub, absStat, addAbsStat, lastAbs, lastAddAbs) {
-	let submitRow = document.createElement("tr")
-	submitRow.setAttribute("id", teamId)
+// // Final Submission
+// const submissionTableFinal = document.getElementById("del-submission-list-final")
 
-	let URLSubmit = `
-		<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
-	let URLAbsSub = `
-		<a href="${absSub}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
-	let URLAddAbsSub = `
-		<a href="${addAbsSub}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
-			Download
-		</a>
-	`
+// function createFinalSubmissionTable(table, teamId, rowNo, teamName, univ, submission, status, overdue, lastSubmit) {
+// 	let submitRow = document.createElement("tr")
+// 	submitRow.setAttribute("id", teamId)
 
-	submitRow.innerHTML = `
-		<td>${rowNo}</td>
-		<td>${teamName}</td>
-		<td>${univ}</td>
-		<td>${status ? lastSubmit.toDate().toLocaleString() : "No Data"}</td>
-		<td>${status ? overdue : "No Data"}</td>
-		<td>${status ? URLSubmit : "No Data"}</td>
-		<td>${absStat ? lastAbs.toDate().toLocaleString() : "No Data"}</td>
-		<td>${absStat ? overdueModel : "No Data"}</td>
-		<td>${absStat ? URLAbsSub : "No Data"}</td>
-		<td>${addAbsStat ? lastAddAbs.toDate().toLocaleString() : "No Data"}</td>
-		<td>${addAbsStat ? overdueppt : "No Data"}</td>
-		<td>${addAbsStat ? URLAddAbsSub : "No Data"}</td>
-	`
-	table.append(submitRow)
-}
+// 	let URLSubmit = `
+// 		<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
+// 			Download
+// 		</a>
+// 	`
+// 	submitRow.innerHTML = `
+// 		<td>${rowNo}</td>
+// 		<td>${teamName}</td>
+// 		<td>${univ}</td>
+// 		<td>${status ? lastSubmit.toDate().toLocaleString() : "No Data"}</td>
+// 		<td>${status ? overdue : "No Data"}</td>
+// 		<td>${status ? URLSubmit : "No Data"}</td>
+// 	`
+// 	table.append(submitRow)
+// }
 
-onSnapshot(Submission_Status, (snap) => {
-	if (!switchCompetition) return
-	const submissionDocs = snap.docs
-	const activeCompetition = normalizeCompetition(switchCompetition)
-	const currentCompe = submissionDocs.filter(doc => normalizeCompetition(doc.data().competition || '') === activeCompetition)
-	const currentCompeFinal = currentCompe.filter(doc => doc.data().final === true)
+// function createFinalPODCSubmissionTable(table, teamId, rowNo, teamName, univ, submission, status, overdue, overdueModel, overdueppt, lastSubmit, absSub, addAbsSub, absStat, addAbsStat, lastAbs, lastAddAbs) {
+// 	let submitRow = document.createElement("tr")
+// 	submitRow.setAttribute("id", teamId)
+
+// 	let URLSubmit = `
+// 		<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
+// 			Download
+// 		</a>
+// 	`
+// 	let URLAbsSub = `
+// 		<a href="${absSub}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
+// 			Download
+// 		</a>
+// 	`
+// 	let URLAddAbsSub = `
+// 		<a href="${addAbsSub}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">
+// 			Download
+// 		</a>
+// 	`
+
+// 	submitRow.innerHTML = `
+// 		<td>${rowNo}</td>
+// 		<td>${teamName}</td>
+// 		<td>${univ}</td>
+// 		<td>${status ? lastSubmit.toDate().toLocaleString() : "No Data"}</td>
+// 		<td>${status ? overdue : "No Data"}</td>
+// 		<td>${status ? URLSubmit : "No Data"}</td>
+// 		<td>${absStat ? lastAbs.toDate().toLocaleString() : "No Data"}</td>
+// 		<td>${absStat ? overdueModel : "No Data"}</td>
+// 		<td>${absStat ? URLAbsSub : "No Data"}</td>
+// 		<td>${addAbsStat ? lastAddAbs.toDate().toLocaleString() : "No Data"}</td>
+// 		<td>${addAbsStat ? overdueppt : "No Data"}</td>
+// 		<td>${addAbsStat ? URLAddAbsSub : "No Data"}</td>
+// 	`
+// 	table.append(submitRow)
+// }
+
+// onSnapshot(Submission_Status, (snap) => {
+// 	if (!switchCompetition) return
+// 	const submissionDocs = snap.docs
+// 	const activeCompetition = normalizeCompetition(switchCompetition)
+// 	const currentCompe = submissionDocs.filter(doc => normalizeCompetition(doc.data().competition || '') === activeCompetition)
+// 	const currentCompeFinal = currentCompe.filter(doc => doc.data().final === true)
 	
-	submissionTablePrelim.innerHTML = ''
-	submissionTableFinal.innerHTML = ''
+// 	submissionTablePrelim.innerHTML = ''
+// 	submissionTableFinal.innerHTML = ''
 
-	if (isPODC) {
-		currentCompe.forEach((compe, index) => {
-			let data = compe.data()
-			createPODCSubmissionTable(
-				submissionTablePrelim,
-				compe.id,
-				index+1,
-				data.team_name,
-				data.university,
-				data.sub_preliminary.fileURL,
-				data.sub_preliminary.status,
-				data.sub_preliminary.overdue,
-				data.sub_preliminary.submittedAt,
-				data.final,
-				data.sub_abstract.fileURL,
-				data.sub_add_abstract.fileURL,
-				data.sub_abstract.status,
-				data.sub_add_abstract.status,
-				data.sub_abstract.submittedAt,
-				data.sub_add_abstract.submittedAt
-			)
-		})
-		currentCompeFinal.forEach((compe, index) => {
-			let data = compe.data()
-			createFinalPODCSubmissionTable(
-				submissionTableFinal,
-				compe.id,
-				index+1,
-				data.team_name,
-				data.university,
-				data.sub_final?.fileURL,
-				data.sub_final?.status,
-				data.sub_final?.overdue,
-				data.sub_final_model?.overdue,
-				data.sub_final_ppt?.overdue,
-				data.sub_final?.submittedAt,
-				data.sub_final_model?.fileURL,
-				data.sub_final_ppt?.fileURL,
-				data.sub_final_model?.status,
-				data.sub_final_ppt?.status,
-				data.sub_final_model?.submittedAt,
-				data.sub_final_ppt?.submittedAt
-			)
-		})
-	} else {
-		currentCompe.forEach((compe, index) => {
-			let data = compe.data()
-			createSubmissionTable(
-				submissionTablePrelim,
-				compe.id,
-				index+1, 
-				data.team_name,
-				data.university,
-				data.sub_preliminary.fileURL,
-				data.sub_preliminary.status,
-				data.sub_preliminary.overdue,
-				data.sub_preliminary.submittedAt,
-				data.final
-			)
-		})
-		currentCompeFinal.forEach((compe, index) => {
-			let data = compe.data()
-			createFinalSubmissionTable(
-				submissionTableFinal,
-				compe.id,
-				index+1, 
-				data.team_name,
-				data.university,
-				data.sub_final?.fileURL || false,
-				data.sub_final?.status || false,
-				data.sub_final?.overdue || false,
-				data.sub_final?.submittedAt || false
-			)
-		})
-	}
+// 	if (isPODC) {
+// 		currentCompe.forEach((compe, index) => {
+// 			let data = compe.data()
+// 			createPODCSubmissionTable(
+// 				submissionTablePrelim,
+// 				compe.id,
+// 				index+1,
+// 				data.team_name,
+// 				data.university,
+// 				data.sub_preliminary.fileURL,
+// 				data.sub_preliminary.status,
+// 				data.sub_preliminary.overdue,
+// 				data.sub_preliminary.submittedAt,
+// 				data.final,
+// 				data.sub_abstract.fileURL,
+// 				data.sub_add_abstract.fileURL,
+// 				data.sub_abstract.status,
+// 				data.sub_add_abstract.status,
+// 				data.sub_abstract.submittedAt,
+// 				data.sub_add_abstract.submittedAt
+// 			)
+// 		})
+// 		currentCompeFinal.forEach((compe, index) => {
+// 			let data = compe.data()
+// 			createFinalPODCSubmissionTable(
+// 				submissionTableFinal,
+// 				compe.id,
+// 				index+1,
+// 				data.team_name,
+// 				data.university,
+// 				data.sub_final?.fileURL,
+// 				data.sub_final?.status,
+// 				data.sub_final?.overdue,
+// 				data.sub_final_model?.overdue,
+// 				data.sub_final_ppt?.overdue,
+// 				data.sub_final?.submittedAt,
+// 				data.sub_final_model?.fileURL,
+// 				data.sub_final_ppt?.fileURL,
+// 				data.sub_final_model?.status,
+// 				data.sub_final_ppt?.status,
+// 				data.sub_final_model?.submittedAt,
+// 				data.sub_final_ppt?.submittedAt
+// 			)
+// 		})
+// 	} else {
+// 		currentCompe.forEach((compe, index) => {
+// 			let data = compe.data()
+// 			createSubmissionTable(
+// 				submissionTablePrelim,
+// 				compe.id,
+// 				index+1, 
+// 				data.team_name,
+// 				data.university,
+// 				data.sub_preliminary.fileURL,
+// 				data.sub_preliminary.status,
+// 				data.sub_preliminary.overdue,
+// 				data.sub_preliminary.submittedAt,
+// 				data.final
+// 			)
+// 		})
+// 		currentCompeFinal.forEach((compe, index) => {
+// 			let data = compe.data()
+// 			createFinalSubmissionTable(
+// 				submissionTableFinal,
+// 				compe.id,
+// 				index+1, 
+// 				data.team_name,
+// 				data.university,
+// 				data.sub_final?.fileURL || false,
+// 				data.sub_final?.status || false,
+// 				data.sub_final?.overdue || false,
+// 				data.sub_final?.submittedAt || false
+// 			)
+// 		})
+// 	}
 
 	
 
-	const compeConfirm = document.querySelectorAll(".compe-manager-confirm")
-	compeConfirm.forEach(c => c.addEventListener('change', () => {
-		console.log("CONFIRM CHANGE")
+// 	const compeConfirm = document.querySelectorAll(".compe-manager-confirm")
+// 	compeConfirm.forEach(c => c.addEventListener('change', () => {
+// 		console.log("CONFIRM CHANGE")
 
-		switch (c.value) {
-			case "1":
-				c.classList.remove("bg-danger")
-				c.classList.remove("bg-light", "text-black")
-				c.classList.add("bg-success", "text-white")
-				break
-			case "-1":
-				c.classList.add("bg-danger", "text-white")
-				c.classList.remove("bg-light", "text-black")
-				c.classList.remove("bg-success")
-				break
-			default:
-				c.classList.remove("bg-danger", "text-white")
-				c.classList.add("bg-light", "text-black")
-				c.classList.remove("bg-success", "text-white")
-				break
-		}
-	}))
-})
+// 		switch (c.value) {
+// 			case "1":
+// 				c.classList.remove("bg-danger")
+// 				c.classList.remove("bg-light", "text-black")
+// 				c.classList.add("bg-success", "text-white")
+// 				break
+// 			case "-1":
+// 				c.classList.add("bg-danger", "text-white")
+// 				c.classList.remove("bg-light", "text-black")
+// 				c.classList.remove("bg-success")
+// 				break
+// 			default:
+// 				c.classList.remove("bg-danger", "text-white")
+// 				c.classList.add("bg-light", "text-black")
+// 				c.classList.remove("bg-success", "text-white")
+// 				break
+// 		}
+// 	}))
+// })
 
 // Case Distribution Section
 const caseStorageCollection = {
@@ -555,7 +495,8 @@ const caseStorageCollection = {
 }
 
 const caseStorage = ref(STORAGE, 'Case')
-const CASE_RELEASE_TIMESTAMP = new Date('2025-11-30T00:00:00+07:00').getTime()
+const CASE_RELEASE_TIMESTAMP = new Date('2025-11-20T00:00:00+07:00').getTime()
+
 
 const prelimCaseDist = document.getElementById("prelim-case-distribution")
 const caseInput = prelimCaseDist.querySelector("input")
@@ -571,8 +512,8 @@ prelimCaseDist.addEventListener("submit", (e) => {
 
 	try{
 		if (Date.now() < CASE_RELEASE_TIMESTAMP) {
-			alert("Study case hanya bisa diunggah setelah 30 Nov 2025 00.00 WIB")
-			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+			alert("Case can only be uploaded after 30 Nov 2025 00.00 WIB")
+			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Pending'
 			prelimCaseDist.querySelectorAll("button")[1].disabled = false
 			return
 		}
@@ -586,24 +527,25 @@ prelimCaseDist.addEventListener("submit", (e) => {
 		.then((downloadURL) => {
 			return updateDoc(doc(DB, 'Information', caseStorageCollection[switchCompetition]), {
 				prelim_case_link: downloadURL,
-				sent_on: serverTimestamp()
+				sent_on: serverTimestamp(),
+				competition_name: switchCompetition
 			})
 		})
 		.then(() => {
 			alert("Success sending the file")
-			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Success'
 			prelimCaseDist.querySelectorAll("button")[1].disabled = false
 		})
 		.catch((err) => {
 			console.log("There is error during sending case file", err.message)
 			alert("[ERROR-1N] Cannot sending case file!")
-			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+			prelimCaseDist.querySelectorAll("button")[1].textContent = 'Failed'
 			prelimCaseDist.querySelectorAll("button")[1].disabled = false
 		})
 	} catch (err) {
 		console.log("Error during uploading case file", err.message)
 		alert("[ERROR-0UT] Cannot sending case file!")
-		prelimCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+		prelimCaseDist.querySelectorAll("button")[1].textContent = 'Failed'
 		prelimCaseDist.querySelectorAll("button")[1].disabled = false
 	}
 })
@@ -611,6 +553,7 @@ prelimCaseDist.addEventListener("submit", (e) => {
 const finalCaseDist = document.getElementById("final-case-distribution")
 const finalCaseInput = finalCaseDist.querySelector("input")
 const deleteFinalCaseFile = document.getElementById("delete-file-case-final")
+const finalcaserelease = new Date('2026-01-04T00:00:00+07:00').getTime()
 
 deleteFinalCaseFile.addEventListener("click", () => { finalCaseInput.value = '' })
 
@@ -621,9 +564,9 @@ finalCaseDist.addEventListener("submit", (e) => {
 	finalCaseDist.querySelectorAll("button")[1].disabled = true
 
 	try{
-		if (Date.now() < CASE_RELEASE_TIMESTAMP) {
-			alert("Study case hanya bisa diunggah setelah 30 Nov 2025 00.00 WIB")
-			finalCaseDist.querySelectorAll("button")[1].textContent = 'Send'
+		if (Date.now() < finalcaserelease) {
+			alert("Case can only be uploaded after 4 Jan 2026 00.00 WIB")
+			finalCaseDist.querySelectorAll("button")[1].textContent = 'Failed'
 			finalCaseDist.querySelectorAll("button")[1].disabled = false
 			return
 		}
@@ -636,8 +579,7 @@ finalCaseDist.addEventListener("submit", (e) => {
 		})
 		.then((downloadURL) => {
 			return updateDoc(doc(DB, 'Information', caseStorageCollection[switchCompetition]), {
-				final_case_link: downloadURL,
-				sent_on: serverTimestamp()
+				final: { case_link: downloadURL, sent_on: serverTimestamp() }
 			})
 		})
 		.then(() => {
