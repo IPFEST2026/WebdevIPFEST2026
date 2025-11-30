@@ -22,15 +22,17 @@ onAuthStateChanged(AUTH, async (user) => {
 	currentUserID = user.uid;
 	let userData = await fetchUserData();
     let userCompetition = (userData.competitionRaw || "").toLowerCase();
+    let paymentStatus = (userData.paymentStatus || null);
     let prelimStatus = (userData.prelimstats || null);
     let PrelimOverdue = (userData.prelim_overdue || null);
     let PrelimSubmittedAt = (userData.prelimSubmittedAt || null);
     let PrelimFileURL = (userData.prelimFileURL || null);
 
-	loadPrelimCase(currentUserID);
+	loadPrelimCase(currentUserID, paymentStatus);
     setupGuidebook(userCompetition);
     setupEditSubmission(prelimStatus);
     submissionSummary(PrelimOverdue, PrelimSubmittedAt, PrelimFileURL);
+    setupPrelimTab(paymentStatus);
 });
 
 
@@ -366,9 +368,33 @@ function overdueStatus() {
 // SUBMISSION OPENING DATE
 // =====================================
 function isSubmissionOpen() {
-    const openDate = new Date("Nov 22, 2025 00:00:00").getTime();
+    const openDate = new Date("Nov 30, 2025 00:00:00").getTime();
     return Date.now() >= openDate;
 }
+
+// =====================================
+// Verified Status Check
+// =====================================
+
+
+function setupPrelimTab(paymentStatus) {
+    const prelimTab = document.getElementById("nav-profile-tab");
+
+    if (paymentStatus !== "verified") {
+  
+        prelimTab.removeAttribute("data-bs-toggle");
+
+        prelimTab.addEventListener("click", function (e) {
+            e.preventDefault();
+            alert("⚠️ Your payment has not been verified. Please complete the payment to access the Preliminary Case.");
+        });
+
+    } else {
+ 
+        prelimTab.setAttribute("data-bs-toggle", "tab");
+    }
+}
+
 
 // =====================================
 // LOAD PRELIM CASE
@@ -385,7 +411,6 @@ export async function loadPrelimCase(currentUserID) {
             console.log("Team doc not found");
             return;
         }
-
         // Ambil nama competition dari Team
         const rawCompetition = teamSnap.data().competition;
         console.log("competition from Team:", rawCompetition);
@@ -489,15 +514,15 @@ export async function loadPrelimCase(currentUserID) {
 // =====================================
 
 const competitionGuideBookRaw = {
-    "business case": "https://drive.google.com/file/d/1GWaq2BPn5lWvV2VEGAKJyshy6z2T0OiS/view?usp=drive_link",
-    "geothermal development plan": "https://drive.google.com/file/d/1nHnoZvb8tnY8_J8kcFz-gvBDfjXkQUZg/view?usp=drive_link",
-    "mud inovation": "https://drive.google.com/file/d/1IqLtOQ4xacP-KRwr7EY8J1apluTo8fY6/view?usp=drive_link",
-    "oil rig design": "https://drive.google.com/file/d/16lSPng29RjoQm0dfZSU622DV-TnD37v4/view?usp=drive_link",
-    "paper and poster": "https://drive.google.com/file/d/1FCF1zc3ZNWW2vB8tq-p1VRZ0RhwforZM/view?usp=drive_link",
-    "plan of development": "https://drive.google.com/file/d/1kgsvhtzgEMB0ZC9UpvvayYFHejy3WKp8/view?usp=drive_link",
-    "smart competition": "https://drive.google.com/file/d/1vLVrzxBPd0zfIRw1qmLgk1RJMbBHd79s/view?usp=drive_link",
-    "well design": "https://drive.google.com/file/d/1U6tb3h5SVQAM3MDOlFs5DofSWPPRVykL/view?usp=drive_link",
-    "hackaton": "https://drive.google.com/file/d/17D-JtWdo7Nkv7j68kJx37cW-GHDmIzxY/view?usp=drive_link"
+    "business case": "https://drive.google.com/drive/folders/1eG9MgKhfW0E_aQrsW14aN29GLMXDGfCm?usp=drive_link",
+    "geothermal development plan": "https://drive.google.com/drive/folders/12m5cj1cZVBADe5EpgcRTrieLi4n7s8Sx?usp=drive_link",
+    "mud inovation": "https://drive.google.com/drive/folders/1noM7qGBFAVzUF6rX-tw8SJtLKZur0oxy?usp=drive_link",
+    "oil rig design": "https://drive.google.com/drive/folders/11cJQVMsE95aGnZRe_N5PZ-tfmHcoA15V?usp=drive_link",
+    "paper and poster": "https://drive.google.com/drive/folders/17P023GNrW9ksEgIVyvJ7_N459IV-u0jw?usp=drive_link",
+    "plan of development": "https://drive.google.com/drive/folders/1BPNsjzrBkBcNTNhe8sp68B_RfZTy20Ve?usp=drive_link",
+    "smart competition": "https://drive.google.com/drive/folders/1dxNlkauTNd-Oa0sN46ShO0oQCv-EoMDe?usp=drive_link",
+    "well design": "https://drive.google.com/drive/folders/1nsiXXuDWnsf-5o62yt758k6WZYPaNqjI?usp=drive_link",
+    "hackaton": "https://drive.google.com/drive/folders/1HorhBttwNfCOY2dB9VqOR_GxXjujtXDI?usp=drive_link"
 };
 
 function setupGuidebook(userCompetition) {

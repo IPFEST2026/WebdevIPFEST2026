@@ -495,7 +495,7 @@ const caseStorageCollection = {
 }
 
 const caseStorage = ref(STORAGE, 'Case')
-const CASE_RELEASE_TIMESTAMP = new Date('2025-11-20T00:00:00+07:00').getTime()
+const CASE_RELEASE_TIMESTAMP = new Date('2025-11-30T00:00:00+07:00').getTime()
 
 
 const prelimCaseDist = document.getElementById("prelim-case-distribution")
