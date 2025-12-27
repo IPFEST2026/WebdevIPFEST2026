@@ -17,6 +17,114 @@
 	<link href="../static/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
 	<link href="../static/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../static/css/style.css" rel="stylesheet">
+	<style>
+		/* Base Style Dropdown */
+		.select-pill {
+			border-radius: 12px;
+			padding: 4px 12px;
+			font-weight: 700;
+			font-size: 0.75rem;
+			border: 2px solid transparent;
+			transition: all 0.3s ease;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+		}
+
+		/* Status: PASSED (Tema Green-Teal IPFest) */
+		.status-passed {
+			background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%) !important;
+			color: #1b5e20 !important;
+			border-color: #81c784 !important;
+		}
+
+		/* Status: FAILED (Tema Pink-Red IPFest) */
+		.status-failed {
+			background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%) !important;
+			color: #be123c !important;
+			border-color: #fda4af !important;
+		}
+
+		/* Status: PENDING (Tema Deep Purple-Blue IPFest) */
+		.status-pending {
+			background: linear-gradient(135deg, #f3f0ff 0%, #e5dbff 100%) !important;
+			color: #5521b5 !important;
+			border-color: #d6bcfa !important;
+		}
+
+		/* Rank Pill (Tema Cyan-Blue IPFest) */
+		.rank-pill {
+			background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%) !important;
+			color: #0369a1 !important;
+			border: 2px solid #7dd3fc !important;
+		}
+
+		/* Desain Badge Overdue */
+		.badge-ipfest {
+			font-size: 10px;
+			padding: 5px 10px;
+			border-radius: 8px;
+			font-weight: 800;
+			text-transform: uppercase;
+		}
+		/* Revisi Final Tombol Download IPFEST 2026 - Ultra High Contrast */
+		.btn-view-file {
+			/* Gradasi Magenta-Violet ke Azure Blue yang lebih terang (vibrant) */
+			background: linear-gradient(45deg, #9333ea, #06b6d4);
+			color: #ffffff !important; /* Putih solid murni */
+			border: none;
+			font-weight: 900; /* Ketebalan maksimal agar teks kecil sangat jelas */
+			font-size: 10px;
+			padding: 10px 20px; /* Padding lebih luas untuk estetika yang lebih lega */
+			border-radius: 50px; /* Bentuk pill sempurna */
+			text-transform: uppercase;
+			letter-spacing: 1.5px; /* Jarak antar huruf diperlebar untuk keterbacaan */
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+			box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4); /* Shadow berwarna neon */
+			text-decoration: none !important;
+			position: relative;
+		}
+
+		/* Efek Hover: Lebih menyala (Ultra Glow) */
+		.btn-view-file:hover {
+			/* Pergeseran warna ke arah yang lebih terang saat hover */
+			background: linear-gradient(45deg, #a855f7, #22d3ee);
+			transform: translateY(-5px) scale(1.08); /* Terangkat lebih tinggi */
+			box-shadow: 0 12px 30px rgba(6, 182, 212, 0.6); /* Shadow berpindah ke biru cyan */
+			color: #ffffff !important;
+			filter: saturate(1.5) brightness(1.2); /* Menambah kejenuhan warna agar lebih 'pop' */
+		}
+
+		/* Efek Klik */
+		.btn-view-file:active {
+			transform: translateY(-2px) scale(0.98); /* Sedikit membal ke dalam saat diklik */
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+				/* Opsional: Bikin Header Tabel makin selaras sama tema neon */
+		thead th {
+			background: #f8f9ff !important;
+			color: #4c1d95 !important;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			font-size: 11px;
+			border-bottom: 2px solid #ddd6fe !important;
+			padding: 15px 10px !important;
+		}
+
+		/* Biar ada efek baris pas di-hover (Smooth) */
+		tbody tr {
+			transition: background-color 0.3s ease;
+		}
+
+		tbody tr:hover {
+			background-color: #f5f3ff !important; /* Ungu sangat muda pas kursor di atas baris */
+		}
+	</style>
 </head>
 <body class="dashboard-theme">
 	<!-- Spinner Start -->
@@ -188,12 +296,12 @@
 											<thead class="text-primary">
 												<tr>
 													<th scope="col">No.</th>
-													<th scope="col">Team Name</th>
-													<th scope="col">University</th>
+													<th scope="col">Team Name/University</th>
 													<th scope="col">Last Submission</th>
 													<th scope="col">Overdue</th>
 													<th scope="col">Submission</th>
 													<th scope="col">Final</th>
+													<th scope="col">Rank</th>
 												</tr>
 											</thead>
 											<tbody id="del-submission-list-prelim"></tbody>

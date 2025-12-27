@@ -17,6 +17,9 @@
 	<link href="static/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
 	<link href="static/css/bootstrap.min.css" rel="stylesheet">
 	<link href="static/css/style.css" rel="stylesheet">
+	<link href="static/css/Homepage.css" rel="stylesheet">
+	<link href="static/css/merchandise.css" rel="stylesheet">
+
 </head>
 <body>
    <!-- Spinner Start -->
@@ -31,8 +34,8 @@
 	<div class="container-fluid p-0">
 		<nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
 			<a href="index.html" class="navbar-brand p-0 d-flex align-items-center">
-				<img src="static/images/logo.png" alt="Logo">
-				<h1 class="fs-5 text-primary m-0"><strong>IPFEST 2025</strong></h1>
+				<img src="static/images/ipfest_2026_logo.svg" alt="Logo">
+				<img src="static/images/ipfest_2026_text.svg" alt="Logo">
 			</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
 				<span class="fa fa-bars"></span>
@@ -51,6 +54,7 @@
 							<li><a href="competitions/plan-of-development.html" class="dropdown-item">Plan of Development</a></li>
 							<li><a href="competitions/smart-competition.html" class="dropdown-item">Smart Competition</a></li>
 							<li><a href="competitions/well-design.html" class="dropdown-item">Well Design</a></li>
+							<li><a href="competitions/hackathon-competition.html" class="dropdown-item">Hackathon</a></li>
 						</ul>
 					</div>
 					<div class="dropdown">
@@ -90,8 +94,9 @@
 		</ul>
 		<div class="container text-center py-4" style="max-width: 900px;">
 			<h3 class="display-3 mb-4 wow fadeInDown" data-wow-delay="0.1s">Merchandise</h1>
-			<figcaption class="blockquote-footer mt-3 text-muted fs-6">
-				Official IPFEST 2025 Merch – Powered by Innovation 
+			<img src="static/images/logo.png" alt="" class="img-fluid w-25">
+			<figcaption class="blockquote-footer mt-3 text-muted fs-6" style="color: #000000;">
+				Official IPFEST 2026 Merch – Powered by Innovation 
 			</figcaption>
 			<!-- <img src="static/images/logo.png" alt="" class="img-fluid w-25"> -->
 		</div>
@@ -122,7 +127,7 @@
 
 	<main class="container-fluid feature overflow-hidden py-5">
 		<!-- Merch Start -->
-		<div class="container">
+		<div class="container merch-content">
 			<div class="row g-5 mb-5">
             <div class="col-lg-6 wow fadeInLeft" data-wow-delay="0.1s">
                <div class="feature-img h-100" style="object-fit: cover;">
@@ -130,7 +135,7 @@
                </div>
             </div>
             <div class="col-lg-6 wow fadeInRight py-5" data-wow-delay="0.1s">
-               <h1 class="display-5 mb-4"><span style="color:#bc2300">Calendar</span></h1>
+               <h1 class="display-5 mb-4"><span>Calendar</span></h1>
                <p class="mb-4 fs-5">
                   Stay ahead in 2025 with the official IPFEST calendar – a perfect blend of style and function to keep your schedule on track while celebrating innovation!
                </p>
@@ -141,7 +146,7 @@
          </div>
 			<div class="row g-5 mt-5 mb-5">
             <div class="col-lg-6 wow fadeInLeft py-5" data-wow-delay="0.1s">
-               <h1 class="display-5 mb-4"><span style="color:#bc2300">Cap</span></h1>
+               <h1 class="display-5 mb-4"><span>Cap</span></h1>
                <p class="mb-4 fs-5">
                   Shield yourself in style with the official IPFEST 2025 cap – a perfect blend of comfort and durability to represent your passion!
                </p>
@@ -162,7 +167,7 @@
                </div>
             </div>
             <div class="col-lg-6 wow fadeInRight py-5" data-wow-delay="0.1s">
-               <h1 class="display-5 mb-4"><span style="color:#bc2300">Totebag</span></h1>
+               <h1 class="display-5 mb-4"><span>Totebag</span></h1>
                <p class="mb-4 fs-5">
                   Carry your stuff wherever you go with the official IPFEST 2025 tote bag – stylish, durable, and perfect for everyday essentials!
                </p>
@@ -173,7 +178,7 @@
          </div>
 			<div class="row g-5 mt-5 mb-5">
             <div class="col-lg-6 wow fadeInLeft py-5" data-wow-delay="0.1s">
-               <h1 class="display-5 mb-4"><span style="color:#bc2300">T-Shirt</span></h1>
+               <h1 class="display-5 mb-4"><span>T-Shirt</span></h1>
                <p class="mb-4 fs-5">
                   Wear your passion with the official IPFEST 2025 T-shirt – a perfect fusion of comfort and style!
                </p>
@@ -194,7 +199,7 @@
                </div>
             </div>
             <div class="col-lg-6 wow fadeInRight py-5" data-wow-delay="0.1s">
-               <h1 class="display-5 mb-4"><span style="color:#bc2300">Race Package</span></h1>
+               <h1 class="display-5 mb-4"><span>Race Package</span></h1>
                <p class="mb-4 fs-5">
                   Gear up for greatness with the official IPFEST 2025 Race Package – a premium bundle of sportswear and essentials designed for champions!
                </p>
@@ -203,433 +208,632 @@
                </div>
             </div>
          </div>
-			<!-- More Merch -->
-			<div class="text-center mt-5">
-				<button class="btn btn-primary border border-primary rounded-pill py-2 px-4" style="border-radius:0;" id="first-row-merch-btn">
-					<span class="fs-5">And many more <i class="bi bi-chevron-double-down"></i></span>
-				</button>
-				<script>
-					document.getElementById('first-row-merch-btn').addEventListener('click', () => {
-						document.getElementById('first-row-merch').classList.remove('d-none')
-						document.getElementById('first-row-merch-btn').classList.add('d-none')
-					})
-				</script>
-			</div>
-			<div class="row g-4 justify-content-center text-center d-none" id="first-row-merch">
-				<hr>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/ITB-HITAM.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Sweatshirt - ITB</a>
-							<p class="mt-4 mb-0">
-								Sweatshirt
-							</p>
+		<!-- More Merch -->
+		<div class="container merch-product my-5">
+			<div class="container merch-product my-5" id="hoodie-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #E768A8;">Hoodie Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						<div class="col" id="black-sweatshirt-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/ITB-HITAM.png" class="card-img-top img-fluid bg-light" alt="Black Sweatshirt ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Black Sweatshirt - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="black-sweatshirt-itb" data-name="Black Sweatshirt - ITB" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="black-sweatshirt-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/3.png" class="card-img-top img-fluid bg-light" alt="Black Sweatshirt IPFEST" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Black Sweatshirt - IPFEST</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="black-sweatshirt-ipfest" data-name="Black Sweatshirt - IPFEST" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="purple-sweatshirt-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/PE-ungu-depan.png" class="card-img-top img-fluid bg-light" alt="Purple Sweatshirt PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Purple Sweatshirt - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="purple-sweatshirt-pe" data-name="Purple Sweatshirt - PE" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="green-sweatshirt-fttm">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/fttm-hijau (1).png" class="card-img-top img-fluid bg-light" alt="Green Sweatshirt FTTM" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Green Sweatshirt - FTTM</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="green-sweatshirt-fttm" data-name="Green Sweatshirt - FTTM" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="black-hoodie-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/7.png" class="card-img-top img-fluid bg-light" alt="Black Hoodie IPFEST" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Black Hoodie - IPFEST</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="black-hoodie-ipfest" data-name="Black Hoodie - IPFEST" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="purple-hoodie-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/PE-ungu (1).png" class="card-img-top img-fluid bg-light" alt="Purple Hoodie PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Purple Hoodie - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="purple-hoodie-pe" data-name="Purple Hoodie - PE" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="blue-hoodie-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/hoodie/Artboard 18 Mockup (5).png" class="card-img-top img-fluid bg-light" alt="Blue Hoodie ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Blue Hoodie - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 150.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="blue-hoodie-itb" data-name="Blue Hoodie - ITB" data-price="150000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/3.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Sweatshirt - IPFEST 2025</a>
-							<p class="mt-4 mb-0">
-								Sweatshirt
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/PE-ungu-depan.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Purple Sweatshirt - PE</a>
-							<p class="mt-4 mb-0">
-								Sweatshirt
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/fttm-hijau (1).png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Green Sweatshirt - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Sweatshirt
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/7.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Hoodie - IPFEST 2025</a>
-							<p class="mt-4 mb-0">
-								Hoodie
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/PE-ungu (1).png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Purple Hoodie - PE</a>
-							<p class="mt-4 mb-0">
-								Hoodie
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/hoodie/Artboard 18 Mockup (5).png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Blue Hoodie - ITB</a>
-							<p class="mt-4 mb-0">
-								Hoodie
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="text-center mt-5">
-					<button class="btn btn-primary border border-primary rounded-pill py-2 px-4" style="border-radius:0;" id="second-row-merch-btn">
-						<span class="fs-5">More <i class="bi bi-chevron-double-down"></i></span>
-					</button>
-					<script>
-						document.getElementById('second-row-merch-btn').addEventListener('click', () => {
-							document.getElementById('second-row-merch').classList.remove('d-none')
-							document.getElementById('second-row-merch-btn').classList.add('d-none')
-						})
-					</script>
-				</div>
-			</div>
-			<div class="row g-4 justify-content-center text-center d-none" id="second-row-merch">
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/polo/3.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Polo - PE</a>
-							<p class="mt-4 mb-0">
-								Polo
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/polo/POLO (3).png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Polo - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Polo
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/polo/POLO.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Polo - ITB</a>
-							<p class="mt-4 mb-0">
-								Polo
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/polo/2.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Red Polo - IPFEST 2025</a>
-							<p class="mt-4 mb-0">
-								Polo
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/jersey/FRONT ITB.png" alt="" style="width: 100%;"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Light Jersey - ITB</a>
-							<p class="mt-4 mb-0">
-								Jersey
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/jersey/FRONT (1).png" alt="" style="width: 80%;"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Dark Jersey - PE ITB</a>
-							<p class="mt-4 mb-0">
-								Jersey
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/jersey/FRONT PE.png" alt="" style="width: 80%;"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Dark Jersey - PE</a>
-							<p class="mt-4 mb-0">
-								Jersey
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="text-center mt-5">
-					<button class="btn btn-primary border border-primary rounded-pill py-2 px-4" style="border-radius:0;" id="third-row-merch-btn">
-						<span class="fs-5">More <i class="bi bi-chevron-double-down"></i></span>
-					</button>
-					<script>
-						document.getElementById('third-row-merch-btn').addEventListener('click', () => {
-							document.getElementById('third-row-merch').classList.remove('d-none')
-							document.getElementById('third-row-merch-btn').classList.add('d-none')
-						})
-					</script>
 				</div>
 			</div>
-			<div class="row g-4 justify-content-center text-center d-none" id="third-row-merch">
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/keychain/1.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Keychain - IPFEST 2025</a>
-							<p class="mt-4 mb-0">
-								Keychain
-							</p>
+
+			<div class="container merch-product my-5" id="jersey-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #E768A8;">Jersey Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						<div class="col" id="light-jersey-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/jersey/FRONT ITB.png" class="card-img-top img-fluid bg-light" alt="Light Jersey ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Light Jersey - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 120.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="light-jersey-itb" data-name="Light Jersey - ITB" data-price="120000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="dark-jersey-pe-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/jersey/FRONT (1).png" class="card-img-top img-fluid bg-light" alt="Dark Jersey PE ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Dark Jersey - PE ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 120.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="dark-jersey-pe-itb" data-name="Dark Jersey - PE ITB" data-price="120000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="dark-jersey-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/jersey/FRONT PE.png" class="card-img-top img-fluid bg-light" alt="Dark Jersey PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Dark Jersey - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 120.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="dark-jersey-pe" data-name="Dark Jersey - PE" data-price="120000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/keychain/2.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Keychain - ITB</a>
-							<p class="mt-4 mb-0">
-								Keychain
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/keychain/3.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Keychain - PE ITB</a>
-							<p class="mt-4 mb-0">
-								Keychain
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/keychain/KEYCHAIN.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Keychain - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Keychain
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/sticker/1.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Sticker - ITB</a>
-							<p class="mt-4 mb-0">
-								Sticker
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/sticker/2.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Sticker - IPFEST 2025</a>
-							<p class="mt-4 mb-0">
-								Sticker
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/sticker/3.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Sticker - PE</a>
-							<p class="mt-4 mb-0">
-								Sticker
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/sticker/4.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Sticker - ITB</a>
-							<p class="mt-4 mb-0">
-								Sticker
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="text-center mt-5">
-					<button class="btn btn-primary border border-primary rounded-pill py-2 px-4" style="border-radius:0;" id="fourth-row-merch-btn">
-						<span class="fs-5">More <i class="bi bi-chevron-double-down"></i></span>
-					</button>
-					<script>
-						document.getElementById('fourth-row-merch-btn').addEventListener('click', () => {
-							document.getElementById('fourth-row-merch').classList.remove('d-none')
-							document.getElementById('fourth-row-merch-btn').classList.add('d-none')
-						})
-					</script>
 				</div>
 			</div>
-			<div class="row g-4 justify-content-center text-center d-none" id="fourth-row-merch">
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
-					<div class="text-center p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/sticker/5.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Sticker - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Sticker
-							</p>
+
+			<div class="container merch-product my-5" id="keychain-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #E768A8;">Keychain Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						<div class="col" id="keychain-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/keychain/1.png" class="card-img-top img-fluid bg-light" alt="Keychain IPFEST" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Keychain - IPFEST 2025</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 15.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="keychain-ipfest" data-name="Keychain - IPFEST 2025" data-price="15000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="keychain-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/keychain/2.png" class="card-img-top img-fluid bg-light" alt="Keychain ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Keychain - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 15.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="keychain-itb" data-name="Keychain - ITB" data-price="15000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="keychain-pe-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/keychain/3.png" class="card-img-top img-fluid bg-light" alt="Keychain PE ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Keychain - PE ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 15.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="keychain-pe-itb" data-name="Keychain - PE ITB" data-price="15000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="keychain-fttm-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/keychain/KEYCHAIN.png" class="card-img-top img-fluid bg-light" alt="Keychain FTTM ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Keychain - FTTM ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 15.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="keychain-fttm-itb" data-name="Keychain - FTTM ITB" data-price="15000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.3s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/sticker/STIKER.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Light Sticker - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Sticker
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="text-center mt-5">
-					<button class="btn btn-primary border border-primary rounded-pill py-2 px-4" style="border-radius:0;" id="fifth-row-merch-btn">
-						<span class="fs-5">More <i class="bi bi-chevron-double-down"></i></span>
-					</button>
-					<script>
-						document.getElementById('fifth-row-merch-btn').addEventListener('click', () => {
-							document.getElementById('fifth-row-merch').classList.remove('d-none')
-							document.getElementById('fifth-row-merch-btn').classList.add('d-none')
-						})
-					</script>
 				</div>
 			</div>
-			<div class="row g-4 justify-content-center text-center d-none" id="fifth-row-merch">
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/totebag/1.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Totebag - IPFEST 2025</a>
-							<p class="mt-4 mb-0">
-								Totebag
-							</p>
+
+			<div class="container merch-product my-5" id="polo-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #E768A8;">Polo Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						<div class="col" id="black-polo-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/polo/3.png" class="card-img-top img-fluid bg-light" alt="Black Polo PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Black Polo - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 100.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="black-polo-pe" data-name="Black Polo - PE" data-price="100000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="black-polo-fttm">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/polo/POLO (3).png" class="card-img-top img-fluid bg-light" alt="Black Polo FTTM" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Black Polo - FTTM ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 100.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="black-polo-fttm" data-name="Black Polo - FTTM ITB" data-price="100000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="black-polo-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/polo/POLO.png" class="card-img-top img-fluid bg-light" alt="Black Polo ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Black Polo - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 100.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="black-polo-itb" data-name="Black Polo - ITB" data-price="100000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="red-polo-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/polo/2.png" class="card-img-top img-fluid bg-light" alt="Red Polo IPFEST" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Red Polo - IPFEST 2025</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 100.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="red-polo-ipfest" data-name="Red Polo - IPFEST 2025" data-price="100000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/totebag/2.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Totebag - ITB</a>
-							<p class="mt-4 mb-0">
-								Totebag
-							</p>
+			</div>
+
+			<div class="container merch-product my-5" id="sticker-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #E768A8;">Sticker Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						<div class="col" id="sticker-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/sticker/1.png" class="card-img-top img-fluid bg-light" alt="Sticker ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Sticker - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 5.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="sticker-itb" data-name="Sticker - ITB" data-price="5000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="sticker-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/sticker/2.png" class="card-img-top img-fluid bg-light" alt="Sticker IPFEST" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Sticker - IPFEST 2025</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 5.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="sticker-ipfest" data-name="Sticker - IPFEST 2025" data-price="5000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="sticker-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/sticker/3.png" class="card-img-top img-fluid bg-light" alt="Sticker PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Sticker - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 5.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="sticker-pe" data-name="Sticker - PE" data-price="5000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="sticker-fttm-light">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/sticker/STIKER.png" class="card-img-top img-fluid bg-light" alt="Sticker FTTM Light" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Light Sticker - FTTM</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 5.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="sticker-fttm-light" data-name="Light Sticker - FTTM ITB" data-price="5000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/totebag/3.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Totebag - PE</a>
-							<p class="mt-4 mb-0">
-								Totebag
-							</p>
+			</div>			
+
+			<div class="container merch-product my-5" id="totebag-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #E768A8;">Totebag Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						
+						<div class="col" id="totebag-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/totebag/1.png" class="card-img-top img-fluid bg-light" alt="Totebag IPFEST 2025" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Totebag - IPFEST 2025</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 80.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" 
+												data-id="totebag-ipfest" 
+												data-name="Totebag - IPFEST 2025" 
+												data-price="80000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="totebag-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/totebag/2.png" class="card-img-top img-fluid bg-light" alt="Totebag ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Totebag - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 80.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" 
+												data-id="totebag-itb" 
+												data-name="Totebag - ITB" 
+												data-price="80000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="totebag-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/totebag/3.png" class="card-img-top img-fluid bg-light" alt="Totebag PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Totebag - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 80.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" 
+												data-id="totebag-pe" 
+												data-name="Totebag - PE" 
+												data-price="80000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="totebag-fttm-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/totebag/TOTEBAG.png" class="card-img-top img-fluid bg-light" alt="Totebag FTTM ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Totebag - FTTM ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 80.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" 
+												data-id="totebag-fttm-itb" 
+												data-name="Totebag - FTTM ITB" 
+												data-price="80000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="container merch-product my-5" id="varsity-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #671c84;">Varsity Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						
+						<div class="col" id="varsity-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/varsity/varsity itb.png" class="card-img-top img-fluid bg-light" alt="Varsity ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Varsity Jacket - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 250.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="varsity-itb" data-name="Varsity Jacket - ITB" data-price="250000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="varsity-ipfest">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/varsity/varsity ipfest.png" class="card-img-top img-fluid bg-light" alt="Varsity IPFest" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Varsity Jacket - IPFest</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 250.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="varsity-ipfest" data-name="Varsity Jacket - IPFest" data-price="250000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="varsity-pe">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/varsity/varsity pe.png" class="card-img-top img-fluid bg-light" alt="Varsity PE" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Varsity Jacket - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 250.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="varsity-pe" data-name="Varsity Jacket - PE" data-price="250000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="varsity-fttm">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/varsity/varsity fttm.png" class="card-img-top img-fluid bg-light" alt="Varsity FTTM" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Varsity Jacket - FTTM</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 250.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="varsity-fttm" data-name="Varsity Jacket - FTTM" data-price="250000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/totebag/TOTEBAG.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Totebag - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Totebag
-							</p>
+			</div>
+
+			<div class="container merch-product my-5" id="workshirt-collection-wrapper">
+				<div class="merch-title mb-4">
+					<h1 class="fw-bold" style="color: #671c84;">Workshirt Collection</h1>
+					<div class="row row-cols-2 row-cols-lg-4 g-4 mt-2">
+						
+						<div class="col" id="workshirt-fttm">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/workshirt/WORKSHIRT FTTM.png" class="card-img-top img-fluid bg-light" alt="Workshirt FTTM" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Workshirt - FTTM</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 180.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="workshirt-fttm" data-name="Workshirt - FTTM" data-price="180000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
+
+						<div class="col" id="workshirt-itb">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/workshirt/workshirt ITB.png" class="card-img-top img-fluid bg-light" alt="Workshirt ITB" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Workshirt - ITB</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 180.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="workshirt-itb" data-name="Workshirt - ITB" data-price="180000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col" id="workshirt-pe2">
+							<div class="card h-100 border-0 shadow-sm p-2">
+								<img src="static/images/merchandise/workshirt/WORKSHIRT PE2.png" class="card-img-top img-fluid bg-light" alt="Workshirt PE2" style="aspect-ratio: 1/1; object-fit: contain;">
+								<div class="card-body px-1 py-2">
+									<p class="card-title mb-1 fw-bold text-truncate">Workshirt - PE</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="price-tag">Rp 180.000</span>
+										<button class="btn btn-add-cart p-0 text-dark" data-id="workshirt-pe2" data-name="Workshirt - PE" data-price="180000">
+											<i class="bi bi-cart-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/workshirt/WORKSHIRT FTTM.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Workshirt - FTTM ITB</a>
-							<p class="mt-4 mb-0">
-								Workshirt
-							</p>
-						</div>
+			</div>
+
+		</div>
+		<button id="floating-cart-btn" class="btn shadow-lg rounded-circle" onclick="openCheckoutModal()">
+			<i class="bi bi-cart-fill"></i>
+			<span id="cart-badge" class="badge rounded-pill bg-danger">0</span>
+		</button>
+
+		<div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title fw-bold" style="color: #000000;">Checkout Form</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/workshirt/workshirt ITB.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Blue Workshirt - ITB</a>
-							<p class="mt-4 mb-0">
-								Workshirt
-							</p>
-						</div>
+					<div class="modal-body">
+						<div id="checkout-summary" class="mb-3 p-2 rounded" style="background-color: #fdf2f8; border-left: 4px solid #E768A8;">
+							</div>
+
+						<form id="checkout-form">
+							<div class="row">
+								<div class="col-md-6 mb-2">
+									<label for="checkout-fullname" class="form-label small fw-bold" style="color: #000000;">Full Name</label>
+									<input type="text" id="checkout-fullname" class="form-control" placeholder="Name as per identity card" required>
+								</div>
+								<div class="col-md-6 mb-2">
+									<label for="checkout-whatsapp" class="form-label small fw-bold" style="color: #000000;">Contact Number</label>
+									<input type="tel" id="checkout-whatsapp" class="form-control" placeholder="e.g. +62812xxxxxx" required>
+								</div>
+							</div>
+
+							<div class="mb-2">
+								<label for="checkout-email" class="form-label small fw-bold" style="color: #000000;">Email Address</label>
+								<input type="email" id="checkout-email" class="form-control" placeholder="example@email.com" required>
+							</div>
+
+							<div class="mb-2">
+								<label for="checkout-address" class="form-label small fw-bold" style="color: #000000;">Shipping Address</label>
+								<textarea id="checkout-address" class="form-control" rows="2" placeholder="Full address, house number, district/city" required></textarea>
+							</div>
+
+							<div class="mb-2">
+								<label for="checkout-id-card" class="form-label small fw-bold" style="color: #000000;">Identity Verification (Student ID/National ID)</label>
+								<input type="file" id="checkout-id-card" class="form-control" accept="image/*,.pdf" required>
+								<div class="form-text mt-0" style="font-size: 0.7rem;">Format: JPG, PNG, or PDF. Max 2MB.</div>
+							</div>
+
+							<div class="mb-2">
+								<label for="checkout-payment-proof" class="form-label small fw-bold" style="color: #000000;">Proof of Payment</label>
+								<input type="file" id="checkout-payment-proof" class="form-control" accept="image/*" required>
+								<div class="form-text mt-0" style="font-size: 0.7rem;">Please upload your transfer screenshot.</div>
+							</div>
+
+							<button type="submit" id="btn-confirm-order" class="btn w-100 mt-3 text-white fw-bold" style="background-color: #E768A8;">
+								Confirm Order
+							</button>
+						</form>
 					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
-					<div class="text-center rounded p-4">
-						<div class="d-inline-block rounded p-4 mb-4"><img src="static/images/merchandise/workshirt/WORKSHIRT PE2.png" alt="" class="w-100"></div>
-						<div class="feature-content">
-							<a href="https://forms.gle/wsMz3zw82fovFKVW8" class="h4">Black Workshirt - PE</a>
-							<p class="mt-4 mb-0">
-								Workshirt
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="text-center mt-5">
-					<button class="btn btn-primary border border-primary rounded-pill py-2 px-4" style="border-radius:0;" id="all-row-merch-d-none">
-						<span class="fs-5">Close <i class="bi bi-chevron-double-up"></i></span>
-					</button>
-					<script>
-						document.getElementById('all-row-merch-d-none').addEventListener('click', () => {
-							document.getElementById('first-row-merch').classList.add('d-none')
-							document.getElementById('second-row-merch').classList.add('d-none')
-							document.getElementById('third-row-merch').classList.add('d-none')
-							document.getElementById('fourth-row-merch').classList.add('d-none')
-							document.getElementById('fifth-row-merch').classList.add('d-none')
-							document.getElementById('all-row-merch-d-none').classList.add('d-none')
-							document.getElementById('first-row-merch-btn').classList.remove('d-none')
-							document.getElementById('second-row-merch-btn').classList.remove('d-none')
-							document.getElementById('third-row-merch-btn').classList.remove('d-none')
-							document.getElementById('fourth-row-merch-btn').classList.remove('d-none')
-							document.getElementById('fifth-row-merch-btn').classList.remove('d-none')
-							document.getElementById('all-row-merch-d-none').classList.add('d-none')
-						})
-					</script>
 				</div>
 			</div>
 		</div>
@@ -658,7 +862,7 @@
 								<li class="compe-item p-1"><a href="competitions/plan-of-development.html" class="compe-anchor link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Plan of Development</a></li>
 								<li class="compe-item p-1"><a href="competitions/smart-competition.html" class="compe-anchor link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Smart Competition</a></li>
 								<li class="compe-item p-1"><a href="competitions/well-design.html" class="compe-anchor link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Well Design</a></li>
-							</ul>
+								<li class="compe-item p-1"><a href="competitions/hackathon-competition.html" class="compe-anchor link-light link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Hackathon Competition</a></li>							</ul>
 						</div>
 						<div class="col-6">
 							<h5 class="text-light">Events</h5>
@@ -690,10 +894,9 @@
 						<div class="col-md-12 col-sm-6 col-12">
 							<ul style="list-style-type: none;">
 								<li><h5 class="lead text-light">Director of External Department</h5></li>
-								<li><h5 class="text-light fs-6">Gianra Raditya</h5></li>
-								<li><h5 class="fs-6" style="color: rgba(245, 245, 245, 0.719);">Email: gianraditya13@gmail.com</h5></li>
-								<li><a href="https://wa.me/+6281285344773" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">
-									Phone: +6281285344773
+								<li><h5 class="text-light fs-6">Muhammad Fiqran Alif</h5></li>
+								<li><a href="https://wa.me/+6281342372640" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">
+									Phone: +6281342372640
 								</a></li>
 							</ul>
 						</div>
@@ -702,17 +905,15 @@
 			</div>
 			<div class="row">
 				<div class="col d-flex justify-content-between align-item-center mt-5 mb-3">
-					<h4 class="text-light">IPFEST 2025</h4>
+					<h4 class="text-light">IPFEST 2026</h4>
 					<div class="d-flex align-item-center gap-3 text-light">
-						<a href="https://www.instagram.com/ipfest25/" class="text-white" target="_blank"><i class="bi bi-instagram"></i></a>
-						<a href="https://www.tiktok.com/@ipfest25" class="text-white" target="_blank"><i class="bi bi-tiktok"></i></a>
-						<a href="https://line.me/ti/p/~lht6899x " class="text-white" target="_blank"><i class="bi bi-line"></i></a>
-						<a href="https://www.linkedin.com/company/integrated-petroleum-festival/" class="text-white" target="_blank"><i class="bi bi-linkedin"></i></a>
+						<a href="https://www.instagram.com/ipfest2026?igsh=MTV5OGhwd3RscDdpcQ==" class="text-white" target="_blank"><i class="bi bi-instagram"></i></a>
+						<a href="https://www.tiktok.com/@ipfest26?_r=1&_t=ZS-91AljL5dbU4" class="text-white" target="_blank"><i class="bi bi-tiktok"></i></a>
 					</div>
 				</div>
 			</div>
 			<div class="row border-top border-light py-3">
-				<p class="text-light">Copyright © IPFEST 2025. All rights reserved</p>
+				<p class="text-light">Copyright © IPFEST 2026. All rights reserved</p>
 			</div>
 		</div>
 	</footer>
@@ -737,5 +938,6 @@
 	<script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
 	<script src="static/lib/lightbox/js/lightbox.min.js"></script>
 	<script src="static/js/main.js"></script>
+	<script src="dist/merchandise.bundle.js"></script>
 </body>
 </html>

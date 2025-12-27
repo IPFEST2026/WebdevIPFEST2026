@@ -197,15 +197,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handle klik kompetisi
   document.querySelectorAll(".card-compe").forEach(card => {
     card.addEventListener("click", () => {
-      document.querySelectorAll(".card-compe").forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
 
       const selectedCompetition = card.dataset.value;
-      compeInput.value = selectedCompetition;
 
+      // Disable Smart Competition
+      if (selectedCompetition === "smart competition") {
+        card.classList.add("disabled");
+        alert("Smart Competition registration is closed.");
+        return;
+      }
+
+      document.querySelectorAll(".card-compe").forEach(c => c.classList.remove('active'));
+
+      card.classList.add('active');
+
+      compeInput.value = selectedCompetition;
       leaderForm?.classList.remove("d-none");
       memberForm?.classList.remove("d-none");
       paymentForm?.classList.remove("d-none");
+
       if (agreementForm) agreementForm.closest('.col-12')?.classList.remove("d-none");
 
       generateTeamMemberOption(selectedCompetition, memberCount);

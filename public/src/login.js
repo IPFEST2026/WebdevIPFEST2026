@@ -1,5 +1,5 @@
 // ==== Import Firebase SDK ====
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
 import { AUTH, DB } from "./index.js";
 import { emailNotVerified, accountCreated, failedLogin } from "../static/js/alert.js";
 import { doc, getDoc } from "firebase/firestore";
@@ -44,6 +44,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const officialAccounts = [
         "officialdelegates.ipfest2026@gmail.com",
         "treasury.ipfest2026@gmail.com",
+        "entrepreneurship.ipfest2026@gmail.com",
         "event@ipfest2026.com",
         "podc.ipfest2026@gmail.com",
         "mic.ipfest2026@gmail.com",
@@ -56,10 +57,17 @@ window.addEventListener("DOMContentLoaded", () => {
         "sc.ipfest2026@gmail.com",
       ];
 
-      // Require verification for non-official accounts
+      // ==== RESEND EMAIL VERIFICATION IF USER IS NOT VERIFIED ====
       if (!officialAccounts.includes(user.email) && !user.emailVerified) {
-        emailNotVerified();
-        await signOut(AUTH);
+        try {
+          await sendEmailVerification(user);
+          console.log("Verification email resent to:", user.email);
+        } catch (err) {
+          console.error("Failed to resend verification email:", err);
+        }
+
+        emailNotVerified();   // your alert popup
+        await signOut(AUTH);  // keep user logged out until verified
         return;
       }
 
@@ -84,6 +92,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const redirectMap = {
         "officialdelegates.ipfest2026@gmail.com": "./dashboard/delegates-relation.html",
         "treasury.ipfest2026@gmail.com": "./dashboard/treasury.html",
+        "entrepreneurship.ipfest2026@gmail.com": "./dashboard/merchandise.html",
         "event@ipfest2026.com": "./dashboard/event.html",
         "podc.ipfest2026@gmail.com": "./dashboard/compe-manager.html",
         "mic.ipfest2026@gmail.com": "./dashboard/compe-manager.html",
@@ -114,7 +123,7 @@ window.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      console.log("Redirect: REGULAR delegate");
+      console.log("Redirect: Non Smart Competition delegate");
       window.location.href = "./dashboard/delegates.html";
 
     } catch (err) {
@@ -136,4 +145,20 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
   });
+
+  function registrationClosed() {
+    const closeTime = new Date("2026-12-13T00:00:00").getTime();
+    const now = Date.now();
+    return now >= closeTime;
+  }
+
+  document.querySelector("#registerLink").addEventListener("click", (e) => {
+    if (registrationClosed()) {
+      e.preventDefault(); 
+      alert("Registration is currently closed. Please contact the committee for more information.");
+      return;
+    }
+  });
+
+
 });

@@ -138,6 +138,9 @@ const Teams = collection(DB, 'Team')
 
 // Database Tab Section
 const delRelList = document.getElementById("delrel-team-list")
+const Submission_Status = collection(DB, 'Team')
+const submissionTablePrelim = document.getElementById("del-submission-list-prelim");
+const compeManagerPrivilage = document.getElementById("compe-manager-privilage");
 
 onSnapshot(Teams, (snap) => {
 	if (!switchCompetition) return
@@ -221,92 +224,120 @@ excelConvertBtn.addEventListener("click", () => {
     XLSX.writeFile(workbook, `${switchCompetition}_Delegates_DB.xlsx`)
 })
 
+// ===============================
+//   CREATE TABLE ROW BY REAL DATA
+// ===============================
 
-// Submission Section
-const Submission_Status = collection(DB, 'Team')
-const submissionTablePrelim = document.getElementById("del-submission-list-prelim");
-const compeManagerPrivilage = document.getElementById("compe-manager-privilage");
-
-// Prelim Submission
-function createPrelimSubmissionRow(table, teamId, rowNo, teamData) {
+function createPrelimSubmissionRow(table, teamId, rowNo, teamData, totalTeams) {
     const prelim = teamData.sub_preliminary || {};
     const submission = prelim.fileURL || null;
     const overdue = prelim.overdue !== undefined ? prelim.overdue : "Haven't Submitted";
     const status = prelim.status !== undefined ? prelim.status : false;
     const lastSubmit = prelim.submittedAt ? prelim.submittedAt.toDate() : null;
 
-    let URLSubmit = submission
-        ? `<a href="${submission}" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;" target="_blank">Download</a>`
-        : "No Data";
+    const finalStatus = prelim.final ?? null; 
+    const rankStatus = prelim.rank ?? null;
 
-    // Dropdown final status
-    let finalPassingStatus = `
-        <select class="compe-manager-confirm form-select text-black bg-opacity-25 bg-light">
-            <option value="0" ${prelim.final === undefined ? "selected" : ""}>Pending</option>
-            <option value="-1" ${prelim.final === false ? "selected" : ""}>Failed</option>
-            <option value="1" ${prelim.final === true ? "selected" : ""}>Passed</option>
-        </select>
+    const row = document.createElement("tr");
+    row.id = teamId;
+    row.className = "align-middle";
+
+    // --- CELL FINAL STATUS ---
+    const finalStatusCell = document.createElement("td");
+    const finalSelect = document.createElement("select");
+    let finalClass = "status-pending";
+    if (finalStatus === true) finalClass = "status-passed";
+    else if (finalStatus === false) finalClass = "status-failed";
+    
+    finalSelect.className = `form-select form-select-sm select-pill ${finalClass}`;
+    finalSelect.innerHTML = `
+        <option value="pending" ${finalStatus === null ? "selected" : ""}>🕒 Pending</option>
+        <option value="failed" ${finalStatus === false ? "selected" : ""}>✖ Failed</option>
+        <option value="passed" ${finalStatus === true ? "selected" : ""}>✔ Passed</option>
     `;
+    finalSelect.onchange = async (e) => {
+        const val = e.target.value;
+        const newStatus = val === "passed" ? true : (val === "failed" ? false : null);
+        await updateDoc(doc(DB, "Team", teamId), { "sub_preliminary.final": newStatus });
+    };
+    finalStatusCell.appendChild(finalSelect);
 
-    let row = document.createElement("tr");
-    row.setAttribute("id", teamId);
+    // --- CELL RANK ---
+    const rankCell = document.createElement("td");
+    const rankSelect = document.createElement("select");
+    rankSelect.className = `form-select form-select-sm select-pill ${rankStatus ? 'rank-pill' : 'status-pending'}`;
+    let rankOptions = `<option value="0">RANK</option>`;
+    for (let i = 1; i <= totalTeams; i++) {
+        rankOptions += `<option value="${i}" ${rankStatus === i ? "selected" : ""}>#${i}</option>`;
+    }
+    rankSelect.innerHTML = rankOptions;
+    rankSelect.onchange = async (e) => {
+        const val = e.target.value;
+        const newRank = val === "0" ? null : Number(val);
+        await updateDoc(doc(DB, "Team", teamId), { "sub_preliminary.rank": newRank });
+    };
+    rankCell.appendChild(rankSelect);
+
+    // --- RENDER ROW ---
+    const btnDownload = submission
+        ? `<a href="${submission}" target="_blank" class="btn-view-file">
+            <i class="bi bi-cloud-arrow-down-fill"></i> VIEW FILE
+        </a>`
+        : `<span class="badge-ipfest" style="background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;">
+            NO FILE
+        </span>`;
+
     row.innerHTML = `
-        <td>${rowNo}</td>
-        <td>${teamData.teamName || "No Name"}</td>
-        <td>${teamData.leader.university || "No Univ"}</td>
-        <td>${status && lastSubmit ? lastSubmit.toLocaleString() : "No Data"}</td>
-        <td>${status ? (overdue ? "On Time" : "Late") : "Haven't Submitted"}</td>
-        <td>${status ? URLSubmit : "Haven't Submitted"}</td>
-        <td>${finalPassingStatus}</td>
+        <td class="text-center fw-bold text-muted" style="font-size: 12px;">${rowNo}</td>
+        <td>
+            <div class="fw-bold" style="color: #4c1d95; font-size: 14px;">${teamData.teamName || "No Name"}</div>
+            <div class="text-muted" style="font-size: 10px;">${teamData.leader?.university || "-"}</div>
+        </td>
+        <td class="text-dark" style="font-size: 13px; line-height: 1.2;">
+            ${status && lastSubmit ? `
+                <div>${lastSubmit.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</div>
+                <div class="text-muted" style="font-size: 11px;">${lastSubmit.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+            ` : "-"}
+        </td>
+        <td class="text-center">
+            <span class="badge-ipfest ${overdue === "no" ? 'bg-success text-white' : (status ? 'bg-danger text-white' : 'bg-secondary text-white')}">
+                ${status ? (overdue === "no" ? "ON TIME" : "LATE") : "EMPTY"}
+            </span>
+        </td>
+        <td class="text-center">${btnDownload}</td>
     `;
+
+    row.appendChild(finalStatusCell);
+    row.appendChild(rankCell);
     table.append(row);
 }
 
-// =========================
-// Load data Teams & tampilkan tabel (sesuai competition)
-// =========================
+// ================================
+// LISTENER UTAMA (REAL-TIME)
+// ================================
 onSnapshot(collection(DB, "Team"), (snap) => {
     if (!switchCompetition) return;
 
     const activeCompetition = normalizeCompetition(switchCompetition);
+    
+    // Filter berdasarkan kompetisi yang dipilih
     const filteredTeams = snap.docs.filter(doc =>
         normalizeCompetition(doc.data().competition || '') === activeCompetition
     );
 
     submissionTablePrelim.innerHTML = '';
+    const totalCount = filteredTeams.length;
+
     filteredTeams.forEach((docSnap, index) => {
-        createPrelimSubmissionRow(submissionTablePrelim, docSnap.id, index + 1, docSnap.data());
+        createPrelimSubmissionRow(
+            submissionTablePrelim, 
+            docSnap.id, 
+            index + 1, 
+            docSnap.data(), 
+            totalCount
+        );
     });
-});
-
-
-// =========================
-// Event listener simpan final status
-// =========================
-compeManagerPrivilage.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const rows = submissionTablePrelim.querySelectorAll("tr");
-
-    for (let row of rows) {
-        const select = row.querySelector("select");
-		
-        const teamId = row.getAttribute("id");
-        const teamRef = doc(DB, "Team", teamId);
-
-        switch (select.value) {
-            case "1":
-                await updateDoc(teamRef, { "sub_preliminary.final": true });
-                break;
-            case "-1":
-                await updateDoc(teamRef, { "sub_preliminary.final": false });
-                break;
-            default:
-                await updateDoc(teamRef, { "sub_preliminary.final": deleteField() });
-                break;
-        }
-    }
-
-    setToastAlert("success", "Saving success!");
+    console.log(`[UI] Table updated with ${totalCount} teams`);
 });
 
 

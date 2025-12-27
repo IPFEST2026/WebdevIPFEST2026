@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc, serverTimestamp,collection, getDocs } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp,collection, getDocs, setDoc } from 'firebase/firestore'
 
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 
@@ -27,12 +27,16 @@ onAuthStateChanged(AUTH, async (user) => {
     let PrelimOverdue = (userData.prelim_overdue || null);
     let PrelimSubmittedAt = (userData.prelimSubmittedAt || null);
     let PrelimFileURL = (userData.prelimFileURL || null);
+    let finalPaymentStatus = (userData.finalPaymentStatus || null);
+    let finalstatus = (userData.finalstatus?? null);
 
 	loadPrelimCase(currentUserID, paymentStatus);
     setupGuidebook(userCompetition);
     setupEditSubmission(prelimStatus);
     submissionSummary(PrelimOverdue, PrelimSubmittedAt, PrelimFileURL);
     setupPrelimTab(paymentStatus);
+    setupFinalTab(finalPaymentStatus);
+    setupFinalRoundLink(finalstatus,currentUserID);
 });
 
 
@@ -147,6 +151,20 @@ async function fetchUserData() {
         const prelimSubmittedAt = prelimStatus && prelimStatus.submittedAt ? prelimStatus.submittedAt : null;
         const prelimFileURL = prelimStatus && prelimStatus.fileURL ? prelimStatus.fileURL : null;
 
+		const prelimRank = prelimStatus.rank ?? "-";
+		document.getElementById("Preliminary-Rank").textContent = prelimRank;
+
+        const finalstatus = prelimStatus.final ?? "-";
+
+        const finalData = data.final_reg || {};
+		const finalPaymentStatus = finalData.paymentStatus || null;
+
+        let finalStatusText = "Not Paid"; // default jika null
+		if (finalPaymentStatus === "pending") finalStatusText = "Pending";
+		else if (finalPaymentStatus === "down_payment_verified") finalStatusText = "Down Payment Verified";
+		else if (finalPaymentStatus === "verified") finalStatusText = "Verified";
+
+		document.getElementById("Final-Payment-Status").textContent = finalStatusText;
         return {
             competitionRaw: data.competition || null,
             paymentStatus: data.payment_status || null,
@@ -154,7 +172,9 @@ async function fetchUserData() {
             prelimstats : prelimStatus || null,
             prelim_overdue: prelim_overdue,
             prelimSubmittedAt: prelimSubmittedAt,
-            prelimFileURL: prelimFileURL
+            prelimFileURL: prelimFileURL,
+            finalPaymentStatus : finalPaymentStatus || null,
+            finalstatus : finalstatus?? null
         };
 
 
@@ -690,9 +710,811 @@ function submissionSummary (PrelimOverdue, PrelimSubmittedAt, PrelimFileURL) {
     }
 }
 
+// =====================================
+// FINAL TAB ACCESS CONTROL
+// =====================================
+console.log("SCRIPT LOADED");
+
+
+// =====================================
+// FINAL ROUND LINK SETUP (FIXED BOOLEAN LOGIC)
+// =====================================
+async function setupFinalRoundLink(finalStatusRaw, currentUserID) {
+    // 1. Ambil Elemen
+    let finalLink = document.getElementById("Final-Round-Registration");
+    const rankDisplay = document.getElementById("Preliminary-Rank"); // Elemen Rank di Card 1
+    const paymentDisplay = document.getElementById("Final-Payment-Status"); // Elemen Payment di Card 3
+
+    if (!finalLink) return;
+
+    // 2. Reset Listener (Clone Node untuk hapus event lama agar tidak menumpuk)
+    finalLink.replaceWith(finalLink.cloneNode(true));
+    finalLink = document.getElementById("Final-Round-Registration"); 
+
+    // -----------------------------------------------------------
+    // LOGIKA BARU SESUAI DATABASE (BOOLEAN)
+    // finalStatusRaw: true (Lolos), false (Gagal), null/"-" (Pending)
+    // -----------------------------------------------------------
+
+    if (finalStatusRaw === true) {
+        // ============================
+        // SKENARIO 1: LOLOS (PASSED) -> Tampilkan Tombol Regist
+        // ============================
+        
+        finalLink.textContent = "Regist";
+        finalLink.style.pointerEvents = "auto";
+        finalLink.style.opacity = "1";
+        
+        // Reset style tombol ke default CSS (jika sebelumnya diubah jadi abu-abu)
+        finalLink.style.backgroundColor = ""; 
+        finalLink.style.borderColor = "";
+        finalLink.style.color = "";
+        finalLink.removeAttribute("href"); // Pastikan tidak ada href aneh
+
+        // Event Klik: Buka Modal Pembayaran
+        finalLink.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            const docRef = doc(DB, "Team", currentUserID);
+            const snap = await getDoc(docRef);
+
+            if (!snap.exists()) {
+                alert("Team data not found.");
+                return;
+            }
+
+            const teamData = snap.data();
+            generateFinalModal(teamData); // Fungsi generate modal Anda
+
+            const finalModal = new bootstrap.Modal(document.getElementById("finalPaymentModal"));
+            finalModal.show();
+        });
+
+    } else if (finalStatusRaw === false) {
+        // ============================
+        // SKENARIO 2: TIDAK LOLOS -> TOMBOL PESAN SEMANGAT
+        // ============================
+
+        // A. RANK (Biarkan normal/putih, jangan merah)
+        if (rankDisplay) {
+            rankDisplay.style.color = ""; 
+            rankDisplay.style.textShadow = "";
+        }
+
+        // B. UBAH TOMBOL JADI "SURAT CINTA"
+        finalLink.textContent = "A Message For You"; 
+        
+        // Aktifkan klik (PENTING)
+        finalLink.style.pointerEvents = "auto"; 
+        finalLink.style.cursor = "pointer";
+
+        // Style tombol: Outline putih transparan (elegan & rendah hati)
+        finalLink.style.backgroundColor = "transparent"; 
+        finalLink.style.borderColor = "rgba(255, 255, 255, 0.6)";
+        finalLink.style.color = "#ffffff"; 
+        finalLink.style.opacity = "1"; 
+        finalLink.style.boxShadow = "none";
+        finalLink.removeAttribute("href");
+
+        // C. EVENT LISTENER: BUKA MODAL SEMANGAT
+        finalLink.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            // Kita ambil nama tim dulu biar personal
+            const docRef = doc(DB, "Team", currentUserID);
+            const snap = await getDoc(docRef);
+            const teamName = snap.exists() ? snap.data().teamName : "Champion";
+
+            // Generate isi modal semangat
+            generateEncouragementModal(teamName);
+
+            // Tampilkan modal yang sama (finalPaymentModal)
+            const finalModal = new bootstrap.Modal(document.getElementById("finalPaymentModal"));
+            finalModal.show();
+        });
+
+        // D. Kosongkan Status Payment
+        if (paymentDisplay) {
+            paymentDisplay.textContent = "-";
+            
+            // Opsional: Bikin agak samar biar user tidak fokus ke situ
+            paymentDisplay.style.opacity = "0.5"; 
+        }
+        
+    } else {
+        // ============================
+        // SKENARIO 3: PENDING (null atau "-") -> Tampilan Default
+        // ============================
+        
+        finalLink.textContent = "Pending";
+        finalLink.style.pointerEvents = "none";
+        finalLink.style.opacity = "0.5";
+        
+        // Pastikan rank tetap menampilkan strip atau nilai aslinya jika pending
+        if (rankDisplay && rankDisplay.textContent === "NOT PASSED") {
+             rankDisplay.textContent = "Pending";
+             rankDisplay.style.color = ""; // Reset warna
+        }
+
+        paymentDisplay.textContent = "Pending";
+    }
+}
+
+// =====================================
+// GENERATE MODAL SEMANGAT (HTML)
+// =====================================
+function generateEncouragementModal(teamName) {
+    const wrapper = document.getElementById("final-payment-wrapper");
+
+    // HTML Pesan Semangat
+    wrapper.innerHTML = `
+        <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold text-secondary">A Message from Committee</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body text-center p-5">
+            <div class="mb-4" style="font-size: 4rem;">
+                ✨
+            </div>
+
+            <h2 class="fw-bold mb-3" style="color: #671c84;">Dear ${teamName},</h2>
+            
+            <p class="lead text-muted mb-4">
+                Thank you for being a part of this incredible journey. 
+                We have reviewed your submission, and although you did not proceed to the final round this time, 
+                your effort and dedication truly stood out.
+            </p>
+
+            <div class="card bg-light border-0 p-3 mb-4 text-start">
+                <p class="mb-0 fst-italic text-secondary">
+                    "Success is not final, failure is not fatal: it is the courage to continue that counts."
+                    <br><span class="fw-bold">— Winston Churchill</span>
+                </p>
+            </div>
+
+            <p class="text-secondary">
+                Please don't let this stop you. Keep learning, keep growing, and we hope to see you shine even brighter next year!
+            </p>
+        </div>
+
+        <div class="modal-footer border-0 justify-content-center">
+            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+    `;
+}
+
+
+function generateFinalModal(teamData) {
+    const wrapper = document.getElementById("final-payment-wrapper");
+
+    // Cegah overwrite kalau sudah ada isi
+    if (wrapper.innerHTML.trim() !== "") return;
+
+    // Leader info
+    const leaderfirstname = teamData.leader.firstName;
+    const leaderlastname = teamData.leader.lastName;
+
+    // Generate form member
+    // Generate form member
+    let memberFormsHTML = "";
+    if (teamData.members && teamData.members.length > 0) {
+        teamData.members.forEach((member, i) => {
+            memberFormsHTML += `
+                <div class="member-final-pay-form mt-3 p-3 border rounded">
+                    <h5 class="text-secondary" id="member-name-${i}">${member.firstName} ${member.lastName}</h5>
+
+                    <!-- Price & Payment Info -->
+                    <span class="fw-bold d-block mt-2" id="member-price-${i}">Price</span>
+                    <div id="member-payment-method-info-${i}" class="mt-2"></div>
+
+                    <!-- Row 1: Upload payment proof -->
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="form-label" for="member-payment-submit-${i}">Upload payment proof</label>
+                            <input type="file" class="form-control" id="member-payment-submit-${i}" name="member-payment-submit-${i}">
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Hospitality -->
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="form-label" for="member-hospitality-type-${i}">Hospitality</label>
+                            <select class="form-select" id="member-hospitality-type-${i}" name="member-hospitality-type-${i}" required>
+                                <option value="Full Hospitality">Full Hospitality</option>
+                                <option value="Excluding Accommodation">Excluding Accommodation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Payment method -->
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="form-label" for="member-payment-method-${i}">Payment Method</label>
+                            <select class="form-select" id="member-payment-method-${i}" name="member-payment-method-${i}" required>
+                                <option value="Gopay">Gopay</option>
+                                <option value="Bank BCA">Bank BCA</option>
+                                <option value="Paypal">Paypal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
 
 
 
+    wrapper.innerHTML = `
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold text-primary" style="color:#671c84">Final Round Registration</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+            <div id="del-final-status"></div>
+            <div id="del-payment-status"></div>
+
+            <div id="del-final-payment" class="p-3">
+                <form id="final-payment-upload">
+                    <div id="leader-final-pay-form" class="p-3 border rounded mb-3">
+                        <h5 class="text-secondary">${leaderfirstname+" "+leaderlastname}</h5>
+                        <span id="final-payment-price" class="fw-bold d-block mt-2">Price</span>
+                        <div id="final-payment-method-info" class="mt-2"></div>
+                        <div class="row">
+                            <div class="col-md-6 col-12">
+                                <label for="final-leader-payment-submit" class="form-label">Upload payment proof</label>
+                                <input type="file" id="final-leader-payment-submit" name="final-leader-payment-submit" class="form-control">
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <label for="leader-hospitality-type" class="form-label">Hospitality:</label>
+                                <select id="leader-hospitality-type" name="leader-hospitality-type" class="form-select" required>
+                                    <option value="Full Hospitality">Full Hospitality</option>
+                                    <option value="Excluding Accommodation">Excluding Accommodation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-4 col-12">
+                                <label for="leader-payment-type" class="form-label">Payment Scheme:</label>
+                                <select id="leader-payment-type" name="leader-payment-type" class="form-select" required>
+                                    <option value="Full">Full Payment</option>
+                                    <option value="DP" selected>Down Payment</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label for="leader-payment-method" class="form-label">Payment Method:</label>
+                                <select id="leader-payment-method" name="leader-payment-method" class="form-select" required>
+                                    <option value="Gopay">Gopay</option>
+                                    <option value="Bank BCA">Bank BCA</option>
+                                    <option value="Paypal">Paypal</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-12" id="down-payment-category-col">
+                                <label for="leader-down-payment-category" class="form-label">Category:</label>
+                                <select id="leader-down-payment-category" name="leader-down-payment-category" class="form-select">
+                                    <option value="First">First Payment</option>
+                                    <option value="Last">Last Payment</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Member Forms -->
+                    ${memberFormsHTML}
+
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="final-rules-check" required>
+                        <label class="form-check-label" for="final-rules-check">
+                            We have read the 
+                            <a href="https://drive.google.com/file/d/1D-Yj2-X-7yXGZNcrtEVnxp4ztn8v52CG/view?usp=sharing" target="_blank" class="link-secondary" style="text-decoration: underline;">Finalist Payment Rules</a>.
+                        </label>
+                        <div class="invalid-feedback">You must agree before submitting.</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button id="final-payment-submit-btn" type="submit" form="final-payment-upload" class="btn btn-primary">Submit</button>
+        </div>
+    `;
+    // Ambil elemen
+    const paymentTypeSelect = document.getElementById("leader-payment-type");
+    const downPaymentCategoryCol = document.getElementById("down-payment-category-col");
+    const downPaymentCategorySelect = document.getElementById("leader-down-payment-category");
+
+    // Fungsi untuk toggle visibility dan set default
+    function updateCategoryVisibility() {
+        if (paymentTypeSelect.value === "DP") {
+            downPaymentCategoryCol.style.display = "block"; // muncul
+            downPaymentCategorySelect.disabled = false;
+            downPaymentCategorySelect.value = "First"; // default First Payment
+        } else {
+            downPaymentCategoryCol.style.display = "none"; // sembunyi
+            downPaymentCategorySelect.disabled = true;
+        }
+    }
+
+    // Event listener
+    paymentTypeSelect.addEventListener("change", updateCategoryVisibility);
+    updateCategoryVisibility(); // panggil sekali untuk inisialisasi
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            initFinalPaymentBindings(teamData);
+
+            const finalPaymentSubmitBtn = document.getElementById("final-payment-submit-btn");
+
+            if (!finalPaymentSubmitBtn) {
+                console.warn("Submit button not found, modal might not be generated yet.");
+                return;
+            }
+
+            finalPaymentSubmitBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+
+                // 1. VALIDASI CHECKBOX (Rules Agreement)
+                const checkboxRead = document.getElementById("final-rules-check");
+                    
+                if (!checkboxRead || !checkboxRead.checked) {
+                    alert("⚠️ Please read and check the Finalist Payment Rules agreement.");
+                    checkboxRead.focus();
+                    return;
+                }
+
+                // 2. VALIDASI LEADER
+                const leaderFileInput = document.getElementById("final-leader-payment-submit");
+                if (!leaderFileInput || leaderFileInput.files.length === 0) {
+                    alert("⚠️ Leader must upload payment proof first.");
+                    leaderFileInput.focus();
+                    return;
+                }
+
+                // 3. VALIDASI MEMBER
+                if (teamData.members && teamData.members.length > 0) {
+                    for (let i = 0; i < teamData.members.length; i++) {
+                        const memberFileInput = document.getElementById(`member-payment-submit-${i}`);
+                        if (!memberFileInput || memberFileInput.files.length === 0) {
+                            alert(`⚠️ ${teamData.members[i].firstName} must upload payment proof.`);
+                            memberFileInput.focus();
+                            return;
+                        }
+                    }
+                }
+
+                // --- PROSES SUBMIT ---
+                const originalText = finalPaymentSubmitBtn.innerText;
+                finalPaymentSubmitBtn.innerText = "Processing...";
+                finalPaymentSubmitBtn.disabled = true;
+
+                try {
+                    const formData = collectFinalFormData(teamData);
+                    await submitFinalRegistration(currentUserID, formData, teamData);
+                    
+                    alert("Payment submitted! Great job on making it this far. See you at the Final Round, Champions! 🚀");
+                    
+                    window.location.reload(); 
+                } catch (err) {
+                    console.error(err);
+                    alert("Failed to save data! Please check your connection.");
+                    finalPaymentSubmitBtn.innerText = originalText;
+                    finalPaymentSubmitBtn.disabled = false;
+                }
+            });
+        });
+    } else {
+        initFinalPaymentBindings(teamData);
+
+        const finalPaymentSubmitBtn = document.getElementById("final-payment-submit-btn");
+
+        if (!finalPaymentSubmitBtn) {
+            console.warn("Submit button not found, modal might not be generated yet.");
+            return;
+        }
+
+        finalPaymentSubmitBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            // 1. VALIDASI CHECKBOX (Rules Agreement)
+            const checkboxRead = document.getElementById("final-rules-check");
+                
+            if (!checkboxRead || !checkboxRead.checked) {
+                alert("⚠️ Please read and check the Finalist Payment Rules agreement.");
+                checkboxRead.focus();
+                return;
+            }
+
+            // 2. VALIDASI LEADER
+            const leaderFileInput = document.getElementById("final-leader-payment-submit");
+            if (!leaderFileInput || leaderFileInput.files.length === 0) {
+                alert("⚠️ Leader must upload payment proof first.");
+                leaderFileInput.focus();
+                return;
+            }
+
+            // 3. VALIDASI MEMBER
+            if (teamData.members && teamData.members.length > 0) {
+                for (let i = 0; i < teamData.members.length; i++) {
+                    const memberFileInput = document.getElementById(`member-payment-submit-${i}`);
+                    if (!memberFileInput || memberFileInput.files.length === 0) {
+                        alert(`⚠️ ${teamData.members[i].firstName} must upload payment proof.`);
+                        memberFileInput.focus();
+                        return;
+                    }
+                }
+            }
+
+            // --- PROSES SUBMIT ---
+            const originalText = finalPaymentSubmitBtn.innerText;
+            finalPaymentSubmitBtn.innerText = "Processing...";
+            finalPaymentSubmitBtn.disabled = true;
+
+            try {
+                const formData = collectFinalFormData(teamData);
+                await submitFinalRegistration(currentUserID, formData, teamData);
+                
+                alert("Payment submitted! Great job on making it this far. See you at the Final Round, Champions! 🚀");
+                
+                window.location.reload(); 
+            } catch (err) {
+                console.error(err);
+                alert("Failed to save data! Please check your connection.");
+                finalPaymentSubmitBtn.innerText = originalText;
+                finalPaymentSubmitBtn.disabled = false;
+            }
+        });
+
+
+
+    }
+}
+
+// PRICE TABLE
+const PRICE_TABLE = {
+    "Full Hospitality": {
+        Full: {
+            "Bank BCA": 700000,
+            "Gopay": 700000,
+            "Paypal": 700000 / 16000
+        },
+        DP: {
+            First: {
+                "Bank BCA": 400000,
+                "Gopay": 400000,
+                "Paypal": 400000 / 16000
+            },
+            Last: {
+                "Bank BCA": 300000,
+                "Gopay": 300000,
+                "Paypal": 300000 / 16000
+            }
+        }
+    },
+    "Excluding Accommodation": {
+        Full: {
+            "Bank BCA": 450000,
+            "Gopay": 450000,
+            "Paypal": 450000 / 16000
+        },
+        DP: {
+            First: {
+                "Bank BCA": 300000,
+                "Gopay": 300000,
+                "Paypal": 300000 / 16000
+            },
+            Last: {
+                "Bank BCA": 150000,
+                "Gopay": 150000,
+                "Paypal": 150000 / 16000
+            }
+        }
+    }
+};
+
+
+function initFinalPaymentBindings(teamData) {
+    console.log("initFinalPaymentBindings: running");
+
+    const leaderHospitality = document.getElementById("leader-hospitality-type");
+    const leaderPaymentScheme = document.getElementById("leader-payment-type");
+    const leaderPaymentMethod = document.getElementById("leader-payment-method");
+    const leaderCategory = document.getElementById("leader-down-payment-category");
+    const leaderPriceSpan = document.getElementById("final-payment-price");
+    const leaderInfoBox = document.getElementById("final-payment-method-info");
+
+    // Ambil harga sesuai tabel, tanpa konversi Paypal tambahan
+    function getPrice(hosp, scheme, method, category = null) {
+        if (scheme === "Full") {
+            return PRICE_TABLE[hosp].Full[method];
+        } else { // DP
+            return PRICE_TABLE[hosp].DP[category][method];
+        }
+    }
+
+    function updatePaymentMethodInfo(infoBox, method) {
+        switch (method) {
+            case "Bank BCA":
+                infoBox.innerHTML = `<p class="mt-2"><strong>BCA</strong> — 2650508800 (Mochammad Rafly Ghazany A)</p>`;
+                break;
+            case "Gopay":
+                infoBox.innerHTML = `<p class="mt-2">085655226900 (Rafly Ghazany)</p>`;
+                break;
+            case "Paypal":
+                infoBox.innerHTML = `<p class="mt-2"><a href="https://www.paypal.me/RaflyGhazany" target="_blank">paypal.me/RaflyGhazany</a></p>`;
+                break;
+            default:
+                infoBox.innerHTML = "";
+        }
+    }
+
+    function updateLeaderPrice() {
+        const hosp = leaderHospitality.value;
+        const scheme = leaderPaymentScheme.value;
+        const method = leaderPaymentMethod.value;
+        const category = leaderCategory.value;
+
+        const price = getPrice(hosp, scheme, method, category);
+        leaderPriceSpan.textContent = method === "Paypal" 
+            ? `$${price.toFixed(2)}` 
+            : `IDR ${price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        updatePaymentMethodInfo(leaderInfoBox, method);
+    }
+
+    leaderHospitality.addEventListener("change", updateLeaderPrice);
+    leaderPaymentScheme.addEventListener("change", updateLeaderPrice);
+    leaderPaymentMethod.addEventListener("change", updateLeaderPrice);
+    leaderCategory.addEventListener("change", updateLeaderPrice);
+
+    updateLeaderPrice(); // inisialisasi leader
+
+    // --- Member bindings ---
+    if (teamData.members && teamData.members.length > 0) {
+        teamData.members.forEach((member, i) => {
+            const hosp = document.getElementById(`member-hospitality-type-${i}`);
+            const method = document.getElementById(`member-payment-method-${i}`);
+            const priceSpan = document.getElementById(`member-price-${i}`);
+            const infoBox = document.getElementById(`member-payment-method-info-${i}`);
+
+            function updateMemberPrice() {
+                const hospVal = hosp.value;
+                const methodVal = method.value;
+                const scheme = leaderPaymentScheme.value;
+                const category = leaderCategory.value;
+
+                const price = getPrice(hospVal, scheme, methodVal, category);
+                priceSpan.textContent = methodVal === "Paypal" 
+                    ? `$${price.toFixed(2)}` 
+                    : `IDR ${price.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+
+                updatePaymentMethodInfo(infoBox, methodVal);
+            }
+
+            hosp.addEventListener("change", updateMemberPrice);
+            method.addEventListener("change", updateMemberPrice);
+            leaderPaymentScheme.addEventListener("change", updateMemberPrice);
+            leaderCategory.addEventListener("change", updateMemberPrice);
+
+            updateMemberPrice();
+        });
+    }
+}
+
+function collectFinalFormData(teamData) {
+    const leaderPaymentType = document.getElementById("leader-payment-type").value;
+    const leaderPaymentCategory = document.getElementById("leader-down-payment-category").value;
+    const leaderPaymentMethod = document.getElementById("leader-payment-method").value;
+    const leaderHospitality = document.getElementById("leader-hospitality-type").value;
+    const leaderFile = document.getElementById("final-leader-payment-submit").files[0];
+
+    const membersData = [];
+
+    if (teamData.members && teamData.members.length > 0) {
+        teamData.members.forEach((member, i) => {
+            const fileInput = document.getElementById(`member-payment-submit-${i}`);
+            const hospitalityInput = document.getElementById(`member-hospitality-type-${i}`);
+            const methodInput = document.getElementById(`member-payment-method-${i}`);
+
+            membersData.push({
+                hospitality: hospitalityInput.value,
+                paymentMethod: methodInput.value,
+                file: fileInput.files[0] || null,
+            });
+        });
+    }
+
+    return {
+        leader: {
+            hospitality: leaderHospitality,
+            paymentMethod: leaderPaymentMethod,
+            file: leaderFile,
+        },
+
+        members: membersData,
+
+        // digunakan untuk determinasi CASE di submitFinalRegistration()
+        paymentScheme: leaderPaymentType,
+        dpCategory: leaderPaymentCategory,
+    };
+}
+
+
+async function submitFinalRegistration(currentUID, formData, teamData) {
+    const teamRef = doc(DB, "Team", currentUID);
+    const snap = await getDoc(teamRef);
+    const timeStamp = Date.now();
+
+    // ==============================
+    // UPLOAD LEADER FILE
+    // ==============================
+    let leaderURL = null;
+    if (formData.leader.file) {
+        const leaderPath = `finalreg_submissions/${currentUID}/leader_${timeStamp}`;
+        const leaderRef = ref(STORAGE, leaderPath);
+        const uploadLeader = await uploadBytes(leaderRef, formData.leader.file);
+        leaderURL = await getDownloadURL(uploadLeader.ref);
+    }
+
+    // ==============================
+    // UPLOAD MEMBER FILES
+    // ==============================
+    const memberPaymentURLs = [];
+    for (let i = 0; i < formData.members.length; i++) {
+        const mem = formData.members[i];
+
+        if (!mem.file) {
+            memberPaymentURLs.push(null);
+            continue;
+        }
+
+        const memPath = `finalreg_submissions/${currentUID}/member_${i}_${timeStamp}`;
+        const memRef = ref(STORAGE, memPath);
+        const memSnap = await uploadBytes(memRef, mem.file);
+        const memURL = await getDownloadURL(memSnap.ref);
+        memberPaymentURLs.push(memURL);
+    }
+
+    const existing = snap.exists() ? snap.data().final_reg : null;
+
+    // ======================================================
+    // CASE 1: BELUM ADA FINAL REG
+    // ======================================================
+    if (!existing) {
+        return updateDoc(teamRef, {
+            final_reg: {
+                leader: {
+                    hospitality: formData.leader.hospitality,
+                    paymentMethod: formData.leader.paymentMethod,
+                    paymentProof: leaderURL || "-",
+                    lastPayment: "-",           // <── khusus leader
+                },
+
+                members: formData.members.map((m, i) => ({
+                    hospitality: m.hospitality,
+                    paymentMethod: m.paymentMethod,
+                    paymentProof: memberPaymentURLs[i] || "-",
+                    lastPayment: "-",           // <── khusus member
+                })),
+
+                paymentScheme: formData.paymentScheme,
+                dpCategory: formData.dpCategory ?? "-",
+                createdAt: serverTimestamp(),
+                paymentStatus: "pending"
+            }
+        });
+    }
+
+    // ======================================================
+    // CASE 2: FULL PAYMENT — overwrite semua
+    // ======================================================
+    if (formData.paymentScheme === "Full") {
+        return updateDoc(teamRef, {
+            final_reg: {
+                leader: {
+                    hospitality: formData.leader.hospitality,
+                    paymentMethod: formData.leader.paymentMethod,
+                    paymentProof: leaderURL || "-",
+                    lastPayment: "-", // reset
+                },
+
+                members: formData.members.map((m, i) => ({
+                    hospitality: m.hospitality,
+                    paymentMethod: m.paymentMethod,
+                    paymentProof: memberPaymentURLs[i] || "-",
+                    lastPayment: "-", // reset
+                })),
+
+                paymentScheme: "Full",
+                dpCategory: "-",
+                updatedAt: serverTimestamp(),
+                paymentStatus : "pending"
+            }
+        });
+    }
+
+    // ======================================================
+    // CASE 3: DP LAST PAYMENT — SELURUH TIM SUBMIT SEKALIGUS
+    // ======================================================
+    if (formData.paymentScheme === "DP" && formData.dpCategory === "Last") {
+        const updatedMembers = existing.members.map((member, i) => {
+            return {
+                ...member,
+                lastPayment: memberPaymentURLs[i] || member.lastPayment || "-"
+            };
+        });
+        const updatedLeader = {
+            ...existing.leader,
+            lastPayment: leaderURL || existing.leader.lastPayment || "-"
+        };
+        return updateDoc(teamRef, {
+            "final_reg.leader": updatedLeader,
+            "final_reg.members": updatedMembers,  
+            "final_reg.dpCategory": "Last",
+            "final_reg.lastPaymentAt": serverTimestamp(),
+            "final_reg.paymentStatus": "pending"
+        });
+    }
+
+
+    // ======================================================
+    // CASE 4: DP FIRST PAYMENT OVERWRITE (kecuali lastPayment)
+    // ======================================================
+    if (formData.paymentScheme === "DP" && formData.dpCategory === "First") {
+        return updateDoc(teamRef, {
+            final_reg: {
+                leader: {
+                    hospitality: formData.leader.hospitality,
+                    paymentMethod: formData.leader.paymentMethod,
+                    paymentProof: leaderURL || existing?.leader?.paymentProof || "-",
+                    lastPayment: existing?.leader?.lastPayment ?? "-", // pertahankan
+                },
+
+                members: formData.members.map((m, i) => ({
+                    hospitality: m.hospitality,
+                    paymentMethod: m.paymentMethod,
+                    paymentProof: memberPaymentURLs[i] || existing?.members?.[i]?.paymentProof || "-",
+                    lastPayment: existing?.members?.[i]?.lastPayment ?? "-", // pertahankan
+                })),
+
+                paymentScheme: "DP",
+                dpCategory: "First",
+                updatedAt: serverTimestamp(),
+                paymentStatus : "pending"
+            }
+        });
+    }
+
+    console.warn("No case matched, check formData.");
+}
+
+
+
+
+function setupFinalTab(finalStatus) {
+    const finalTab = document.getElementById("nav-contact-tab");
+
+    if (!finalTab) return;
+
+    // Hanya enable tab jika status "verified" atau "down_payment_verified"
+    if (finalStatus === "verified" || finalStatus === "down_payment_verified") {
+        finalTab.style.pointerEvents = "auto";
+        finalTab.style.opacity = "1";
+        finalTab.style.cursor = "pointer";
+    } else {
+        // Disable tab untuk status lain
+        finalTab.style.pointerEvents = "none";
+        finalTab.style.opacity = "0.5";
+        finalTab.style.cursor = "not-allowed";
+
+        finalTab.addEventListener("click", function (e) {
+            e.preventDefault();
+            alert("⚠️ Your final payment is not verified yet.");
+        });
+    }
+}
 
 
 
