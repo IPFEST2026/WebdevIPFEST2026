@@ -225,6 +225,16 @@ let deleteFileBtnPrem = null;
 let delegateSubmissionSummary = null;
 let editFileBtnPrem = null;
 let delCasePrelimLink = null;
+let finalForm = null;
+let finalSubmitBtn = null;
+let finalFileInput = null;
+let deleteFileBtnFinal = null;
+let uploadProgressContainer = null;
+let uploadProgress = null;
+let uploadStatus = null;
+let currentUploadedSize = null;
+let totalUploadSize = null;
+let cancelFileUpload = null;
 
 // central init to run when DOM is ready
 function initDomBindings() {
@@ -253,6 +263,180 @@ function initDomBindings() {
     if (deleteFileBtnPrem && premFileInput) {
         deleteFileBtnPrem.addEventListener("click", () => {
             premFileInput.value = "";
+        });
+    }
+
+    // final form bindings
+    finalForm = document.getElementById("final-form");
+    finalSubmitBtn = document.getElementById("final-submit-btn");
+    finalFileInput = finalForm ? finalForm.querySelector("input[name='final-submit']") : null;
+    deleteFileBtnFinal = document.getElementById("delete-file-final");
+    uploadProgressContainer = document.getElementById("upload-progress-container");
+    uploadProgress = document.getElementById("upload-progress");
+    uploadStatus = document.getElementById("upload-status");
+    currentUploadedSize = document.getElementById("current-uploaded-size");
+    totalUploadSize = document.getElementById("total-size");
+    cancelFileUpload = document.getElementById("cancel-file-upload");
+
+    if (deleteFileBtnFinal && finalFileInput) {
+        deleteFileBtnFinal.addEventListener("click", () => { finalFileInput.value = ""; });
+    }
+
+    if (finalForm) {
+        finalForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (!finalSubmitBtn || finalSubmitBtn.disabled) return;
+
+            if (!finalForm.checkValidity()) {
+                alert("Please fill the form correctly!");
+                return;
+            }
+
+            if (!currentUserID) {
+                alert("User not authenticated");
+                return;
+            }
+
+            try {
+                let teamRef = doc(DB, "Team", currentUserID);
+                let teamSnap = await getDoc(teamRef);
+                if (!teamSnap.exists()) {
+                    console.warn('Team doc by UID not found, attempting fallback search by user email');
+                    const firebaseUser = AUTH.currentUser;
+                    const userEmail = firebaseUser?.email || null;
+                    if (!userEmail) {
+                        alert('Team data not found (no email available). Please contact support.');
+                        return;
+                    }
+
+                    // Fallback: search Team collection for matching leader or member email
+                    const allTeamsSnap = await getDocs(collection(DB, 'Team'));
+                    let found = null;
+                    allTeamsSnap.forEach(d => {
+                        const data = d.data();
+                        if (!data) return;
+                        const leaderEmail = data.leader?.email?.toLowerCase();
+                        if (leaderEmail === userEmail.toLowerCase()) {
+                            found = { id: d.id, data };
+                            return;
+                        }
+                        const members = data.members || [];
+                        for (let m of members) {
+                            if (m.email && m.email.toLowerCase() === userEmail.toLowerCase()) {
+                                found = { id: d.id, data };
+                                return;
+                            }
+                        }
+                    });
+
+                    if (!found) {
+                        alert('Team data not found. Please contact committee.');
+                        return;
+                    }
+
+                    teamRef = doc(DB, 'Team', found.id);
+                    teamSnap = await getDoc(teamRef);
+                    console.log('Fallback found team doc:', found.id);
+                }
+
+                const existingFinal = teamSnap.data().sub_final;
+                if (existingFinal && existingFinal.status === true) {
+                    alert("⚠️ Submission can only be done once!");
+                    return;
+                }
+
+                const file = finalFileInput?.files[0];
+                if (!file) {
+                    alert("Please select a file to submit.");
+                    return;
+                }
+
+                // Enforce .zip only
+                const isZip = file.name && file.name.toLowerCase().endsWith('.zip');
+                if (!isZip) {
+                    alert('Please upload a .zip file only.');
+                    return;
+                }
+
+                // show progress UI
+                if (uploadProgressContainer) uploadProgressContainer.classList.remove('d-none');
+                finalSubmitBtn.disabled = true;
+
+                const timeStamp = Date.now();
+                const uploadPath = `final_submissions/${currentUserID}/${timeStamp}_${file.name}`;
+                const uploadRef = ref(STORAGE, uploadPath);
+                const uploadTask = uploadBytesResumable(uploadRef, file);
+
+                const cancelUpload = () => {
+                    try { uploadTask.cancel(); } catch (err) {}
+                    finalSubmitBtn.disabled = false;
+                    if (uploadProgressContainer) uploadProgressContainer.classList.add('d-none');
+                };
+
+                if (cancelFileUpload) cancelFileUpload.addEventListener('click', cancelUpload, { once: true });
+
+                uploadTask.on('state_changed', (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    showProgressUI(progress, uploadProgress, currentUploadedSize, totalUploadSize, snapshot.totalBytes);
+                }, (err) => {
+                    console.error('Upload error:', err);
+                    let userMsg = 'Upload failed. Please try again.';
+                    if (err && err.code) {
+                        switch (err.code) {
+                            case 'storage/unauthorized':
+                                userMsg = 'Upload failed: permission denied. Please check Firebase storage rules.';
+                                break;
+                            case 'storage/canceled':
+                                userMsg = 'Upload canceled.';
+                                break;
+                            case 'storage/quota-exceeded':
+                                userMsg = 'Upload failed: storage quota exceeded.';
+                                break;
+                            case 'storage/retry-limit-exceeded':
+                                userMsg = 'Upload failed due to network timeout. Please try again on a stable connection.';
+                                break;
+                            case 'storage/unknown':
+                            default:
+                                userMsg = `Upload failed (${err.code}): ${err.message || 'Unknown error'}`;
+                                break;
+                        }
+                    } else if (err && err.message) {
+                        userMsg = `Upload failed: ${err.message}`;
+                    }
+
+                    alert(userMsg);
+                    cancelUpload();
+                }, async () => {
+                    try {
+                        const url = await getDownloadURL(uploadTask.snapshot.ref);
+                        // simple overdue check (can be customized per competition)
+                        const overdue = Date.now() > new Date('Feb 5, 2026 00:00:00').getTime() ? 'yes' : 'no';
+                        await updateDoc(teamRef, {
+                            sub_final: {
+                                fileURL: url,
+                                submittedAt: serverTimestamp(),
+                                status: true,
+                                overdue: overdue
+                            }
+                        });
+                        alert('✅ Submission successful — thank you!');
+                        location.reload();
+                    } catch (err) {
+                        console.error(err);
+                        alert('Failed saving submission. Please contact committee.');
+                        finalSubmitBtn.disabled = false;
+                    } finally {
+                        if (uploadProgressContainer) uploadProgressContainer.classList.add('d-none');
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred. Please try again.');
+                if (finalSubmitBtn) finalSubmitBtn.disabled = false;
+                if (uploadProgressContainer) uploadProgressContainer.classList.add('d-none');
+            }
         });
     }
 
