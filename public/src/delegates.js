@@ -523,6 +523,32 @@ export async function loadPrelimCase(currentUserID) {
             delCasePrelimLink.style.color = "#0dcaf0";
 
             console.log("📎 Case link assigned:", matchedCase.prelim_case_link);
+
+            // --- FINAL CASE LINK ---
+            try {
+                const delCaseFinalLink = document.getElementById("del-case-final-download");
+                if (delCaseFinalLink) {
+                    // try multiple shapes for stored final link
+                    const finalCaseUrl = matchedCase.final_case_link || (matchedCase.final && (matchedCase.final.case_link || matchedCase.final.final_case_link)) || null;
+                    if (finalCaseUrl) {
+                        delCaseFinalLink.href = finalCaseUrl;
+                        delCaseFinalLink.innerText = "Download Case";
+                        delCaseFinalLink.style.pointerEvents = "auto";
+                        delCaseFinalLink.style.color = "#0dcaf0";
+                        console.log("📎 Final case link assigned:", finalCaseUrl);
+                    } else {
+                        delCaseFinalLink.href = "javascript:void(0)";
+                        delCaseFinalLink.innerText = "Case Not Available";
+                        delCaseFinalLink.style.color = "gray";
+                        delCaseFinalLink.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            alert("⚠️ Final case is not available yet for your competition.");
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Error assigning final case link:", err);
+            }
         }
 	} catch (err) {
 		console.error("Error in loadPrelimCase:", err);	
