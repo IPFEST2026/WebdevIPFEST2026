@@ -423,7 +423,8 @@
 }
 
 /* BOX REMINDER (MODERN GLASS) */
-#nav-profile #preliminary-alert {
+#nav-profile #preliminary-alert,
+#final-alert {
     background: rgba(0, 0, 0, 0.3) !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-left: 5px solid #ffeb3b; /* Aksen kuning peringatan */
@@ -431,7 +432,9 @@
 }
 
 #nav-profile #preliminary-alert p, 
-#nav-profile #preliminary-alert h1 {
+#nav-profile #preliminary-alert h1,
+#final-alert p,
+#final-alert h1 {
     color: #ffffff !important;
 }
 
@@ -444,6 +447,12 @@
 #nav-profile #delete-file-prem {
     background-color: #495057;
     border: none;
+}
+
+#final-alert strong,
+#final-alert h4,
+#preliminary-alert h4 {
+    color : #ffff00 !important;
 }
 
 /* ========================================================= */
@@ -546,9 +555,11 @@ button[type="submit"] {
 
 /* LINK (DOWNLOAD, OPEN FILE, GUIDE BOOK) */
 #nav-profile a#del-case-prelim-download, 
+#del-case-final-download,
 #nav-profile #file-url, 
 #nav-profile .form-check-label a,
-#nav-profile .text-info {
+#nav-profile .text-info,
+#final-competition-guide-book {
     color: #00f2ff !important; /* Cyan terang untuk kontras maksimal */
     font-weight: 700 !important;
     text-decoration: underline !important;
@@ -785,224 +796,686 @@ section,
     padding-right: 20px !important;
 }
 
-/* final form registration
+/* =========================================
+   IPFEST FINAL - WIDE, TOP ALIGNED & SLIM FOOTER
+   ========================================= */
 
-/* ==========================================================================
-   IPFEST 2026 — FINAL PAYMENT
-   BOLD • COLORFUL • EVENT-GRADE UI
-   ========================================================================== */
+/* 1. WRAPPER UTAMA (TETAP) */
+#final-payment-wrapper {
+    position: fixed !important;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7) !important;
+    z-index: 999999 !important; 
+    display: flex !important;
+    justify-content: center !important; 
+    align-items: flex-start !important; /* Mulai dari atas */
+    padding-top: 100px !important; 
+}
 
-
-/* =======================
-   1. MODAL BACKGROUND
-   ======================= */
+/* 2. MODAL CONTENT (TETAP) */
 #final-payment-wrapper .modal-content {
-    background:
-        radial-gradient(circle at top left, #ff8ccf, transparent 40%),
-        radial-gradient(circle at bottom right, #00e5ff, transparent 45%),
-        linear-gradient(135deg, #ff512f, #dd2476, #6a11cb, #2575fc);
-    border-radius: 18px !important;
-    border: none !important;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45) !important;
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-}
-
-
-/* =======================
-   2. HEADER — EVENT TITLE
-   ======================= */
-#final-payment-wrapper .modal-header {
+    width: 95% !important;
+    max-width: 750px !important; 
+    height: auto !important; 
+    max-height: 83vh !important;
     background: linear-gradient(
-        90deg,
-        rgba(255,255,255,0.25),
-        rgba(255,255,255,0.05)
-    ) !important;
-    backdrop-filter: blur(8px);
-    padding: 10px 18px !important;
-    border-bottom: none !important;
+        135deg,         
+        #F3906F 0%, 
+        #E94E77 34%, 
+        #7000ff 72%, 
+        #00f2ff 100%) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important; 
+    margin: 0 !important;
 }
 
+/* 3. HEADER (TETAP) */
+#final-payment-wrapper .modal-header {
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 15px 25px !important;
+    z-index: 50;
+}
 #final-payment-wrapper .modal-title {
-    font-size: 1rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 1px;
-    color: #ffffff !important;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    color: #fff !important; font-size: 1.1rem !important; font-weight: 800 !important; text-transform: uppercase; margin: 0; letter-spacing: 1px;
+}
+#final-payment-wrapper .btn-close {
+    filter: invert(1) brightness(2); opacity: 0.8;
 }
 
+/* 4. BODY (TETAP) */
+#final-payment-wrapper .modal-body {
+    flex-grow: 1; 
+    overflow-y: auto !important; 
+    padding: 20px !important;
+    background: transparent !important;
+    scrollbar-width: thin;
+}
+#final-payment-wrapper .modal-body::-webkit-scrollbar { width: 6px; }
+#final-payment-wrapper .modal-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+#final-payment-wrapper .modal-body::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.4); border-radius: 10px; }
 
-/* =======================
-   3. FORM CARDS — POP
-   ======================= */
+/* 5. ELEMEN FORM (TETAP) */
 #leader-final-pay-form,
 .member-final-pay-form {
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.95),
-            rgba(245,245,255,0.9)
-        ) !important;
-
-    border-radius: 14px !important;
-    padding: 14px !important;
-    margin-bottom: 14px !important;
-
-    box-shadow:
-        0 12px 30px rgba(0,0,0,0.2),
-        inset 0 0 0 2px rgba(255,105,180,0.15) !important;
-
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-bottom: 15px !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15) !important;
     position: relative;
+    border: none !important;
 }
-
-
-/* Accent strip */
 #leader-final-pay-form::before,
 .member-final-pay-form::before {
-    content: "";
-    position: absolute;
-    top: 10px;
-    left: -4px;
-    width: 6px;
-    height: calc(100% - 20px);
-    background: linear-gradient(
-        180deg,
-        #ff3cac,
-        #784ba0,
-        #2b86c5
-    );
-    border-radius: 6px;
+    content: ""; position: absolute; top: 0; left: 0; width: 5px; height: 100%;
+    background: linear-gradient(180deg, #ff3cac 0%, #784ba0 50%, #2b86c5 100%);
 }
-
-
-/* =======================
-   4. NAME & PRICE — HERO
-   ======================= */
-#leader-final-pay-form h5,
-.member-final-pay-form h5 {
-    font-size: 0.95rem !important;
-    font-weight: 900 !important;
-    color: #3b0a6d !important;
-    margin-bottom: 6px !important;
+.price-display-box {
+    display: flex !important; justify-content: space-between !important; align-items: center !important;
+    background: linear-gradient(90deg, #ff512f 0%, #dd2476 50%, #7b1fa2 100%) !important;
+    padding: 12px 15px !important; border-radius: 8px; margin: 10px 0 15px 0;
+    box-shadow: 0 4px 10px rgba(221, 36, 118, 0.3);
 }
+.price-label { margin: 0 !important; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #fff !important; opacity: 0.9; }
+.price-value { margin: 0 !important; font-size: 1rem; font-weight: 800; color: #ffffff !important; background: rgba(0, 0, 0, 0.2); padding: 5px 15px; border-radius: 50px; line-height: 1; }
+#final-payment-wrapper .form-label { color: #784ba0 !important; font-size: 0.7rem !important; font-weight: 700; text-transform: uppercase; margin-bottom: 4px !important; }
+#final-payment-wrapper .form-control, #final-payment-wrapper .form-select { background: #f8f9fa !important; border: 1px solid #ddd !important; font-weight: 600; font-size: 0.9rem !important; padding: 8px 12px !important; }
 
-#final-payment-price,
-[id^="member-price-"] {
-    background: linear-gradient(
-        90deg,
-        #ff512f,
-        #dd2476,
-        #6a11cb
-    ) !important;
-    color: #ffffff !important;
-    font-size: 0.85rem;
-    font-weight: 900;
-    letter-spacing: 0.5px;
-
-    padding: 6px 14px;
-    border-radius: 10px;
-
-    box-shadow: 0 6px 18px rgba(221,36,118,0.5);
-    text-align: center;
-}
-
-
-/* =======================
-   5. LABELS — NEON MICRO
-   ======================= */
-#final-payment-wrapper .form-label {
-    font-size: 0.65rem !important;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #7a1fa2 !important;
-    letter-spacing: 0.6px;
-}
-
-
-/* =======================
-   6. INPUTS — MODERN
-   ======================= */
-#final-payment-wrapper .form-control,
-#final-payment-wrapper .form-select {
-    background: #ffffff !important;
-    border-radius: 8px !important;
-    border: 2px solid transparent !important;
-
-    padding: 6px 10px !important;
-    height: 34px !important;
-
-    font-size: 0.8rem !important;
-    font-weight: 600;
-    color: #2b0c45 !important;
-
-    box-shadow: inset 0 0 0 1px #ddd;
-}
-
-#final-payment-wrapper .form-control:focus,
-#final-payment-wrapper .form-select:focus {
-    border-color: #dd2476 !important;
-    box-shadow: 0 0 0 3px rgba(221,36,118,0.25) !important;
-}
-
-
-/* =======================
-   7. FILE BUTTON — CTA
-   ======================= */
-#final-payment-wrapper
-.form-control[type="file"]::file-selector-button {
-    background: linear-gradient(
-        135deg,
-        #ff3cac,
-        #784ba0,
-        #2b86c5
-    ) !important;
-    color: #ffffff !important;
-    font-weight: 800;
-    font-size: 0.7rem;
-
-    border: none;
-    border-radius: 6px;
-
-    padding: 4px 10px !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-}
-
-
-/* =======================
-   8. FOOTER & BUTTONS
-   ======================= */
+/* =========================================================
+   6. FOOTER 
+   ========================================================= */
 #final-payment-wrapper .modal-footer {
-    background: linear-gradient(
-        90deg,
-        rgba(255,255,255,0.15),
-        rgba(255,255,255,0.05)
-    ) !important;
-    backdrop-filter: blur(6px);
+    flex-shrink: 0; 
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+    
+    /* PADDING DIKURANGI BIAR LEBIH PENDEK/RAMPING */
+    padding: 10px 20px !important; 
+    
+    display: flex; justify-content: flex-end; gap: 10px;
 }
 
-#final-payment-submit-btn {
-    background: linear-gradient(
-        135deg,
-        #ff512f,
-        #dd2476,
-        #6a11cb
-    ) !important;
-    color: #ffffff !important;
+/* =========================================================
+   FOOTER & TOMBOL KEMBAR (50:50 SPLIT)
+   ========================================================= */
 
+/* 1. FOOTER (WADAH) */
+#final-payment-wrapper .modal-footer {
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+    
+    /* Layout Flexbox */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 15px !important; /* Jarak tengah antar tombol */
+    
+    padding: 15px 25px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. TOMBOL CANCEL & SUBMIT (GAYA & UKURAN SAMA PERSIS) */
+#final-payment-submit-btn,
+#final-payment-wrapper .modal-footer button[data-bs-dismiss="modal"] {
+    /* KUNCI POSISI SAMA: Bagi lebar rata 50:50 */
+    flex: 1 !important; 
+    width: 100% !important; 
+    
+    /* Background Gradient SAMA */
+    background: linear-gradient(90deg, #ff512f, #dd2476, #7b1fa2) !important;
+    color: white !important;
+    border: none !important;
     border-radius: 50px !important;
-    padding: 8px 26px !important;
-
-    font-size: 0.85rem;
-    font-weight: 900;
-    letter-spacing: 0.6px;
-
-    box-shadow: 0 10px 30px rgba(221,36,118,0.6);
+    
+    /* Ukuran Font & Padding */
+    padding: 12px 0 !important; /* Padding atas bawah saja, kiri kanan ikut lebar flex */
+    font-weight: 800 !important;
+    font-size: 0.9rem !important;
+    text-align: center !important;
+    
+    /* Shadow */
+    box-shadow: 0 4px 15px rgba(221, 36, 118, 0.5) !important;
+    transition: all 0.3s ease;
+    margin: 0 !important; /* Reset margin liar */
 }
+
+/* Efek Hover (Sama untuk keduanya) */
+#final-payment-submit-btn:hover,
+#final-payment-wrapper .modal-footer button[data-bs-dismiss="modal"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(221, 36, 118, 0.7) !important;
+    filter: brightness(1.1);
+}
+
+/* Rules (Tetap) */
+/* --- FIX ALIGNMENT & WARNA LINK --- */
+
+.custom-rules-box {
+    display: flex !important;       /* Wajib Flexbox */
+    align-items: center !important; /* KUNCI: Sejajar Vertikal (Tengah) */
+    gap: 12px !important;           /* Jarak antar elemen */
+    
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 15px;
+}
+
+#final-rules-check {
+    margin: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    cursor: pointer;
+    flex-shrink: 0; 
+}
+
+.custom-rules-label {
+    margin: 0 !important;
+    line-height: 1.2 !important; 
+    color: white !important;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* --- BAGIAN INI UNTUK UBAH WARNA LINK --- */
+.custom-rules-label a {
+    color: #ffeb3b !important; /* KUNING TERANG (Biar tidak gelap) */
+    font-weight: 800 !important;
+    text-decoration: underline !important;
+    transition: 0.3s;
+}
+
+.custom-rules-label a:hover {
+    color: #ffffff !important; /* Jadi Putih pas disorot */
+    text-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+
 
 
 /* =======================
-   9. GRID — DENSE
+   Upload Progress
    ======================= */
-.row { margin: 0 -6px !important; }
-.col-12,
-.col-md-6,
-.col-md-4 { padding: 0 6px !important; }
+/* 1. Track/Wadah Progress Bar (Bagian kosongnya) */
+#progress-container {
+    height: 20px !important;       /* Sedikit lebih tebal */
+    border-radius: 20px !important; /* Ujung bulat */
+    background-color: #e9ecef !important; /* Warna abu terang untuk track */
+    border: none !important;
+}
+
+/* 2. Isi Progress Bar (Warna Cokelat & Garis) */
+#upload-progress {
+    background-color: transparent !important;
+
+    background-image: 
+        linear-gradient(
+            45deg, 
+            rgba(255, 255, 255, 0.2) 25%, 
+            transparent 25%, 
+            transparent 50%, 
+            rgba(255, 255, 255, 0.2) 50%, 
+            rgba(255, 255, 255, 0.2) 75%, 
+            transparent 75%, 
+            transparent
+        ),
+        linear-gradient(to right, #11998e, #38ef7d) !important; /* Hijau Teal ke Hijau Muda */
+    
+    background-size: 1rem 1rem, 100% 100% !important; 
+    border-radius: 20px !important;
+    color: #fff !important; 
+    font-weight: bold !important;
+    box-shadow: 0 0 10px rgba(56, 239, 125, 0.5) !important; /* Green Glow */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* 3. Teks 'Processing' dan Ukuran File (Menimpa class text-muted/secondary) */
+#upload-status h6, 
+#upload-status .text-secondary,
+#upload-status .text-muted {
+    color: #ffffff !important; /* Warna Putih */
+    opacity: 1 !important;     /* Hapus transparansi bawaan bootstrap */
+}
+
+/* 4. Animasi Titik-titik (SVG) */
+#upload-status .loading-svg circle {
+    fill: #ffffff !important; /* Ubah titik hitam jadi putih */
+}
+
+/* 5. Tombol Cancel (Biru Transparan) */
+#cancel-file-upload {
+    background-color: #dc3545 !important; /* Merah (Bootstrap Danger) */
+    border: 2px solid #dc3545 !important; /* Border Merah */
+    color: #ffffff !important;            /* Teks Putih */
+    
+    /* Mempertahankan bentuk bulat */
+    border-radius: 50px !important;
+    padding: 6px 20px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+#cancel-file-upload:hover {
+    background-color: #ffffff !important; /* Background Jadi Putih */
+    border-color: #dc3545 !important;     /* Border Tetap Merah */
+    color: #dc3545 !important;            /* Teks Jadi Merah (agar terbaca) */
+    
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.4) !important; /* Efek glow merah sedikit */
+}
+
+/* Opsional: Agar tombol cancel sejajar tengah secara vertikal */
+#upload-progress-container {
+    align-items: center !important;
+}
+
+/* 6. Animasi ukuran file */
+#current-uploaded-size,
+#total-size {
+    color: #ffffff !important; /* Warna Putih */
+    opacity: 1 !important;     /* Hapus transparansi bawaan bootstrap */
+}
+
+/* 7 summary tab */
+#final-file-time-sub,
+#final-file-url,
+#final-submission-title,
+#final-form label,
+#del-sub-sum-final h3,
+#del-sub-sum-final p {
+    color : #ffffff !important;
+}
+
+
+/* 
+Styling untuk Modal Semangat 
+*/
+#final-payment-wrapper {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 1. Kartu Modal (Background Gradasi) */
+#encourage-modal-card {
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #671c84 0%, #4facfe 100%);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    overflow: hidden;
+
+    margin-top: 20vh; 
+}
+/* 2. Tombol X (Close Icon) */
+#encourage-close-icon {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 0.5rem;
+    filter: invert(1); /* Memutihkan icon X bawaan bootstrap */
+    transition: 0.3s;
+    opacity: 1;
+}
+#encourage-close-icon:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 3. Wrapper Icon (Lingkaran Putih) */
+#encourage-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#encourage-icon {
+    font-size: 32px;
+}
+
+/* 4. Judul (Dear Team...) */
+#encourage-title {
+    color: #ffffff; /* Teks Putih */
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+/* 5. Pesan Utama */
+#encourage-message {
+    color: rgba(255, 255, 255, 0.9); /* Putih agak transparan */
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+#encourage-message-highlight {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+}
+
+/* 6. Kotak Quotes */
+#encourage-quote-box {
+    background: rgba(255, 255, 255, 0.95); /* Putih Kaca */
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: left;
+    border-left: 5px solid #671c84; /* Aksen Ungu */
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+#encourage-quote-text {
+    font-style: italic;
+    color: #333333; /* Teks Hitam agar terbaca di background putih */
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+#encourage-quote-author {
+    font-weight: 700;
+    color: #671c84; /* Nama Author Ungu */
+    display: block;
+}
+
+/* 7. Footer Text */
+#encourage-footer {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 8. Tombol Close Bawah */
+#encourage-btn-action {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 50px;
+    border: none;
+    background-color: #ffffff;
+    color: #671c84;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+#encourage-btn-action:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+
+/* =========================================
+   IPFEST LEADERBOARD MODAL - DARK THEME
+   ========================================= */
+
+/* 1. WRAPPER (Backdrop Gelap & Blur) */
+/* 1. WRAPPER (Backdrop Gelap & Blur Tipis) */
+.custom-modal-hidden {
+    display: none; /* Default Hidden */
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    
+    /* Background sedikit lebih gelap biar teks modal tetap kebaca */
+    background: rgba(0, 0, 0, 0.5); 
+    
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    
+    /* BLUR DIKURANGI (Sesuai Request) */
+    backdrop-filter: blur(1.4px); 
+    
+    opacity: 0;
+    animation: fadeInModal 0.3s forwards;
+}
+
+@keyframes fadeInModal {
+    to { opacity: 1; }
+}
+
+/* 2. KOTAK MODAL (Dark Glassy) */
+.custom-modal-box {
+    /* Background Gelap dengan sedikit transparansi */
+    background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%);
+    width: 90%;
+    max-width: 850px;
+    max-height: 85vh;
+    border-radius: 20px;
+    
+    /* Border tipis menyala */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.2); /* Shadow ungu pudar */
+    
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transform: scale(0.95);
+    animation: zoomInModal 0.3s forwards;
+}
+
+@keyframes zoomInModal {
+    to { transform: scale(1); }
+}
+
+/* 3. HEADER (Gradient IPFest) */
+.custom-modal-header {
+    /* Gradasi Ungu ke Biru */
+    background: linear-gradient(90deg, #4c1d95 0%, #3b82f6 100%);
+    padding: 20px 30px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.custom-modal-header h5 {
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    font-size: 1.1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.custom-close-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease;
+}
+.custom-close-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(90deg);
+}
+
+/* 4. BODY & SCROLLBAR */
+.custom-modal-body {
+    padding: 0; /* Padding di-handle table */
+    overflow-y: auto;
+    background: transparent;
+}
+
+/* Custom Scrollbar (Biar ga putih ngerusak pemandangan) */
+.custom-modal-body::-webkit-scrollbar { width: 8px; }
+.custom-modal-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.custom-modal-body::-webkit-scrollbar-thumb { 
+    background: rgba(255,255,255,0.2); 
+    border-radius: 10px; 
+}
+.custom-modal-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+/* 5. TABEL DESAIN BARU (Dark Mode) */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e2e8f0; /* Teks putih abu */
+}
+
+/* Header Tabel */
+.custom-table thead th {
+    background: rgba(0, 0, 0, 0.3); /* Gelap transparan */
+    color: #94a3b8; /* Teks abu muda */
+    padding: 18px 25px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: sticky; top: 0; /* Header nempel pas discroll */
+    backdrop-filter: blur(5px);
+    z-index: 5;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Isi Tabel */
+.custom-table tbody td {
+    padding: 15px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+    transition: background 0.2s;
+}
+
+/* Hover Effect Baris */
+.custom-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* 6. MODIFIKASI ELEMEN DALAM TABEL (Override JS Styles) */
+
+/* Nama Tim */
+.custom-table td div[style*="color:#4c1d95"] {
+    color: #fff !important; /* Tim jadi Putih */
+    font-size: 1rem !important;
+}
+
+/* Universitas */
+.custom-table td div[style*="color:#64748b"] {
+    color: #94a3b8 !important; /* Univ jadi Abu terang */
+}
+
+/* Rank Number (#1, #2) */
+.custom-table td span[style*="font-size: 1.1rem"] {
+    color: #22d3ee !important; /* Cyan neon */
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
+/* Score */
+.custom-table td span[style*="color: #4c1d95"] {
+    color: #fbbf24 !important; /* Emas/Kuning */
+    font-family: 'Courier New', monospace; /* Kesan teknis */
+    font-weight: bold;
+}
+
+/* Badge Status (Bootstrap Override) */
+.custom-table .badge.bg-success {
+    background: rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+}
+.custom-table .badge.bg-danger {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+}
+.custom-table .badge.bg-secondary {
+    background: rgba(100, 116, 139, 0.2) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(203, 213, 225, 0.2);
+}
+
+.custom-modal-header h5 {
+    color: #FFFFFF;
+}
+
+/* =========================================================
+    DASHBOARD BUTTONS (WA, VIEW, REGIST)
+   ========================================================= */
+
+#WhatsApp-Group,
+#Preliminary-Leaderboard,
+#Final-Round-Registration {
+    /* 1. Layout & Shape */
+    display: inline-block !important;
+    padding: 12px 45px !important;    /* Lebih lebar & tinggi dikit */
+    margin-top: 20px !important;
+    border-radius: 50px !important;
+    border: none !important;
+    
+    /* 2. Background (Premium White) */
+    /* Putih 90% opacity biar background gradient di belakangnya kerasa "nyatu" */
+    background: rgba(255, 255, 255, 0.9) !important; 
+    backdrop-filter: blur(4px); /* Efek kaca tipis */
+
+    /* 3. Typography (Kunci Desain Mewah) */
+    color: #4c1d95 !important;        /* Ungu Gelap */
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 800 !important;      /* Sangat Tebal */
+    font-size: 0.85rem !important;    /* Ukuran font sedikit lebih kecil */
+    text-transform: uppercase !important; /* HURUF BESAR SEMUA */
+    letter-spacing: 2px !important;   /* Jarak antar huruf renggang (Mewah) */
+    text-decoration: none !important;
+    
+    /* 4. Depth & Shadow */
+    /* Shadow hitam halus di bawah biar tombol kerasa "ngambang" */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important; 
+    
+    /* 5. Animation Setup */
+    cursor: pointer !important;
+    /* Transisi smooth mentul-mentul */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; 
+}
+
+/* --- EFEK HOVER (INTERAKSI KEREN) --- */
+#WhatsApp-Group:hover,
+#Preliminary-Leaderboard:hover,
+#Final-Round-Registration:hover {
+    background: #ffffff !important;   /* Jadi Putih Solid Terang */
+    
+    /* Ganti warna teks jadi Pink/Magenta pas hover biar ada variasi */
+    color: #db2777 !important;        
+    
+    /* Animasi Gerak */
+    transform: translateY(-5px) scale(1.05) !important; /* Naik & Membesar */
+    
+    /* Animasi Teks Melebar */
+    letter-spacing: 3px !important;   /* Spasi huruf makin lebar */
+    
+    /* Double Glow Effect */
+    box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.25), /* Shadow Bawah */
+        0 0 20px rgba(255, 255, 255, 0.6) !important; /* Glow Putih Sekeliling */
+}
+
+/* --- STATE DISABLED (BIAR USER TAU GABISA DIKLIK) --- */
+#WhatsApp-Group[style*="pointer-events: none"],
+#Final-Round-Registration[style*="pointer-events: none"],
+#Preliminary-Leaderboard[style*="pointer-events: none"] {
+    background: rgba(0, 0, 0, 0.2) !important; /* Gelap Transparan */
+    color: rgba(255, 255, 255, 0.5) !important; /* Teks Pudar */
+    box-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    letter-spacing: 1px !important; /* Reset spasi */
+}

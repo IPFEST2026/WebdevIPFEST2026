@@ -237,6 +237,8 @@ function createPrelimSubmissionRow(table, teamId, rowNo, teamData, totalTeams) {
 
     const finalStatus = prelim.final ?? null; 
     const rankStatus = prelim.rank ?? null;
+    // Ambil data score yang ada (jika ada)
+    const scoreStatus = prelim.score !== undefined ? prelim.score : null;
 
     const row = document.createElement("tr");
     row.id = teamId;
@@ -278,6 +280,52 @@ function createPrelimSubmissionRow(table, teamId, rowNo, teamData, totalTeams) {
     };
     rankCell.appendChild(rankSelect);
 
+    // --- CELL SCORE (NEW) ---
+    const scoreCell = document.createElement("td");
+    const scoreInput = document.createElement("input");
+    
+    scoreInput.type = "number";
+    scoreInput.className = "form-control form-control-sm text-center fw-bold text-primary";
+    scoreInput.style.minWidth = "80px";
+    scoreInput.placeholder = "0.00";
+    scoreInput.step = "0.01"; // Memungkinkan desimal
+    scoreInput.min = "0";
+    scoreInput.max = "100";
+
+    // Set value awal jika ada, format ke 2 desimal
+    if (scoreStatus !== null) {
+        scoreInput.value = parseFloat(scoreStatus).toFixed(2);
+    }
+
+    scoreInput.onchange = async (e) => {
+        let val = e.target.value;
+
+        // Jika input dikosongkan, update ke null
+        if (val === "") {
+            await updateDoc(doc(DB, "Team", teamId), { "sub_preliminary.score": null });
+            return;
+        }
+
+        let floatVal = parseFloat(val);
+
+        // Validasi Input
+        if (isNaN(floatVal) || floatVal < 0 || floatVal > 100) {
+            alert("Error: Score must be a number between 0.00 and 100.00");
+            
+            // Reset ke nilai database terakhir atau kosongkan jika error
+            e.target.value = scoreStatus !== null ? parseFloat(scoreStatus).toFixed(2) : "";
+            return;
+        }
+
+        // Format tampilan menjadi 2 desimal (ex: 16 -> 16.00)
+        e.target.value = floatVal.toFixed(2);
+
+        // Update ke Firebase
+        await updateDoc(doc(DB, "Team", teamId), { "sub_preliminary.score": floatVal });
+    };
+    scoreCell.appendChild(scoreInput);
+
+
     // --- RENDER ROW ---
     const btnDownload = submission
         ? `<a href="${submission}" target="_blank" class="btn-view-file">
@@ -307,14 +355,37 @@ function createPrelimSubmissionRow(table, teamId, rowNo, teamData, totalTeams) {
         <td class="text-center">${btnDownload}</td>
     `;
 
+    // Append cells sesuai urutan header HTML: Final -> Rank -> Score
     row.appendChild(finalStatusCell);
     row.appendChild(rankCell);
+    row.appendChild(scoreCell); // Menambahkan kolom score di akhir
+
     table.append(row);
+}
+// ==========================================
+// EXPORT PRELIM TABLE TO EXCEL
+// ==========================================
+
+const excelBtn = document.getElementById("export-prelim-excel");
+const tablePrelim = document.getElementById("submission-table"); // ID tabel HTML kamu
+
+if (excelBtn && tablePrelim) {
+    excelBtn.addEventListener("click", () => {
+        // Ambil nama file dari variabel switchCompetition (jika ada), atau default
+        const fileName = (typeof switchCompetition !== 'undefined' ? switchCompetition : "Competition") + "_Prelim.xlsx";
+        
+        // Convert langsung
+        const workbook = XLSX.utils.table_to_book(tablePrelim, { sheet: "Data" });
+        XLSX.writeFile(workbook, fileName);
+    });
 }
 
 // ================================
 // LISTENER UTAMA (REAL-TIME)
 // ================================
+
+const submissionTableFinal = document.getElementById("del-submission-list-final");
+
 onSnapshot(collection(DB, "Team"), (snap) => {
     if (!switchCompetition) return;
 
@@ -325,21 +396,40 @@ onSnapshot(collection(DB, "Team"), (snap) => {
         normalizeCompetition(doc.data().competition || '') === activeCompetition
     );
 
-    submissionTablePrelim.innerHTML = '';
     const totalCount = filteredTeams.length;
 
-    filteredTeams.forEach((docSnap, index) => {
-        createPrelimSubmissionRow(
-            submissionTablePrelim, 
-            docSnap.id, 
-            index + 1, 
-            docSnap.data(), 
-            totalCount
-        );
-    });
-    console.log(`[UI] Table updated with ${totalCount} teams`);
-});
+    // 1. UPDATE TABEL PRELIM 
+    if(typeof submissionTablePrelim !== 'undefined' && submissionTablePrelim) {
+        submissionTablePrelim.innerHTML = '';
+        filteredTeams.forEach((docSnap, index) => {
+             // ... fungsi createPrelimSubmissionRow kamu ...
+             createPrelimSubmissionRow(submissionTablePrelim, docSnap.id, index + 1, docSnap.data(), totalCount);
+        });
+    }
 
+    console.log(`[UI] Tables updated with ${totalCount} teams for ${activeCompetition}`);
+
+    // 2. UPDATE TABEL FINAL 
+    if(submissionTableFinal) {
+        submissionTableFinal.innerHTML = ''; // Reset isi tabel
+
+        const finalistTeams = filteredTeams.filter(doc => {
+            const data = doc.data();
+            // Cek existensi object sub_preliminary DAN status final === true
+            return data.sub_preliminary && data.sub_preliminary.final === true;
+        });
+        
+        finalistTeams.forEach((docSnap, index) => {
+            createFinalSubmissionRow(
+                submissionTableFinal, 
+                docSnap.id, 
+                index + 1, 
+                docSnap.data()
+            );
+        });
+        console.log(`[UI] Final Table updated: ${finalistTeams.length} finalists out of ${totalCount} teams.`);
+    }
+});
 
 // // Final Submission
 // const submissionTableFinal = document.getElementById("del-submission-list-final")
@@ -584,7 +674,7 @@ prelimCaseDist.addEventListener("submit", (e) => {
 const finalCaseDist = document.getElementById("final-case-distribution")
 const finalCaseInput = finalCaseDist.querySelector("input")
 const deleteFinalCaseFile = document.getElementById("delete-file-case-final")
-const finalcaserelease = new Date('2026-01-04T00:00:00+07:00').getTime()
+const finalcaserelease = new Date('2025-01-04T00:00:00+07:00').getTime()
 
 deleteFinalCaseFile.addEventListener("click", () => { finalCaseInput.value = '' })
 
@@ -629,6 +719,91 @@ finalCaseDist.addEventListener("submit", (e) => {
 	}	
 })
 
+// ================================
+// Final Row
+// ================================
+function createFinalSubmissionRow(table, teamId, rowNo, teamData) {
+    // Ambil data sub_final, default object kosong jika belum ada
+    const finalSub = teamData.sub_final || {};
+    
+    const submission = finalSub.fileURL || null;
+    const overdue = finalSub.overdue; // "no" atau "yes" (sesuai data firebase)
+    const status = finalSub.status || false; // boolean status submit
+    
+    // Konversi timestamp ke Date object
+    const lastSubmit = finalSub.submittedAt ? finalSub.submittedAt.toDate() : null;
+
+    const row = document.createElement("tr");
+    row.id = `final-${teamId}`; // ID unik row
+    row.className = "align-middle";
+
+    // --- LOGIKA TOMBOL VIEW FILE ---
+    const btnDownload = submission
+        ? `<a href="${submission}" target="_blank" class="btn-view-file">
+            <i class="bi bi-cloud-arrow-down-fill"></i> VIEW FILE
+        </a>`
+        : `<span class="badge-ipfest" style="background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;">
+            NO FILE
+        </span>`;
+
+    // --- LOGIKA BADGE OVERDUE ---
+    // Default: Abu-abu (Empty/Belum submit)
+    let badgeClass = "bg-secondary text-white";
+    let badgeText = "EMPTY";
+
+    if (status === true) {
+        if (overdue === "no") {
+            badgeClass = "bg-success text-white"; // Hijau
+            badgeText = "ON TIME";
+        } else {
+            badgeClass = "bg-danger text-white"; // Merah
+            badgeText = "LATE";
+        }
+    }
+
+    // --- FORMAT TANGGAL ---
+    const dateDisplay = (status && lastSubmit) 
+        ? `<div>${lastSubmit.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</div>
+           <div class="text-muted" style="font-size: 11px;">${lastSubmit.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>`
+        : "-";
+
+    // --- RENDER HTML ROW ---
+    // Kolom sesuai thead: No | Team Name | Time | Overdue | Submission
+    row.innerHTML = `
+        <td class="text-center fw-bold text-muted" style="font-size: 12px;">${rowNo}</td>
+        <td>
+            <div class="fw-bold" style="color: #4c1d95; font-size: 14px;">${teamData.teamName || "No Name"}</div>
+            <div class="text-muted" style="font-size: 10px;">${teamData.leader?.university || "-"}</div>
+        </td>
+        <td class="text-dark" style="font-size: 13px; line-height: 1.2;">
+            ${dateDisplay}
+        </td>
+        <td class="text-center">
+            <span class="badge-ipfest ${badgeClass}">
+                ${badgeText}
+            </span>
+        </td>
+        <td class="text-center">${btnDownload}</td>
+    `;
+
+    table.append(row);
+}
+
+// Listener simpel untuk export excel FINAL
+const excelFinalBtn = document.getElementById("export-final-excel");
+const tableFinal = document.getElementById("submission-table-final");
+
+if (excelFinalBtn && tableFinal) {
+    excelFinalBtn.addEventListener("click", () => {
+        // Nama file: "NamaKompetisi_Final.xlsx"
+        const fileName = (typeof switchCompetition !== 'undefined' ? switchCompetition : "Competition") + "_Final.xlsx";
+        
+        // Convert langsung
+        const workbook = XLSX.utils.table_to_book(tableFinal, { sheet: "Final Data" });
+        XLSX.writeFile(workbook, fileName);
+    });
+}
+
 // Sign out user
 const logoutBtn = document.querySelector("#logout-btn")
 
@@ -641,3 +816,4 @@ logoutBtn.addEventListener('click', () => {
 		console.log("Cannot loggin out user", err)
 	})
 })
+

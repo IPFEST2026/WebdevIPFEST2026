@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc, serverTimestamp,collection, getDocs, setDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp,collection, getDocs, setDoc,where,query } from 'firebase/firestore'
 
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 
@@ -8,37 +8,177 @@ import { DB, AUTH, STORAGE } from './index.js'
 
 import { showProgressUI, setToastAlert } from '../static/js/alert.js'
 
+
 // =========================
 // AUTH STATE
 // =========================
 let currentUserID = null;
 
 onAuthStateChanged(AUTH, async (user) => {
-	if (!user) {
-		window.location.href = '../login.html';
-		return;
-	}
+    if (!user) {
+        window.location.href = '../login.html';
+        return;
+    }
 
-	currentUserID = user.uid;
-	let userData = await fetchUserData();
-    let userCompetition = (userData.competitionRaw || "").toLowerCase();
+    currentUserID = user.uid;
+    
+    // Ambil data user
+    let userData = await fetchUserData();
+
+    // PENTING: Cek jika userData gagal diambil (undefined/null) agar tidak error lanjutannya
+    if (!userData) {
+        console.error("User data could not be loaded.");
+        return;
+    }
+
+    let userCompetition = (userData.userCompetition || null);
     let paymentStatus = (userData.paymentStatus || null);
     let prelimStatus = (userData.prelimstats || null);
     let PrelimOverdue = (userData.prelim_overdue || null);
     let PrelimSubmittedAt = (userData.prelimSubmittedAt || null);
     let PrelimFileURL = (userData.prelimFileURL || null);
     let finalPaymentStatus = (userData.finalPaymentStatus || null);
-    let finalstatus = (userData.finalstatus?? null);
+    let finalstatus = (userData.finalstatus ?? null);
+    let finalsubstatus = (userData.finalsubstatus ?? null);
+    let finalsubfileURL = (userData.finalsubfileURL ?? null);
+    let finalsubsubmittedAt = (userData.finalsubsubmittedAt ?? null);
+    let finalsubmissionoverdue = (userData.finalsubmissionoverdue ?? null);
 
-	loadPrelimCase(currentUserID, paymentStatus);
-    setupGuidebook(userCompetition);
-    setupEditSubmission(prelimStatus);
-    submissionSummary(PrelimOverdue, PrelimSubmittedAt, PrelimFileURL);
-    setupPrelimTab(paymentStatus);
-    setupFinalTab(finalPaymentStatus);
-    setupFinalRoundLink(finalstatus,currentUserID);
+    // Pastikan fungsi-fungsi ini ada di kode Anda sebelumnya
+    if (typeof loadPrelimCase === 'function') loadPrelimCase(currentUserID, paymentStatus);
+    if (typeof setupGuidebook === 'function') setupGuidebook(userCompetition);
+    if (typeof setupEditSubmission === 'function') setupEditSubmission(prelimStatus);
+    if (typeof submissionSummary === 'function') submissionSummary(PrelimOverdue, PrelimSubmittedAt, PrelimFileURL);
+    if (typeof setupPrelimTab === 'function') setupPrelimTab(paymentStatus);
+    if (typeof setupFinalTab === 'function') setupFinalTab(finalPaymentStatus);
+    
+    // Panggil setupFinalRoundLink yang sudah diperbaiki sebelumnya
+    setupFinalRoundLink(finalstatus, currentUserID, finalPaymentStatus, userCompetition);
+    
+    if (typeof checkSubmissionStatus === 'function') checkSubmissionStatus(finalsubstatus, finalsubfileURL, finalsubsubmittedAt, finalsubmissionoverdue);
 });
 
+async function fetchUserData() {
+    if (!currentUserID) return null;
+
+    try {
+        const docRef = doc(DB, "Team", currentUserID);
+        const snap = await getDoc(docRef);
+
+        if (!snap.exists()) {
+            console.error("Team data not found");
+            return null;
+        }
+
+        const data = snap.data();
+
+        // --- FUNGSI BANTUAN AGAR TIDAK ERROR JIKA ID HTML TIDAK ADA ---
+        const setText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+
+        // 1. UPDATE UI (Dengan Safety Check)
+        // TEAM LEADER
+        setText("Team-Leader", `${data.leader.firstName} ${data.leader.lastName}`);
+
+        // TEAM NAME
+        setText("Team-Name", data.teamName || "-");
+
+        // COMPETITION
+        const compKey = (data.competition || "").toLowerCase();
+        // Pastikan CompetitionFullName ada, jika tidak pakai data.competition
+        const compName = (typeof CompetitionFullName !== 'undefined' && CompetitionFullName[compKey]) 
+                         ? CompetitionFullName[compKey] 
+                         : (data.competition || "-");
+        setText("Competition-Name", compName);
+
+        // WA GROUP
+        const waEl = document.getElementById("WhatsApp-Group");
+        if (waEl) {
+            const waLink = (typeof WAGroup !== 'undefined' && WAGroup[compKey]) ? WAGroup[compKey] : "#";
+            if (data.payment_status?.toLowerCase() === "verified") {
+                waEl.href = waLink;
+                waEl.textContent = "Join";
+                waEl.style.pointerEvents = "auto";
+                waEl.style.opacity = "1";
+            } else {
+                waEl.href = "javascript:void(0)";
+                waEl.textContent = "Your payment has not been verified";
+                waEl.style.pointerEvents = "none";
+                waEl.style.opacity = "0.5";
+            }
+        }
+
+        // MEMBERS LIST
+        const members = data.members || [];
+        if (members.length > 0) {
+            const names = members.map(m => `${m.firstName} ${m.lastName}`);
+            setText("Team-Member", names.join(", "));
+        } else {
+            setText("Team-Member", "-");
+        }
+
+        // PAYMENT STATUS
+        let paymentStatusText = data.payment_status === "verified" ? "Verified" : "Pending";
+        setText("Payment-Status", paymentStatusText || "Not Submitted");
+
+        // APPLY LOCK
+        const prelimStatus = data.sub_preliminary === undefined ? undefined : data.sub_preliminary;
+        if (typeof applySubmissionLock === 'function') applySubmissionLock(prelimStatus);
+
+        // PRELIM DATA
+        let prelim_overdue = null;
+        if (prelimStatus && prelimStatus.overdue !== undefined) {
+            prelim_overdue = prelimStatus.overdue === "yes" ? "Overdue" : "On Time";
+        }
+        const prelimSubmittedAt = prelimStatus && prelimStatus.submittedAt ? prelimStatus.submittedAt : null;
+        const prelimFileURL = prelimStatus && prelimStatus.fileURL ? prelimStatus.fileURL : null;
+        const prelimRank = prelimStatus?.rank ?? "-";
+        
+        setText("Preliminary-Rank", prelimRank);
+
+        // FINAL STATUS
+        const finalstatus = prelimStatus?.final ?? "-";
+        const finalData = data.final_reg || {};
+        const finalPaymentStatus = finalData.paymentStatus || null;
+
+        let finalStatusText = "Not Paid";
+        if (finalPaymentStatus === "pending") finalStatusText = "Pending";
+        else if (finalPaymentStatus === "down_payment_verified") finalStatusText = "Down Payment Verified";
+        else if (finalPaymentStatus === "verified") finalStatusText = "Verified";
+
+        setText("Final-Payment-Status", finalStatusText);
+
+        // FINAL SUB DATA
+        const finalsub = data.sub_final || {};
+        const finalsubstatus = finalsub.status || null;
+        const finalsubfileURL = finalsub.fileURL || null;
+        const finalsubsubmittedAt = finalsub.submittedAt || null;
+        const finalsubmissionoverdue = finalsub.overdue || null;
+
+        // 2. RETURN DATA (PENTING: Return object meskipun UI error sebagian)
+        return {
+            userCompetition: data.competition || null,
+            paymentStatus: data.payment_status || null,
+            teamName: data.teamName || null,
+            prelimstats: prelimStatus || null,
+            prelim_overdue: prelim_overdue,
+            prelimSubmittedAt: prelimSubmittedAt,
+            prelimFileURL: prelimFileURL,
+            finalPaymentStatus: finalPaymentStatus || null,
+            finalstatus: finalstatus ?? null,
+            finalsubstatus: finalsubstatus ?? null,
+            finalsubfileURL: finalsubfileURL ?? null,
+            finalsubsubmittedAt: finalsubsubmittedAt ?? null,
+            finalsubmissionoverdue: finalsubmissionoverdue ?? null
+        };
+
+    } catch (err) {
+        console.error("Failed to fetch data:", err);
+        return null; // Return null jika error parah
+    }
+}
 
 
 // =========================
@@ -74,115 +214,128 @@ const WAGroup = {
 // =========================
 // FETCH USER DATA
 // =========================
-async function fetchUserData() {
-	if (!currentUserID) return;
+// async function fetchUserData() {
+// 	if (!currentUserID) return;
 
-	try {
-		const docRef = doc(DB, "Team", currentUserID);
-		const snap = await getDoc(docRef);
+// 	try {
+// 		const docRef = doc(DB, "Team", currentUserID);
+// 		const snap = await getDoc(docRef);
 
-		if (!snap.exists()) {
-			console.error("Team data not found");
-			return;
-		}
+// 		if (!snap.exists()) {
+// 			console.error("Team data not found");
+// 			return;
+// 		}
 
-		const data = snap.data();
+// 		const data = snap.data();
 
-		// TEAM LEADER
-		document.getElementById("Team-Leader").textContent =
-			`${data.leader.firstName} ${data.leader.lastName}`;
+// 		// TEAM LEADER
+// 		document.getElementById("Team-Leader").textContent =
+// 			`${data.leader.firstName} ${data.leader.lastName}`;
 
-		// TEAM NAME
-		document.getElementById("Team-Name").textContent =
-			data.teamName || "-";
+// 		// TEAM NAME
+// 		document.getElementById("Team-Name").textContent =
+// 			data.teamName || "-";
 
-		// =========================
-		// COMPETITION (FULL NAME)
-		// =========================
-		const compKey = (data.competition || "").toLowerCase();
-		document.getElementById("Competition-Name").textContent =
-			CompetitionFullName[compKey] || data.competition || "-";
+// 		// =========================
+// 		// COMPETITION (FULL NAME)
+// 		// =========================
+// 		const compKey = (data.competition || "").toLowerCase();
+// 		document.getElementById("Competition-Name").textContent =
+// 			CompetitionFullName[compKey] || data.competition || "-";
 
-		// =========================
-		// WA GROUP (DISABLED IF NOT VERIFIED)
-		// =========================
-		const waEl = document.getElementById("WhatsApp-Group");
-		const waLink = WAGroup[compKey] || "#";
+// 		// =========================
+// 		// WA GROUP (DISABLED IF NOT VERIFIED)
+// 		// =========================
+// 		const waEl = document.getElementById("WhatsApp-Group");
+// 		const waLink = WAGroup[compKey] || "#";
 
-		if (data.payment_status?.toLowerCase() === "verified") {
-			// PAYMENT VERIFIED → LINK AKTIF
-			waEl.href = waLink;
-			waEl.textContent = "Join";
-			waEl.style.pointerEvents = "auto";
-			waEl.style.opacity = "1";
-		} else {
-			// PAYMENT NOT VERIFIED → LINK DISABLED
-			waEl.href = "javascript:void(0)";
-			waEl.textContent = "Your payment has not been verified";
-			waEl.style.pointerEvents = "none";  // Disable clicking
-			waEl.style.opacity = "0.5";         // Make it look disabled
-		}
-		// =========================
-		// MEMBERS LIST (FULL NAMES)
-		// =========================
-		const members = data.members || [];
+// 		if (data.payment_status?.toLowerCase() === "verified") {
+// 			// PAYMENT VERIFIED → LINK AKTIF
+// 			waEl.href = waLink;
+// 			waEl.textContent = "Join";
+// 			waEl.style.pointerEvents = "auto";
+// 			waEl.style.opacity = "1";
+// 		} else {
+// 			// PAYMENT NOT VERIFIED → LINK DISABLED
+// 			waEl.href = "javascript:void(0)";
+// 			waEl.textContent = "Your payment has not been verified";
+// 			waEl.style.pointerEvents = "none";  // Disable clicking
+// 			waEl.style.opacity = "0.5";         // Make it look disabled
+// 		}
+// 		// =========================
+// 		// MEMBERS LIST (FULL NAMES)
+// 		// =========================
+// 		const members = data.members || [];
 
-		if (members.length > 0) {
-			const names = members.map(m => `${m.firstName} ${m.lastName}`);
-			document.getElementById("Team-Member").textContent = names.join(", ");
-		} else {
-			document.getElementById("Team-Member").textContent = "-";
-		}
+// 		if (members.length > 0) {
+// 			const names = members.map(m => `${m.firstName} ${m.lastName}`);
+// 			document.getElementById("Team-Member").textContent = names.join(", ");
+// 		} else {
+// 			document.getElementById("Team-Member").textContent = "-";
+// 		}
 
-		// PAYMENT STATUS
-		let paymentStatusText = data.payment_status === "verified" ? "Verified" : "Pending";
-		document.getElementById("Payment-Status").textContent =
-			paymentStatusText || "Not Submitted";
+// 		// PAYMENT STATUS
+// 		let paymentStatusText = data.payment_status === "verified" ? "Verified" : "Pending";
+// 		document.getElementById("Payment-Status").textContent =
+// 			paymentStatusText || "Not Submitted";
         
-     // applySubmissionLock expects `undefined` when not submitted
-        const prelimStatus = data.sub_preliminary === undefined ? undefined : data.sub_preliminary;
-        applySubmissionLock(prelimStatus);
+//      // applySubmissionLock expects `undefined` when not submitted
+//         const prelimStatus = data.sub_preliminary === undefined ? undefined : data.sub_preliminary;
+//         applySubmissionLock(prelimStatus);
 
-        let prelim_overdue = null;
-        if (prelimStatus && prelimStatus.overdue !== undefined) {
-            prelim_overdue = prelimStatus.overdue === "yes" ? "Overdue" : "On Time";
-        }
+//         let prelim_overdue = null;
+//         if (prelimStatus && prelimStatus.overdue !== undefined) {
+//             prelim_overdue = prelimStatus.overdue === "yes" ? "Overdue" : "On Time";
+//         }
 
-        const prelimSubmittedAt = prelimStatus && prelimStatus.submittedAt ? prelimStatus.submittedAt : null;
-        const prelimFileURL = prelimStatus && prelimStatus.fileURL ? prelimStatus.fileURL : null;
+//         const prelimSubmittedAt = prelimStatus && prelimStatus.submittedAt ? prelimStatus.submittedAt : null;
+//         const prelimFileURL = prelimStatus && prelimStatus.fileURL ? prelimStatus.fileURL : null;
 
-		const prelimRank = prelimStatus.rank ?? "-";
-		document.getElementById("Preliminary-Rank").textContent = prelimRank;
+// 		const prelimRank = prelimStatus.rank ?? "-";
+// 		document.getElementById("Preliminary-Rank").textContent = prelimRank;
 
-        const finalstatus = prelimStatus.final ?? "-";
+//         const finalstatus = prelimStatus.final ?? "-";
 
-        const finalData = data.final_reg || {};
-		const finalPaymentStatus = finalData.paymentStatus || null;
+//         const finalData = data.final_reg || {};
+// 		const finalPaymentStatus = finalData.paymentStatus || null;
 
-        let finalStatusText = "Not Paid"; // default jika null
-		if (finalPaymentStatus === "pending") finalStatusText = "Pending";
-		else if (finalPaymentStatus === "down_payment_verified") finalStatusText = "Down Payment Verified";
-		else if (finalPaymentStatus === "verified") finalStatusText = "Verified";
+//         let finalStatusText = "Not Paid"; // default jika null
+// 		if (finalPaymentStatus === "pending") finalStatusText = "Pending";
+// 		else if (finalPaymentStatus === "down_payment_verified") finalStatusText = "Down Payment Verified";
+// 		else if (finalPaymentStatus === "verified") {
+//             finalStatusText = "Verified"; 
+//         }
 
-		document.getElementById("Final-Payment-Status").textContent = finalStatusText;
-        return {
-            competitionRaw: data.competition || null,
-            paymentStatus: data.payment_status || null,
-            teamName: data.teamName || null,
-            prelimstats : prelimStatus || null,
-            prelim_overdue: prelim_overdue,
-            prelimSubmittedAt: prelimSubmittedAt,
-            prelimFileURL: prelimFileURL,
-            finalPaymentStatus : finalPaymentStatus || null,
-            finalstatus : finalstatus?? null
-        };
+// 		document.getElementById("Final-Payment-Status").textContent = finalStatusText;
+
+//         const finalsub =data.sub_final || {};
+//         const finalsubstatus = finalsub.status || null;
+//         const finalsubfileURL = finalsub.fileURL || null;
+//         const finalsubsubmittedAt = finalsub.submittedAt || null;
+//         const finalsubmissionoverdue = finalsub.overdue || null;
+
+//         return {
+//             userCompetition: data.competition || null,
+//             paymentStatus: data.payment_status || null,
+//             teamName: data.teamName || null,
+//             prelimstats : prelimStatus || null,
+//             prelim_overdue: prelim_overdue,
+//             prelimSubmittedAt: prelimSubmittedAt,
+//             prelimFileURL: prelimFileURL,
+//             finalPaymentStatus : finalPaymentStatus || null,
+//             finalstatus : finalstatus?? null,
+//             finalsubstatus : finalsubstatus?? null,
+//             finalsubfileURL : finalsubfileURL?? null,
+//             finalsubsubmittedAt : finalsubsubmittedAt?? null,
+//             finalsubmissionoverdue : finalsubmissionoverdue?? null
+//         };
 
 
 
-	} catch (err) {
-		console.error("Failed to fetch data:", err);
-	}
-}
+// 	} catch (err) {
+// 		console.error("Failed to fetch data:", err);
+// 	}
+// }
 
 // Write Final Payment Status
 // function writePaymentStatus(status) {
@@ -599,7 +752,6 @@ function setupPrelimTab(paymentStatus) {
     }
 }
 
-
 // =====================================
 // LOAD PRELIM CASE
 // =====================================
@@ -719,7 +871,6 @@ export async function loadPrelimCase(currentUserID) {
                         delCaseFinalLink.innerText = "Download Case";
                         delCaseFinalLink.style.pointerEvents = "auto";
                         delCaseFinalLink.style.color = "#0dcaf0";
-                        console.log("📎 Final case link assigned:", finalCaseUrl);
                     } else {
                         delCaseFinalLink.href = "javascript:void(0)";
                         delCaseFinalLink.innerText = "Case Not Available";
@@ -769,9 +920,15 @@ function setupGuidebook(userCompetition) {
     console.log("setupGuidebook: found guidebook entry =", guidebookURL);
 
     const guidebookAnchor = document.getElementById("competition-guide-book");
+    const finalguidebookAnchor = document.getElementById("final-competition-guide-book");   
 
     if (!guidebookAnchor) {
         console.error("setupGuidebook: Elemen #competition-guide-book tidak ditemukan!");
+        return;
+    }
+
+    if (!finalguidebookAnchor) {
+        console.error("setupGuidebook: Elemen #final-competition-guide-book tidak ditemukan!");
         return;
     }
 
@@ -786,6 +943,11 @@ function setupGuidebook(userCompetition) {
             alert("Guidebook can be accessed during the submission period.");
         });
 
+        finalguidebookAnchor.addEventListener("click", (e) => {
+            e.preventDefault();
+            alert("Guidebook can be accessed during the submission period.");
+        });
+
         console.log("setupGuidebook: guidebook locked — alert mode aktif");
         return;
     }
@@ -795,14 +957,19 @@ function setupGuidebook(userCompetition) {
     // ======================================================
     if (!guidebookURL) {
         guidebookAnchor.href = "#";
+        finalguidebookAnchor.href = "#";
         guidebookAnchor.innerText = "Guidebook Not Available";
+        finalguidebookAnchor.innerText = "Guidebook Not Available"; 
         return;
     }
 
     // Normal mode
     guidebookAnchor.href = guidebookURL;
+    finalguidebookAnchor.href = guidebookURL;
     guidebookAnchor.innerText = "Guide Book";
+    finalguidebookAnchor.innerText = "Guide Book";
     guidebookAnchor.classList.remove("disabled");
+    finalguidebookAnchor.classList.remove("disabled");
 
     console.log("setupGuidebook: guidebook link applied");
 }
@@ -929,21 +1096,73 @@ console.log("SCRIPT LOADED");
 // =====================================
 // FINAL ROUND LINK SETUP (FIXED BOOLEAN LOGIC)
 // =====================================
-async function setupFinalRoundLink(finalStatusRaw, currentUserID) {
+async function setupFinalRoundLink(finalStatusRaw, currentUserID, finalPaymentStatus, competition) {
     // 1. Ambil Elemen
     let finalLink = document.getElementById("Final-Round-Registration");
-    const rankDisplay = document.getElementById("Preliminary-Rank"); // Elemen Rank di Card 1
+    let LeaderboardDisplay = document.getElementById("Preliminary-Leaderboard"); // Elemen Rank di Card 1
     const paymentDisplay = document.getElementById("Final-Payment-Status"); // Elemen Payment di Card 3
 
     if (!finalLink) return;
 
-    // 2. Reset Listener (Clone Node untuk hapus event lama agar tidak menumpuk)
+    // -----------------------------------------------------------
+    // LOGIKA LEADERBOARD: UBAH JADI "VIEW" & BUKA MODAL
+    // -----------------------------------------------------------
+    if (LeaderboardDisplay) {
+
+        LeaderboardDisplay.replaceWith(LeaderboardDisplay.cloneNode(true));
+        LeaderboardDisplay = document.getElementById("Preliminary-Leaderboard");
+
+        const openTimeUTC = Date.UTC(2026, 0, 3, 11, 0, 0); 
+        const nowUTC = Date.now();
+
+        const isOpen = nowUTC >= openTimeUTC;
+
+        // ===== SET TAMPILAN =====
+        LeaderboardDisplay.textContent = "View";
+        LeaderboardDisplay.style.textDecoration = "underline";
+
+        if (!isOpen) {
+            // LOCKED
+            LeaderboardDisplay.style.color = "#9ca3af";
+            LeaderboardDisplay.style.cursor = "not-allowed";
+
+            LeaderboardDisplay.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                alert("Leaderboard can only be accessed starting January 3, 2026 at 6:00 PM (Jakarta Time, GMT+7) ");
+            });
+
+        } else {
+            // UNLOCKED
+            LeaderboardDisplay.style.color = "#4c1d95";
+            LeaderboardDisplay.style.cursor = "pointer";
+
+            LeaderboardDisplay.addEventListener("click", (e) => {
+                e.preventDefault();
+                handleOpenLeaderboard(competition);
+            });
+        }
+    }
+
+
+
+    // -----------------------------------------------------------
+    // LOGIKA PAYMENT VERIFIED (PRIORITAS TERTINGGI)
+    // -----------------------------------------------------------
+    if (finalPaymentStatus === "verified") {
+        finalLink.textContent = "Registered";
+        finalLink.style.pointerEvents = "none";
+        finalLink.style.opacity = "0.7";
+        if (paymentDisplay) paymentDisplay.textContent = "Verified";
+        return;
+    }
+
+    // 2. Reset Listener Tombol Registrasi
     finalLink.replaceWith(finalLink.cloneNode(true));
     finalLink = document.getElementById("Final-Round-Registration"); 
 
     // -----------------------------------------------------------
-    // LOGIKA BARU SESUAI DATABASE (BOOLEAN)
-    // finalStatusRaw: true (Lolos), false (Gagal), null/"-" (Pending)
+    // LOGIKA STATUS KELOLOSAN (finalStatusRaw)
     // -----------------------------------------------------------
 
     if (finalStatusRaw === true) {
@@ -955,11 +1174,11 @@ async function setupFinalRoundLink(finalStatusRaw, currentUserID) {
         finalLink.style.pointerEvents = "auto";
         finalLink.style.opacity = "1";
         
-        // Reset style tombol ke default CSS (jika sebelumnya diubah jadi abu-abu)
+        // Reset style tombol ke default CSS
         finalLink.style.backgroundColor = ""; 
         finalLink.style.borderColor = "";
         finalLink.style.color = "";
-        finalLink.removeAttribute("href"); // Pastikan tidak ada href aneh
+        finalLink.removeAttribute("href");
 
         // Event Klik: Buka Modal Pembayaran
         finalLink.addEventListener("click", async (e) => {
@@ -974,10 +1193,13 @@ async function setupFinalRoundLink(finalStatusRaw, currentUserID) {
             }
 
             const teamData = snap.data();
-            generateFinalModal(teamData); // Fungsi generate modal Anda
-
-            const finalModal = new bootstrap.Modal(document.getElementById("finalPaymentModal"));
-            finalModal.show();
+            
+            // Panggil modal pembayaran bootstrap (Logic lama Anda)
+            if(typeof generateFinalModal === 'function'){
+                 generateFinalModal(teamData); 
+                 const finalModal = new bootstrap.Modal(document.getElementById("finalPaymentModal"));
+                 finalModal.show();
+            }
         });
 
     } else if (finalStatusRaw === false) {
@@ -985,20 +1207,14 @@ async function setupFinalRoundLink(finalStatusRaw, currentUserID) {
         // SKENARIO 2: TIDAK LOLOS -> TOMBOL PESAN SEMANGAT
         // ============================
 
-        // A. RANK (Biarkan normal/putih, jangan merah)
-        if (rankDisplay) {
-            rankDisplay.style.color = ""; 
-            rankDisplay.style.textShadow = "";
-        }
-
-        // B. UBAH TOMBOL JADI "SURAT CINTA"
+        // Ubah tombol jadi pesan
         finalLink.textContent = "A Message For You"; 
         
-        // Aktifkan klik (PENTING)
+        // Aktifkan klik
         finalLink.style.pointerEvents = "auto"; 
         finalLink.style.cursor = "pointer";
 
-        // Style tombol: Outline putih transparan (elegan & rendah hati)
+        // Style tombol: Outline putih transparan
         finalLink.style.backgroundColor = "transparent"; 
         finalLink.style.borderColor = "rgba(255, 255, 255, 0.6)";
         finalLink.style.color = "#ffffff"; 
@@ -1006,90 +1222,216 @@ async function setupFinalRoundLink(finalStatusRaw, currentUserID) {
         finalLink.style.boxShadow = "none";
         finalLink.removeAttribute("href");
 
-        // C. EVENT LISTENER: BUKA MODAL SEMANGAT
+        // Event Klik: Buka Modal Semangat
         finalLink.addEventListener("click", async (e) => {
             e.preventDefault();
-
-            // Kita ambil nama tim dulu biar personal
+            
+            // 1. Ambil nama tim
             const docRef = doc(DB, "Team", currentUserID);
             const snap = await getDoc(docRef);
-            const teamName = snap.exists() ? snap.data().teamName : "Champion";
-
-            // Generate isi modal semangat
+            const teamName = snap.exists() ? snap.data().teamName : "Participant";
+            // 2. Generate HTML 
             generateEncouragementModal(teamName);
+            // 3. Pastikan ID ini sesuai dengan ID modal pembungkus utama di HTML kamu (biasanya "finalPaymentModal")
+            const modalElement = document.getElementById("finalPaymentModal"); 
 
-            // Tampilkan modal yang sama (finalPaymentModal)
-            const finalModal = new bootstrap.Modal(document.getElementById("finalPaymentModal"));
-            finalModal.show();
+            // Cek apakah modal sudah ada instance-nya atau buat baru
+            let finalModal = bootstrap.Modal.getInstance(modalElement);
+            if (!finalModal) {
+                finalModal = new bootstrap.Modal(modalElement);
+            }
+            
+            finalModal.show(); // <--- INI KUNCINYA
         });
 
-        // D. Kosongkan Status Payment
+        // Kosongkan Status Payment
         if (paymentDisplay) {
             paymentDisplay.textContent = "-";
-            
-            // Opsional: Bikin agak samar biar user tidak fokus ke situ
             paymentDisplay.style.opacity = "0.5"; 
         }
         
     } else {
         // ============================
-        // SKENARIO 3: PENDING (null atau "-") -> Tampilan Default
+        // SKENARIO 3: PENDING -> Tampilan Default
         // ============================
         
         finalLink.textContent = "Pending";
         finalLink.style.pointerEvents = "none";
         finalLink.style.opacity = "0.5";
         
-        // Pastikan rank tetap menampilkan strip atau nilai aslinya jika pending
-        if (rankDisplay && rankDisplay.textContent === "NOT PASSED") {
-             rankDisplay.textContent = "Pending";
-             rankDisplay.style.color = ""; // Reset warna
+        if (paymentDisplay) paymentDisplay.textContent = "Pending";
+    }
+}
+
+async function handleOpenLeaderboard(userCompetition) {
+    const tbody = document.getElementById("prelim-table-body");
+    const modalWrapper = document.getElementById("prelim-leaderboard-modal-wrapper");
+    
+    // 1. Reset & Tampilkan Loading
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted"><div class="spinner-border text-primary spinner-border-sm" role="status"></div> Loading Leaderboard...</td></tr>';
+    
+    // 2. Buka Modal
+    if (modalWrapper) {
+        modalWrapper.style.display = 'flex';
+    }
+
+    try {
+        // 3. Query Firebase: Ambil HANYA tim dari lomba yang sama
+        // Pastikan nama field di database sesuai, misal "competition" atau "selectedCompetition"
+        const q = query(
+            collection(DB, "Team"), 
+            where("competition", "==", userCompetition) 
+        );
+        
+        const querySnapshot = await getDocs(q);
+        let qualifiedTeams = [];
+
+        // 4. Filtering Data (Client Side)
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const prelim = data.sub_preliminary || {};
+
+            // Syarat Masuk Leaderboard:
+            // a. Punya Rank (Tidak null/undefined dan > 0)
+            // b. Punya Score (Tidak null/undefined)
+            const hasRank = prelim.rank !== null && prelim.rank !== undefined && prelim.rank > 0;
+            const hasScore = prelim.score !== null && prelim.score !== undefined;
+
+            if (hasRank && hasScore) {
+                qualifiedTeams.push({
+                    id: doc.id,
+                    teamName: data.teamName,
+                    university: data.leader?.university || "-",
+                    rank: prelim.rank,
+                    score: prelim.score,
+                    finalStatus: prelim.final // true/false/null
+                });
+            }
+        });
+
+        // 5. Sorting: Urutkan berdasarkan Rank (1, 2, 3...)
+        qualifiedTeams.sort((a, b) => a.rank - b.rank);
+
+        // 6. Rendering ke HTML
+        tbody.innerHTML = ""; // Hapus loading
+
+        if (qualifiedTeams.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center p-4 text-muted" style="font-style: italic;">
+                        Leaderboard data is not available yet.
+                    </td>
+                </tr>`;
+            return;
         }
 
-        paymentDisplay.textContent = "Pending";
+        // Loop data yang sudah bersih
+        qualifiedTeams.forEach((team, index) => {
+            renderLeaderboardRow(tbody, team, index + 1);
+        });
+
+    } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger p-3">Failed to load leaderboard.</td></tr>';
     }
+}
+
+/**
+ * RENDER BARIS TABEL (READ-ONLY)
+ * Karena ini untuk dilihat peserta, kita pakai Teks Biasa (Bukan Input/Select)
+ */
+function renderLeaderboardRow(tbody, team, displayNo) {
+    const row = document.createElement("tr");
+
+    // Tentukan Label Status Final
+    let statusBadge = `<span class="badge bg-secondary">Pending</span>`;
+    if (team.finalStatus === true) {
+        statusBadge = `<span class="badge bg-success">Passed</span>`;
+    } else if (team.finalStatus === false) {
+        statusBadge = `<span class="badge bg-danger">Failed</span>`;
+    }
+
+    // Styling Score agar rapi (2 desimal)
+    const formattedScore = parseFloat(team.score).toFixed(2);
+
+    row.innerHTML = `
+        <td class="text-center fw-bold text-secondary">${displayNo}</td>
+        
+        <td>
+            <div style="font-weight:700; color:#4c1d95; font-size:14px;">
+                ${team.teamName || "No Name"}
+            </div>
+            <div style="font-size:11px; color:#64748b;">
+                ${team.university}
+            </div>
+        </td>
+
+        <td class="text-center">${statusBadge}</td>
+
+        <td class="text-center">
+            <span style="font-weight: 800; font-size: 1.1rem; color: #0f172a;">#${team.rank}</span>
+        </td>
+
+        <td class="text-center">
+            <span style="font-weight: 600; color: #4c1d95;">${formattedScore}</span>
+        </td>
+    `;
+
+    tbody.appendChild(row);
 }
 
 // =====================================
 // GENERATE MODAL SEMANGAT (HTML)
 // =====================================
+
 function generateEncouragementModal(teamName) {
     const wrapper = document.getElementById("final-payment-wrapper");
 
-    // HTML Pesan Semangat
+    // --- TAMBAHAN BARU: Hapus Background Putih Bawaan Bootstrap ---
+    // Ini mencari elemen induk (.modal-content) dan membuatnya transparan
+    const parentContent = wrapper.closest('.modal-content');
+    if (parentContent) {
+        parentContent.style.backgroundColor = 'transparent';
+        parentContent.style.border = 'none';
+        parentContent.style.boxShadow = 'none';
+    }
+    // -------------------------------------------------------------
+
     wrapper.innerHTML = `
-        <div class="modal-header border-0">
-            <h5 class="modal-title fw-bold text-secondary">A Message from Committee</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body text-center p-5">
-            <div class="mb-4" style="font-size: 4rem;">
-                ✨
-            </div>
-
-            <h2 class="fw-bold mb-3" style="color: #671c84;">Dear ${teamName},</h2>
+        <div class="modal-content" id="encourage-modal-card">
             
-            <p class="lead text-muted mb-4">
-                Thank you for being a part of this incredible journey. 
-                We have reviewed your submission, and although you did not proceed to the final round this time, 
-                your effort and dedication truly stood out.
-            </p>
-
-            <div class="card bg-light border-0 p-3 mb-4 text-start">
-                <p class="mb-0 fst-italic text-secondary">
-                    "Success is not final, failure is not fatal: it is the courage to continue that counts."
-                    <br><span class="fw-bold">— Winston Churchill</span>
-                </p>
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn-close" id="encourage-close-icon" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <p class="text-secondary">
-                Please don't let this stop you. Keep learning, keep growing, and we hope to see you shine even brighter next year!
-            </p>
-        </div>
+            <div class="modal-body px-4 pb-4 pt-0 text-center">
+                
+                <div id="encourage-icon-wrapper">
+                    <span id="encourage-icon">✨</span>
+                </div>
 
-        <div class="modal-footer border-0 justify-content-center">
-            <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Close</button>
+                <h3 id="encourage-title">Dear ${teamName},</h3>
+                
+                <p id="encourage-message">
+                    Thank you for participating. Although you did not proceed to the final round, 
+                    <span id="encourage-message-highlight">we were truly impressed by your effort.</span>
+                </p>
+
+                <div id="encourage-quote-box">
+                    <p id="encourage-quote-text">
+                        "Success is not final, failure is not fatal: it is the courage to continue that counts."
+                    </p>
+                    <small id="encourage-quote-author">— Winston Churchill</small>
+                </div>
+
+                <p id="encourage-footer">
+                    Keep learning, keep growing! 🚀
+                </p>
+
+                <button type="button" id="encourage-btn-action" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
         </div>
     `;
 }
@@ -1097,6 +1439,13 @@ function generateEncouragementModal(teamName) {
 
 function generateFinalModal(teamData) {
     const wrapper = document.getElementById("final-payment-wrapper");
+
+    const parentContent = wrapper.closest('.modal-content');
+    if (parentContent) {
+        parentContent.style.backgroundColor = 'transparent';
+        parentContent.style.border = 'none';
+        parentContent.style.boxShadow = 'none';
+    }
 
     // Cegah overwrite kalau sudah ada isi
     if (wrapper.innerHTML.trim() !== "") return;
@@ -1111,35 +1460,37 @@ function generateFinalModal(teamData) {
     if (teamData.members && teamData.members.length > 0) {
         teamData.members.forEach((member, i) => {
             memberFormsHTML += `
-                <div class="member-final-pay-form mt-3 p-3 border rounded">
-                    <h5 class="text-secondary" id="member-name-${i}">${member.firstName} ${member.lastName}</h5>
-
-                    <!-- Price & Payment Info -->
-                    <span class="fw-bold d-block mt-2" id="member-price-${i}">Price</span>
-                    <div id="member-payment-method-info-${i}" class="mt-2"></div>
-
-                    <!-- Row 1: Upload payment proof -->
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <label class="form-label" for="member-payment-submit-${i}">Upload payment proof</label>
-                            <input type="file" class="form-control" id="member-payment-submit-${i}" name="member-payment-submit-${i}">
+                <div class="member-final-pay-form mb-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="payment-icon-user me-3">👤</div>
+                        <div>
+                            <div class="role-label-small">Member</div> <h5 class="member-name-large mb-0" id="member-name-${i}">
+                                ${member.firstName} ${member.lastName}
+                            </h5>
                         </div>
                     </div>
 
-                    <!-- Row 2: Hospitality -->
-                    <div class="row mt-2">
-                        <div class="col-12">
+                    <div class="price-display-box">
+                        <span class="price-label">Amount to Pay</span>
+                        <span class="price-value" id="member-price-${i}">Calculating...</span>
+                    </div>
+                    
+                    <div id="member-payment-method-info-${i}" class="small text-muted mb-2 px-1"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="member-payment-submit-${i}">Upload Payment Proof</label>
+                        <input type="file" class="form-control" id="member-payment-submit-${i}" name="member-payment-submit-${i}">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
                             <label class="form-label" for="member-hospitality-type-${i}">Hospitality</label>
                             <select class="form-select" id="member-hospitality-type-${i}" name="member-hospitality-type-${i}" required>
                                 <option value="Full Hospitality">Full Hospitality</option>
                                 <option value="Excluding Accommodation">Excluding Accommodation</option>
                             </select>
                         </div>
-                    </div>
-
-                    <!-- Row 3: Payment method -->
-                    <div class="row mt-2">
-                        <div class="col-12">
+                        <div class="col-6">
                             <label class="form-label" for="member-payment-method-${i}">Payment Method</label>
                             <select class="form-select" id="member-payment-method-${i}" name="member-payment-method-${i}" required>
                                 <option value="Gopay">Gopay</option>
@@ -1153,81 +1504,97 @@ function generateFinalModal(teamData) {
         });
     }
 
-
-
     wrapper.innerHTML = `
-        <div class="modal-header">
-            <h5 class="modal-title fw-bold text-primary" style="color:#671c84">Final Round Registration</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">FINAL ROUND REGISTRATION</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-        <div class="modal-body">
-            <div id="del-final-status"></div>
-            <div id="del-payment-status"></div>
+            <div class="modal-body"> 
+                <div id="del-final-status"></div>
+                <div id="del-payment-status"></div>
 
-            <div id="del-final-payment" class="p-3">
-                <form id="final-payment-upload">
-                    <div id="leader-final-pay-form" class="p-3 border rounded mb-3">
-                        <h5 class="text-secondary">${leaderfirstname+" "+leaderlastname}</h5>
-                        <span id="final-payment-price" class="fw-bold d-block mt-2">Price</span>
-                        <div id="final-payment-method-info" class="mt-2"></div>
-                        <div class="row">
-                            <div class="col-md-6 col-12">
-                                <label for="final-leader-payment-submit" class="form-label">Upload payment proof</label>
+                <div id="del-final-payment">
+                    <form id="final-payment-upload">
+                        
+                        <div id="leader-final-pay-form" class="mb-3">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="payment-icon-user me-3" style="background: rgba(255, 81, 47, 0.1); color: #ff512f;">👑</div> 
+                                <div>
+                                    <div class="role-label-small" style="color: #ff512f;">Team Leader</div>
+                                    <h5 class="member-name-large mb-0">
+                                        ${leaderfirstname + " " + leaderlastname}
+                                    </h5>
+                                </div>
+                            </div>
+                            
+                            <div class="price-display-box">
+                                <span class="price-label">Amount to Pay</span>
+                                <span class="price-value" id="final-payment-price">Calculating...</span>
+                            </div>
+
+                            <div id="final-payment-method-info" class="small text-muted mb-2 px-1"></div>
+
+                            <div class="mb-3">
+                                <label for="final-leader-payment-submit" class="form-label">Upload Payment Proof</label>
                                 <input type="file" id="final-leader-payment-submit" name="final-leader-payment-submit" class="form-control">
                             </div>
-                            <div class="col-md-6 col-12">
-                                <label for="leader-hospitality-type" class="form-label">Hospitality:</label>
-                                <select id="leader-hospitality-type" name="leader-hospitality-type" class="form-select" required>
-                                    <option value="Full Hospitality">Full Hospitality</option>
-                                    <option value="Excluding Accommodation">Excluding Accommodation</option>
-                                </select>
+
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="leader-hospitality-type" class="form-label">Hospitality</label>
+                                    <select id="leader-hospitality-type" name="leader-hospitality-type" class="form-select" required>
+                                        <option value="Full Hospitality">Full Hospitality</option>
+                                        <option value="Excluding Accommodation">Excluding Accommodation</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label for="leader-payment-type" class="form-label">Payment Scheme</label>
+                                    <select id="leader-payment-type" name="leader-payment-type" class="form-select" required>
+                                        <option value="Full">Full Payment</option>
+                                        <option value="DP" selected>Down Payment</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row"> 
+                                <div class="col-6">
+                                    <label for="leader-payment-method" class="form-label">Payment Method</label>
+                                    <select id="leader-payment-method" name="leader-payment-method" class="form-select" required>
+                                        <option value="Gopay">Gopay</option>
+                                        <option value="Bank BCA">Bank BCA</option>
+                                        <option value="Paypal">Paypal</option>
+                                    </select>
+                                </div>
+                                <div class="col-6" id="down-payment-category-col">
+                                    <label for="leader-down-payment-category" class="form-label">Category (DP)</label>
+                                    <select id="leader-down-payment-category" name="leader-down-payment-category" class="form-select">
+                                        <option value="First">First Payment</option>
+                                        <option value="Last">Last Payment</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-md-4 col-12">
-                                <label for="leader-payment-type" class="form-label">Payment Scheme:</label>
-                                <select id="leader-payment-type" name="leader-payment-type" class="form-select" required>
-                                    <option value="Full">Full Payment</option>
-                                    <option value="DP" selected>Down Payment</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 col-12">
-                                <label for="leader-payment-method" class="form-label">Payment Method:</label>
-                                <select id="leader-payment-method" name="leader-payment-method" class="form-select" required>
-                                    <option value="Gopay">Gopay</option>
-                                    <option value="Bank BCA">Bank BCA</option>
-                                    <option value="Paypal">Paypal</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 col-12" id="down-payment-category-col">
-                                <label for="leader-down-payment-category" class="form-label">Category:</label>
-                                <select id="leader-down-payment-category" name="leader-down-payment-category" class="form-select">
-                                    <option value="First">First Payment</option>
-                                    <option value="Last">Last Payment</option>
-                                </select>
-                            </div>
+
+                        ${memberFormsHTML}
+
+                        <div class="custom-rules-box">
+                            <input class="form-check-input" type="checkbox" id="final-rules-check" required>
+                            <label class="custom-rules-label" for="final-rules-check">
+                                I confirm that all data is correct and I have read the 
+                                <a href="https://drive.google.com/file/d/1D-Yj2-X-7yXGZNcrtEVnxp4ztn8v52CG/view?usp=sharing" target="_blank">Finalist Payment Rules</a>.
+                            </label>
                         </div>
-                    </div>
-
-                    <!-- Member Forms -->
-                    ${memberFormsHTML}
-
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" id="final-rules-check" required>
-                        <label class="form-check-label" for="final-rules-check">
-                            We have read the 
-                            <a href="https://drive.google.com/file/d/1D-Yj2-X-7yXGZNcrtEVnxp4ztn8v52CG/view?usp=sharing" target="_blank" class="link-secondary" style="text-decoration: underline;">Finalist Payment Rules</a>.
-                        </label>
-                        <div class="invalid-feedback">You must agree before submitting.</div>
-                    </div>
-                </form>
+                        <div class="invalid-feedback d-block text-center mt-2" style="color: #ff8ccf; font-weight:bold; display:none;">* You must agree before submitting.</div>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        <div class="modal-footer">
-            <button class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-            <button id="final-payment-submit-btn" type="submit" form="final-payment-upload" class="btn btn-primary">Submit</button>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel-custom" data-bs-dismiss="modal">Cancel</button>
+                <button id="final-payment-submit-btn" type="submit" form="final-payment-upload" class="btn-submit-custom">Submit Payment</button>
+            </div>
         </div>
     `;
     // Ambil elemen
@@ -1303,7 +1670,7 @@ function generateFinalModal(teamData) {
                     const formData = collectFinalFormData(teamData);
                     await submitFinalRegistration(currentUserID, formData, teamData);
                     
-                    alert("Payment submitted! Great job on making it this far. See you at the Final Round, Champions! 🚀");
+                    alert("Payment submitted successfully. Well done on reaching the Final Round. We look forward to seeing you there.");
                     
                     window.location.reload(); 
                 } catch (err) {
@@ -1726,5 +2093,59 @@ function setupFinalTab(finalStatus) {
     }
 }
 
+
+function checkSubmissionStatus(finalsubstatus,finalsubfileURL,finalsubsubmittedAt,finalsubmissionoverdue) {
+    const formElement = document.getElementById('final-form');
+    const summaryElement = document.getElementById('del-sub-sum-final');
+    const finalcase = document.getElementById("del-case-final-download");
+    
+    // Jika finalsubstatus memiliki nilai (Truthy), artinya user SUDAH submit
+    if (finalsubstatus) {
+        // 1. Sembunyikan Form
+        formElement.classList.add('d-none');
+        finalcase.classList.add('d-none');
+        // 2. Tampilkan Summary
+        summaryElement.classList.remove('d-none');
+        const filesubmitat = document.getElementById('final-file-time-sub');
+
+        let submittedText = "No submission yet";
+        if (finalsubsubmittedAt) {
+            try {
+                const dt = typeof finalsubsubmittedAt.toDate === "function"
+                    ? finalsubsubmittedAt.toDate()
+                    : new Date(finalsubsubmittedAt);
+                submittedText = isNaN(dt) ? "No submission yet" : dt.toLocaleString();
+            } catch {
+                submittedText = "No submission yet";
+            }
+        }
+        if (filesubmitat) filesubmitat.textContent = submittedText;
+
+
+        const fileoverduestatus = document.getElementById('final-file-time-status');
+        if (finalsubmissionoverdue==="no") {
+            fileoverduestatus.innerText = "On Time";
+        } else {
+            fileoverduestatus.innerText = "Overdue";
+        }
+
+        const fileURL = document.getElementById('final-file-url');
+        if (fileURL) {
+            if (finalsubfileURL) {
+                fileURL.innerHTML = `<a href="${finalsubfileURL}" target="_blank" class="text-primary text-decoration-underline" id="final-file-url">Open File</a>`;
+            } else {
+                fileURL.textContent = "No file uploaded";
+            }
+        }
+
+    } else {
+        // Jika finalsubstatus kosong (Falsy), artinya user BELUM submit
+        // 1. Tampilkan Form
+        formElement.classList.remove('d-none');
+        
+        // 2. Sembunyikan Summary
+        summaryElement.classList.add('d-none');
+    }
+}
 
 

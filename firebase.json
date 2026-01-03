@@ -17,7 +17,7 @@
     }
   ],
   "hosting": {
-    "site":"ipfest-itb-2026",
+    "site":"ipfest-2026",
     "public": "public",
     "ignore": [
       "firebase.json",
