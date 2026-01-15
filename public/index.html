@@ -67,7 +67,20 @@
 							<li><a href="events/petrocare.html" class="dropdown-item">PetroCare</a></li>
 						</ul>
 					</div>
-					<a href="merchandise.html" class="nav-item nav-link">Merchandise</a>
+					<a href="merchandise.html" 
+					class="nav-item nav-link"
+					onclick="
+						var targetDate = new Date('2026-11-03');
+						var currentDate = new Date();
+						
+						if (currentDate < targetDate) {
+						event.preventDefault(); /* Cegah pindah halaman */
+						alert('Merchandise is not available yet'); /* Tampilkan pesan */
+						}
+						/* Jika sudah tanggal 15, kode ini dilewati dan link jalan normal */
+					">
+					Merchandise
+					</a>
 				</div>
 				<div class="" id="btn-login-status">
 					<a href="login.html" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4">Log In</a>
@@ -76,7 +89,7 @@
 		</nav>
 
 		<!-- Hero Header Start -->
-		<section class="container-xl">
+		<!-- <section class="container-xl">
 			<div class="hero-header overflow-hidden px-5">
 				<div class="rotate-img">
 					<img src="static/images/sty-1.png" class="img-fluid w-100" alt="">
@@ -96,6 +109,64 @@
 					</div>
 					<div class="col-lg-6 wow fadeInRight ps-5" data-wow-delay="0.2s">
 						<img src="static/images/ipfest_2026_logo.svg" class="img-fluid ms-5 w-100 h-75" alt="">
+					</div>
+				</div>
+			</div>
+		</section> -->
+		<section class="container-xl">
+			<div class="hero-header overflow-hidden px-3 px-lg-5"> 
+				<div class="rotate-img d-none d-lg-block"> 
+					<img src="static/images/sty-1.png" class="img-fluid w-100" alt="">
+					<div class="rotate-sty-2"></div>
+				</div>
+				<ul class="circles">
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ul>
+
+				<div class="row gy-5 align-items-center">
+					<div class="col-lg-6 text-center text-lg-start wow fadeInLeft" data-wow-delay="0.1s">
+						
+						<h1 class="display-4 mb-4 wow fadeInUp lead" data-wow-delay="0.3s" style="color: #ffffff; font-weight: bold;">
+							#TransformTo<span style="color: #E768A8;">Transcend</span>
+						</h1>
+
+						<p class="fs-5 mb-4 wow fadeInUp text-white" data-wow-delay="0.5s" id="hero-paragraph">
+							IPFEST 2026 as the global transformative nexus where academic insight, industry expertise, and learner ingenuity converge to shape actionable pathways and unlock scalable solutions through innovations for future energy challenges.
+						</p>
+
+						<div class="d-flex justify-content-center justify-content-lg-start wow fadeInUp" data-wow-delay="0.7s">
+							<a href="https://bit.ly/InvitationLetterIPFEST2026" class="btn btn-outline-light border border-light rounded-pill py-2 px-4" style="border-radius: 0; font-weight: 500;" target="_blank">
+								Download Invitation Letter
+							</a>    
+						</div>
+					</div>
+
+					<div class="col-lg-6 text-center wow fadeInRight" data-wow-delay="0.2s">
+						<img src="static/images/ipfest_2026_logo.svg" class="img-fluid w-50 w-lg-100" alt="IPFest Logo">
 					</div>
 				</div>
 			</div>
@@ -127,18 +198,20 @@
 </div>
 	<!-- About End -->
 	<section class="container-xl mb-5">
-		<div class="col-lg-4 col-sm-6 col-12 text-center mx-auto">
-			<p class="fs-5 wow fadeInDown">Organized By:</p>
-			<div class="row wow fadeInUp">
-				<div class="col-12 mx-auto">
-					<img src="static/images/spe_itb.png" alt="SPE ITB SC" class="me-3" style="width: 30%;">
-					<img src="static/images/patra.png" alt="HMTM PATRA ITB" class="" style="width: 30%;">
-					<img src="static/images/iatmi_itb.png" alt="IATMI SM ITB" class="" style="width: 30%;">
+		<div class="col-12 mt-5 mb-5">	
+			<div class="d-flex flex-column align-items-center justify-content-center gap-3">
+				<div class="organized-title wow fadeInDown">
+					Organized By
+				</div>
+				<div class="logo-capsule wow fadeInUp" data-wow-delay="0.2s">
+					<img src="static/images/spe_itb.png" alt="SPE ITB">
+					<img src="static/images/patra.png" alt="PATRA ITB">
+					<img src="static/images/iatmi_itb.png" alt="IATMI ITB">
 				</div>
 			</div>
 		</div>
 	</section>
-	<section class="container-xl py-5">
+	<!-- <section class="container-xl py-5">
 		<div class="col-lg-10 col-12 text-center mx-auto">
 			<p class="fs-5 wow fadeInDown" style="margin-bottom: 0;">Supported By:</p>
 			<div class="row wow fadeInUp" style="margin-top: 0;">
@@ -151,58 +224,107 @@
 				</div>
 			</div>
 		</div>
-	</section>
+	</section> -->
 	<section class="container-xl py-5">
-		<div class="col-lg-10 col-12 text-center mx-auto">
-			<p class="fs-5 wow fadeInDown" style="margin-bottom: 3rem;">Sponsored By:</p>
-			<div class="row wow fadeInUp gap-0 justify-content-center" style="margin-top: 3rem;">
-				<div class="col-6">
-					<img src="static/images/sponsor/PHR.PNG" alt="PHR" class="img-fluid">
-				</div>
-				<div class="col-2">
-					<img src="static/images/sponsor/BP.PNG" alt="BP" class="img-fluid">
-				</div>
+		<div class="col-12 mt-5 mb-5 text-center">
+			
+			<div class="organized-title wow fadeInDown">
+				Sponsored By
 			</div>
-			<div class="row wow fadeInUp gap-0 justify-content-center align-items-center" style="margin-top: 0rem;">
-				<div class="col-4 col-md-2">
-					<img src="static/images/sponsor/RFD.png" alt="RFD" class="img-fluid">
+
+			<div class="sponsor-box wow fadeInUp" data-wow-delay="0.2s">
+				
+				<div class="row justify-content-center align-items-center mb-4">
+					<div class="col-md-4 col-8">
+						<img src="static/images/sponsor/6. Benvors (Gold).png" 
+							alt="Benvors" 
+							class="img-fluid sponsor-gold"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="benvors">
+					</div> 
 				</div>
-				<div class="col-4 col-md-2">
-					<img src="static/images/sponsor/tNavigator.png" alt="tNAV" class="img-fluid">
+
+				<div class="row justify-content-center align-items-center g-4 mb-4">
+					
+					<div class="col-lg-4 col-6">
+						<img src="static/images/sponsor/1. EMP (Bronze).png" 
+							alt="EMP" 
+							class="img-fluid sponsor-bronze"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="emp">
+					</div>
+					
+					<div class="col-lg-4 col-6">
+						<img src="static/images/sponsor/3. Geodipa (Bronze).png" 
+							alt="Geodipa" 
+							class="img-fluid sponsor-bronze"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="geodipa">
+					</div>
+					
+					<div class="col-lg-4 col-6">
+						<img src="static/images/sponsor/5. PYC (Bronze).png" 
+							alt="PYC" 
+							class="img-fluid sponsor-bronze"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="pyc">
+					</div>
+
+					<div class="col-lg-4 col-6">
+						<img src="static/images/sponsor/4. HCML (Bronze).png" 
+							alt="HCML" 
+							class="img-fluid sponsor-bronze"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="hcml">
+					</div>
+					
+					<div class="col-lg-4 col-6">
+						<img src="static/images/sponsor/10. Pertamina EP (Bronze).png" 
+							alt="Pertamina EP" 
+							class="img-fluid sponsor-bronze"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="pertamina_ep">
+					</div>
+					
+					<div class="col-lg-4 col-6">
+						<img src="static/images/sponsor/9. Harbour Energy (Bronze).png" 
+							alt="Harbour" 
+							class="img-fluid sponsor-bronze"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="harbour">
+					</div>
+
 				</div>
-				<div class="col-7 col-md-5">
-					<img src="static/images/sponsor/EP&SKK.png" alt="EP&SKK" class="img-fluid">
-				</div>
-				<div class="col-5 col-md-3">
-					<img src="static/images/sponsor/inalum.PNG" alt="Inalum" class="img-fluid">
-				</div>
-				<div class="col-3 col-md-2">
-					<img src="static/images/sponsor/SKK.png" alt="SKK" class="img-fluid">
-				</div>
-				<div class="col-5 col-md-4">
-					<img src="static/images/sponsor/EP.PNG" alt="EP" class="img-fluid">
-				</div> 
-			</div>
-			<div class="row wow fadeInUp gap-0 justify-content-center" style="margin-top: 0rem;">
-				<div class="col-4 col-md-2">
-					<img src="static/images/sponsor/KA+PYC.png" alt="KA&PYC" class="img-fluid">
-				</div>
-				<div class="col-4 col-md-3 text-center">
-					<div class="col-10">
-						<img src="static/images/sponsor/Medco.PNG" alt="Medco" class="img-fluid">
+
+				<div class="row justify-content-center align-items-center">
+					<div class="col-md-6 col-10"> 
+						<img src="static/images/sponsor/7. ExxonMobil (Bronze).png" 
+							alt="ExxonMobil" 
+							class="img-fluid sponsor-exxon"
+							style="cursor: pointer;"
+							data-bs-toggle="modal" 
+							data-bs-target="#sponsorModal"
+							data-id="exxon">
 					</div>
 				</div>
-				<div class="col-5 col-md-3 mb-3">
-					<img src="static/images/sponsor/Harbour.png" alt="Harbour" class="img-fluid">
-				</div>
-			</div>
-			<div class="row wow fadeInUp gap-0 justify-content-center" style="margin-top: 2rem;">
-				<div class="col-9 col-md-5">
-					<img src="static/images/sponsor/EXXONdkk.PNG" alt="Exxon" class="img-fluid">
-				</div>
+
 			</div>
 		</div>
-	</section>
+	</section> 
 
 	<!-- Service Start -->
 	<div class="container-fluid service py-5">
@@ -965,6 +1087,35 @@
 	</div>
 	<!-- Map End -->
 
+	<!-- Modal -->
+	 <div class="modal fade" id="sponsorModal" tabindex="-1" aria-labelledby="sponsorModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"> 
+			
+			<div class="modal-content" style="background: rgba(20, 20, 50, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; color: white;">
+			
+			<div class="modal-header border-0">
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			
+			<div class="modal-body text-center p-4">
+				
+				<div class="bg-white p-3 rounded-3 d-inline-block mb-3">
+					<img id="modalImage" src="" alt="Sponsor Logo" class="img-fluid" style="max-height: 80px;">
+				</div>
+				
+				<h3 id="modalTitle" class="fw-bold mb-3" style="color: #ffc107; text-shadow: 0 2px 5px rgba(0,0,0,0.5); letter-spacing: 1px;">
+					Loading...
+				</h3>
+				
+				<p id="modalDesc" style="text-align: justify; opacity: 0.9;">
+					Loading description...
+				</p>
+
+			</div>
+			</div>
+		</div>
+		</div>
+
 	<!-- Footer Start -->
 	<footer class="pt-5" style="background-color: #121212;">
 		<div class="container-xl">
@@ -1058,5 +1209,34 @@
 	<script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
 	<script src="static/lib/lightbox/js/lightbox.min.js"></script>
 	<script src="static/js/main.js"></script>
+	<script src="src/sponsor.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Fungsi untuk menghapus total elemen di HP
+			function nukeBackground() {
+				if ($(window).width() < 992) {
+					// 1. Cari elemen wrapper class .rotate-img dan HAPUS DARI DOM
+					$(".rotate-img").remove();
+					
+					// 2. Cari elemen berdasarkan nama file gambar (jaga-jaga classnya berubah)
+					$("img[src*='sty-1.png']").remove();
+					
+					// 3. Hapus elemen dekorasi kedua
+					$(".rotate-sty-2").remove();
+					
+					// 4. Paksa container jadi bersih
+					$(".hero-header").css("background", "none");
+				}
+			}
+
+			// Jalankan saat loading pertama
+			nukeBackground();
+
+			// Jalankan lagi sedikit terlambat (untuk menimpa WOW.js jika dia lambat)
+			setTimeout(nukeBackground, 100); 
+			setTimeout(nukeBackground, 500); 
+			setTimeout(nukeBackground, 1000);
+		});
+	</script>
 </body>
 </html>

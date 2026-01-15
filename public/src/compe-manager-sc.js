@@ -72,39 +72,56 @@ const delRelList = document.getElementById("delrel-team-list")
 
 let SCTeam = null
 
-// dynamic query after auth resolved
+const selectionList = document.getElementById("del-selection-list-prelim");
+
 const waitCompetition = setInterval(() => {
-	if (!switchCompetition) return
+    if (!switchCompetition) return;
 
-	clearInterval(waitCompetition)
+    clearInterval(waitCompetition);
 
-	SCTeam = query(collection(DB, 'Team'), where('competition', '==', switchCompetition))
+    SCTeam = query(collection(DB, 'Team'), where('competition', '==', switchCompetition));
 
-	onSnapshot(SCTeam, (snap) => {
-		let teamDocs = snap.docs
-		delRelList.innerHTML = ''
+    onSnapshot(SCTeam, (snap) => {
+        let teamDocs = snap.docs;
+        
+        const totalTeams = teamDocs.length; 
 
-		teamDocs.forEach((team, index) => {
-			let teamData = team.data()
-			createTeamList(
-				index + 1,
-				teamData.teamName,
-				teamData.leader.university,
-				teamData.competition,
-				teamData.leader,
-				teamData.members ?? [],
-				teamData.payment_status === "verified" ? "Verified" : "Pending"
-			)
-		})
-	})
-}, 100)
+        // RESET TABEL 
+        delRelList.innerHTML = '';
+        selectionList.innerHTML = ''; 
+
+        teamDocs.forEach((team, index) => {
+            let teamData = team.data();
+            let teamId = team.id; // 
+
+            // --- A. Render Tabel Database Utama ---
+            createTeamList(
+                index + 1,
+                teamData.teamName,
+                teamData.leader.university,
+                teamData.competition,
+                teamData.leader,
+                teamData.members ?? [],
+                teamData.payment_status === "verified" ? "Verified" : "Pending"
+            );
+
+            // --- B. Render Tabel Preliminary ---
+            createPrelimSelectionRow(
+                selectionList,  
+                teamId,         
+                index + 1,      
+                teamData,       
+                totalTeams      
+            );
+        });
+    });
+}, 100);
 
 
 // =========================
 // Render Table
 // ===============================
-//   CREATE TABLE ROW BY REAL DATA
-// ===============================
+
 
 function createTeamList(rowNo, teamName, univ, compe, leader, members, paymentStatus) {
 
@@ -160,201 +177,163 @@ excelConvertBtn.addEventListener("click", () => {
 })
 
 
-// Selection Section
-const SCSelection = collection(DB, 'SC_Selection')
-// Preliminary Round
-const selectionFormPrelim = document.getElementById("compe-manager-privilage-prelim")
-const selectionTablePrelim = document.getElementById("del-selection-list-prelim")
-// Final Booklet
-const caseStorage = ref(STORAGE, 'Case')
+// =========================
+// Function to Render Prelim Selection Row
+// =========================
+function createPrelimSelectionRow(tableElement, teamId, rowNo, teamData, totalTeams) {
+    // Ambil data sub_preliminary (gunakan object kosong jika belum ada)
+    const prelim = teamData.sub_preliminary || {};
+    
+    const finalStatus = prelim.final; // null (pending), true (passed), false (failed)
+    const rankStatus = prelim.rank || 0; // default 0
+    const scoreStatus = prelim.score !== undefined ? prelim.score : null;
 
-const finalBookletDist = document.getElementById('final-booklet-distribution')
-const bookletFile = finalBookletDist.querySelector('input')
-const deleteBookletBtn = finalBookletDist.querySelector('#delete-booklet-final')
-const submitBookletBtn = finalBookletDist.querySelector('#submit-final-booklet')
+    const row = document.createElement("tr");
+    row.className = "align-middle";
 
-deleteBookletBtn.addEventListener('click', () => { bookletFile.value = '' })
+    // --------------------------------------------------
+    // 1. KOLOM NO & 2. KOLOM TEAM NAME/UNIV
+    // --------------------------------------------------
+    // Kita render string HTML statis untuk bagian yang tidak diedit
+    const staticCols = `
+        <th scope="row" class="text-center">${rowNo}</th>
+        <td>
+            <div class="fw-bold text-primary">${teamData.teamName || "No Name"}</div>
+            <div class="small text-muted">${teamData.leader?.university || "-"}</div>
+        </td>
+    `;
+    row.innerHTML = staticCols;
 
-finalBookletDist.addEventListener('submit', (e) => {
-	e.preventDefault()
+    // --------------------------------------------------
+    // 3. KOLOM FINAL (Dropdown: Pending, Failed, Passed)
+    // --------------------------------------------------
+    const finalTd = document.createElement("td");
+    finalTd.className = "text-center";
+    
+    const finalSelect = document.createElement("select");
+    // Styling warna warni berdasarkan status
+    let finalClass = "btn-light border-secondary text-secondary"; // Pending styling
+    if (finalStatus === true) finalClass = "btn-success text-white";
+    else if (finalStatus === false) finalClass = "btn-danger text-white";
 
-	if (submitBookletBtn.disabled) return
+    finalSelect.className = `form-select form-select-sm text-center fw-bold ${finalClass}`;
+    finalSelect.style.borderRadius = "20px"; // Rounded pill style
+    
+    finalSelect.innerHTML = `
+        <option value="pending" ${finalStatus === null || finalStatus === undefined ? "selected" : ""}>🕒 Pending</option>
+        <option value="failed" ${finalStatus === false ? "selected" : ""}>✖ Failed</option>
+        <option value="passed" ${finalStatus === true ? "selected" : ""}>✔ Passed</option>
+    `;
 
-	if (!finalBookletDist.checkValidity()) {
-		setToastAlert('warning', 'Please fill the form correctly')
-		return
-	}
+    // Event Listener: Update Firestore saat diganti
+    finalSelect.onchange = async (e) => {
+        const val = e.target.value;
+        const newStatus = val === "passed" ? true : (val === "failed" ? false : null);
+        
+        try {
+            // Update Firestore
+            await updateDoc(doc(DB, "Team", teamId), { 
+                "sub_preliminary.final": newStatus 
+            });
+            // Update visual class tanpa reload
+            e.target.className = `form-select form-select-sm text-center fw-bold ${
+                newStatus === true ? "btn-success text-white" : 
+                (newStatus === false ? "btn-danger text-white" : "btn-light border-secondary text-secondary")
+            }`;
+        } catch (err) {
+            console.error("Error updating final status:", err);
+            alert("Gagal mengupdate status.");
+        }
+    };
+    finalTd.appendChild(finalSelect);
+    row.appendChild(finalTd);
 
-	const docRef = doc(DB, 'Information', '13HEVsAZhaWYqJiEowyz')
+    // --------------------------------------------------
+    // 4. KOLOM RANK (Dropdown: 1 - Total Teams)
+    // --------------------------------------------------
+    const rankTd = document.createElement("td");
+    rankTd.className = "text-center";
 
-	try {
-		submitBookletBtn.disabled = true
-		submitBookletBtn.innerText = 'Processing...'
+    const rankSelect = document.createElement("select");
+    rankSelect.className = "form-select form-select-sm text-center";
+    
+    // Opsi Default
+    let rankOptions = `<option value="0" class="text-muted">- Rank -</option>`;
+    
+    // Loop untuk membuat opsi ranking sejumlah tim yang ada
+    for (let i = 1; i <= totalTeams; i++) {
+        rankOptions += `<option value="${i}" ${rankStatus === i ? "selected" : ""}>#${i}</option>`;
+    }
+    rankSelect.innerHTML = rankOptions;
 
-		const file  = bookletFile.files[0]
-		const folderRef = ref(caseStorage, 'SC')
-		const fileRef = ref(folderRef, `${file.name}`)
-		const uploadTask = uploadBytesResumable(fileRef, file)
+    // Event Listener: Update Firestore
+    rankSelect.onchange = async (e) => {
+        const val = parseInt(e.target.value);
+        const newRank = val === 0 ? null : val;
 
-		uploadTask.on('state_changed', 
-			(snapshot) => {
-				const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-				console.log(progress)
-			},
-			(err) => {
-				switch (err.code) {
-					case 'storage/unauthorized':
-						setToastAlert('danger', 'You do not have permission to upload the file!')
-						break
-					case 'storage/unknown':
-						setToastAlert('danger', 'An unknown error occurred!')
-						break
-				}
-				console.error(err)
-			},
-			() => {
-				getDownloadURL(uploadTask.snapshot.ref)
-				.then((url) => {
-					return updateDoc(docRef, {
-						final_booklet_link: url,
-						sent_on: serverTimestamp()
-					})
-				})
-				.then(() => {
-					setToastAlert('success', 'Success uploading the booklet!')
-				})
-				.catch((err) => {
-					console.error(err)
-					setToastAlert('danger', 'Something went wrong!')
-				})
-				.finally(() => {
-					submitBookletBtn.disabled = false
-					submitBookletBtn.innerText = 'Send'
-				})
-			}
-		)
-	} catch (err) {
-		console.error(err)
-		setToastAlert('danger', 'Something went wrong!')
-		submitBookletBtn.disabled = false
-		submitBookletBtn.innerText = 'Send'
-	}
-})
+        try {
+            await updateDoc(doc(DB, "Team", teamId), { 
+                "sub_preliminary.rank": newRank 
+            });
+        } catch (err) {
+            console.error("Error updating rank:", err);
+        }
+    };
+    rankTd.appendChild(rankSelect);
+    row.appendChild(rankTd);
 
-onSnapshot(SCSelection, (snap) => {
-	// Preliminary Table
-	let SCData = snap.docs
+    // --------------------------------------------------
+    // 5. KOLOM SCORE (Input: 0 - 250)
+    // --------------------------------------------------
+    const scoreTd = document.createElement("td");
+    scoreTd.className = "text-center";
 
-	selectionTablePrelim.innerHTML = ''
-	SCData.forEach((data, index) => {
-		let team = data.data()
-		createSelectionTable(
-			selectionTablePrelim,
-			data.id,
-			index+1,
-			team.team,
-			team.university,
-			team.elimination
-		)
-	})
+    const scoreInput = document.createElement("input");
+    scoreInput.type = "number";
+    scoreInput.className = "form-control form-control-sm text-center fw-bold text-primary";
+    scoreInput.placeholder = "0.00";
+    scoreInput.min = "0";
+    scoreInput.max = "250";
+    scoreInput.step = "0.01"; // Support desimal
 
-	const compeConfirm = document.querySelectorAll(".compe-manager-confirm")
-	compeConfirm.forEach(c => c.addEventListener('change', () => {
-		console.log("CONFIRM CHANGE")
+    // Set value jika ada di database
+    if (scoreStatus !== null) {
+        scoreInput.value = parseFloat(scoreStatus).toFixed(2);
+    }
 
-		switch (c.value) {
-			case "1":
-				c.classList.remove("bg-danger")
-				c.classList.remove("bg-light", "text-black")
-				c.classList.add("bg-success", "text-white")
-				break
-			case "-1":
-				c.classList.add("bg-danger", "text-white")
-				c.classList.remove("bg-light", "text-black")
-				c.classList.remove("bg-success")
-				break
-			default:
-				c.classList.remove("bg-danger", "text-white")
-				c.classList.add("bg-light", "text-black")
-				c.classList.remove("bg-success", "text-white")
-				break
-		}
-	}))
-})
+    // Event Listener: Update Firestore (menggunakan 'change' agar tidak spam saat mengetik)
+    scoreInput.onchange = async (e) => {
+        let val = e.target.value;
 
-// Preliminary Form Selection
-selectionFormPrelim.addEventListener("submit", (e) => {
-	e.preventDefault()
+        // Jika dikosongkan manual, set null ke database
+        if (val === "") {
+            await updateDoc(doc(DB, "Team", teamId), { "sub_preliminary.score": null });
+            return;
+        }
 
-	try {
-		selectionTablePrelim.querySelectorAll("tr").forEach(row => {
-			let selectedValue = row.querySelector("select").value
-			const docRef = doc(DB, 'SC_Selection', row.getAttribute("id"))
-			const docRef2 = doc(DB, 'Submission_Status', row.getAttribute('id'))
-	
-			switch (selectedValue) {
-				case '1':
-					updateDoc(docRef, { elimination: true })
-					updateDoc(docRef2, { final: true })
-					break
-				case '-1':
-					updateDoc(docRef, { elimination: false })
-					updateDoc(docRef2, { final: false })
-					break
-				case '0':
-					updateDoc(docRef, { elimination: deleteField() })
-					updateDoc(docRef2, { final: deleteField() })
-					break
-				default:
-					throw TypeError('Invalid value')
-			}
-		})
-		setToastAlert('success', 'Success updating selection')
-	} catch (err) {
-		setToastAlert('danger', 'Failed to save selection preliminary')
-	}
-})
+        let floatVal = parseFloat(val);
 
-function createSelectionTable(table, teamId, rowNo, teamName, univ, nextStatus) {
-	let submitRow = document.createElement("tr")
-	submitRow.setAttribute("id", teamId)
+        // Validasi Angka 0 - 250
+        if (isNaN(floatVal) || floatVal < 0 || floatVal > 250) {
+            alert("Score harus angka antara 0 - 250");
+            e.target.value = scoreStatus !== null ? parseFloat(scoreStatus).toFixed(2) : ""; // Reset ke nilai lama
+            return;
+        }
 
-	let nextPassingStatus
-	switch (nextStatus) {
-		case true:
-			nextPassingStatus = `
-				<select class="compe-manager-confirm form-select text-white bg-opacity-25 bg-success">
-					<option value="0">Pending</option>
-					<option value="-1">Failed</option>
-					<option value="1" selected>Passed</option>
-				</select>
-			`
-			break
-		case false:
-			nextPassingStatus = `
-				<select class="compe-manager-confirm form-select text-white bg-opacity-25 bg-danger">
-					<option value="0">Pending</option>
-					<option value="-1" selected>Failed</option>
-					<option value="1">Passed</option>
-				</select>
-			`
-			break
-		default:
-			nextPassingStatus = `
-				<select class="compe-manager-confirm form-select text-black bg-opacity-25 bg-light">
-					<option value="0" selected>Pending</option>
-					<option value="-1">Failed</option>
-					<option value="1">Passed</option>
-				</select>
-			`
-			break
-	}
+        // Format tampilan di input jadi 2 desimal
+        e.target.value = floatVal.toFixed(2);
 
-	submitRow.innerHTML = `
-		<td>${rowNo}</td>
-		<td>${teamName}</td>
-		<td>${univ}</td>
-		<td>${nextPassingStatus}</td>
-	`
-	table.append(submitRow)
+        try {
+            await updateDoc(doc(DB, "Team", teamId), { 
+                "sub_preliminary.score": floatVal 
+            });
+        } catch (err) {
+            console.error("Error updating score:", err);
+        }
+    };
+    scoreTd.appendChild(scoreInput);
+    row.appendChild(scoreTd);
+
+    // Append baris ke tabel utama
+    tableElement.appendChild(row);
 }

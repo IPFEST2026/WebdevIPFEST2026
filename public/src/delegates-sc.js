@@ -1,7 +1,4 @@
-import {
-	doc, getDoc, updateDoc,
-	serverTimestamp,
-} from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp,collection, getDocs, setDoc,where,query } from 'firebase/firestore'
 
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 
@@ -56,510 +53,1065 @@ const WAGroup = {
 };
 
 // =========================
-// FETCH USER DATA
+// FETCH USER DATA (UPDATED)
 // =========================
 async function fetchUserData() {
-	if (!currentUserID) return;
+    if (!currentUserID) return;
 
-	try {
-		const docRef = doc(DB, "Team", currentUserID);
-		const snap = await getDoc(docRef);
+    try {
+        const docRef = doc(DB, "Team", currentUserID);
+        const snap = await getDoc(docRef);
 
-		if (!snap.exists()) {
-			console.error("Team data not found");
-			return;
-		}
+        if (!snap.exists()) {
+            console.error("Team data not found");
+            return;
+        }
 
-		const data = snap.data();
+        const data = snap.data();
 
-		// TEAM LEADER
-		document.getElementById("Team-Leader").textContent =
-			`${data.leader.firstName} ${data.leader.lastName}`;
+        // 1. UI UPDATE: DATA DASAR
+        // =========================
+        
+        // Team Leader
+        document.getElementById("Team-Leader").textContent = 
+            `${data.leader.firstName} ${data.leader.lastName}`;
 
-		// TEAM NAME
-		document.getElementById("Team-Name").textContent =
-			data.teamName || "-";
+        // Team Name
+        document.getElementById("Team-Name").textContent = 
+            data.teamName || "-";
 
-		// =========================
-		// COMPETITION (FULL NAME)
-		// =========================
-		const compKey = (data.competition || "").toLowerCase();
-		document.getElementById("Competition-Name").textContent =
-			CompetitionFullName[compKey] || data.competition || "-";
+        // Competition Name
+        const compKey = (data.competition || "").toLowerCase();
+        // Asumsi variabel CompetitionFullName sudah didefinisikan secara global
+        document.getElementById("Competition-Name").textContent = 
+            (typeof CompetitionFullName !== 'undefined' ? CompetitionFullName[compKey] : data.competition) || "-";
 
-		// =========================
-		// WA GROUP (DISABLED IF NOT VERIFIED)
-		// =========================
-		const waEl = document.getElementById("WhatsApp-Group");
-		const waLink = WAGroup[compKey] || "#";
+        // 2. UI UPDATE: WHATSAPP GROUP
+        // =========================
+        const waEl = document.getElementById("WhatsApp-Group");
+        // Asumsi variabel WAGroup sudah didefinisikan secara global
+        const waLink = (typeof WAGroup !== 'undefined' ? WAGroup[compKey] : "#") || "#";
 
-		if (data.payment_status?.toLowerCase() === "verified") {
-			// PAYMENT VERIFIED → LINK AKTIF
-			waEl.href = waLink;
-			waEl.textContent = "Join";
-			waEl.style.pointerEvents = "auto";
-			waEl.style.opacity = "1";
-		} else {
-			// PAYMENT NOT VERIFIED → LINK DISABLED
-			waEl.href = "javascript:void(0)";
-			waEl.textContent = "Your payment has not been verified";
-			waEl.style.pointerEvents = "none";  // Disable clicking
-			waEl.style.opacity = "0.5";         // Make it look disabled
-		}
-		// =========================
-		// MEMBERS LIST (FULL NAMES)
-		// =========================
-		const members = data.members || [];
+        // Cek pembayaran Preliminary (Bukan Final)
+        if (data.payment_status?.toLowerCase() === "verified") {
+            waEl.href = waLink;
+            waEl.textContent = "Join";
+            waEl.style.pointerEvents = "auto";
+            waEl.style.opacity = "1";
+        } else {
+            waEl.href = "javascript:void(0)";
+            waEl.textContent = "Your payment has not been verified";
+            waEl.style.pointerEvents = "none";
+            waEl.style.opacity = "0.5";
+        }
 
-		if (members.length > 0) {
-			const names = members.map(m => `${m.firstName} ${m.lastName}`);
-			document.getElementById("Team-Member").textContent = names.join(", ");
-		} else {
-			document.getElementById("Team-Member").textContent = "-";
-		}
+        // 3. UI UPDATE: MEMBERS LIST
+        // =========================
+        const members = data.members || [];
+        if (members.length > 0) {
+            const names = members.map(m => `${m.firstName} ${m.lastName}`);
+            document.getElementById("Team-Member").textContent = names.join(", ");
+        } else {
+            document.getElementById("Team-Member").textContent = "-";
+        }
 
-		// PAYMENT STATUS
-		// PAYMENT STATUS
-		let paymentStatusText = data.payment_status === "verified" ? "Verified" : "Pending";
-		document.getElementById("Payment-Status").textContent =
-			paymentStatusText || "Not Submitted";
+        // 4. UI UPDATE: PRELIMINARY PAYMENT STATUS
+        // =========================
+        let prelimPaymentText = data.payment_status === "verified" ? "Verified" : "Pending";
+        document.getElementById("Payment-Status").textContent = 
+            prelimPaymentText || "Not Submitted";
 
-	} catch (err) {
-		console.error("Failed to fetch data:", err);
-	}
+
+        // ============================================================
+        // 5. FINAL ROUND SETUP (UPDATED)
+        // ============================================================
+        
+        // A. Ambil Data Status Kelolosan (Sub Preliminary)
+        const subPrelim = data.sub_preliminary || {};
+        const finalStatusRaw = subPrelim.final; // true, false, or null
+
+        // B. Ambil Data Registrasi Final
+        const finalData = data.final_reg || {}; 
+        const finalPaymentStatusRaw = finalData.paymentStatus || null; // "pending", "verified", etc.
+
+        // C. Tentukan Teks Tampilan untuk UI (Final Payment)
+        // Ambil data payment dari database
+        let finalStatusText = "Not Paid"; // default
+
+        // Mapping status database ke teks user-friendly
+        const paymentTextMap = {
+            pending: "Pending",
+            down_payment_verified: "Down Payment Verified",
+            verified: "Verified"
+        };
+
+        // Gunakan mapping, kalau null/undefined tetap "Not Paid"
+        finalStatusText = paymentTextMap[finalPaymentStatusRaw] || "Not Paid";
+
+        // D. Update Elemen UI "Final-Payment-Status"
+        const finalPaymentStatusEl = document.getElementById("Final-Payment-Status");
+        if (finalPaymentStatusEl) {
+            finalPaymentStatusEl.textContent = finalStatusText;
+        }
+
+        // E. Jalankan Fungsi Setup Tombol/Link Final
+        // Kita oper 'finalPaymentStatusRaw' (kode status) bukan teks tampilannya
+        // agar logika di dalam setupFinalRoundLink bekerja dengan benar (if === 'verified')
+        setupFinalRoundLink(
+            finalStatusRaw, 
+            currentUserID, 
+            finalPaymentStatusRaw, 
+            data.competition
+        );
+
+    } catch (err) {
+        console.error("Failed to fetch data:", err);
+    }
 }
 
-// // Handle User Data
-// const delCompetition = document.querySelectorAll(".del-team-competition")
-// const delegateUniv = document.querySelector("#del-univ")
-// const delegateTeamName = document.querySelector("#del-team-name")
-// const delegatePaymentStatus = document.querySelector("#del-payment-status")
-// const delTeamMembers = document.querySelector("#del-team-members")
-// const delFinalStatusCont = document.getElementById("del-elimination-status")
+// =====================================
+// FINAL ROUND LINK SETUP (OPTIMIZED)
+// =====================================
+async function setupFinalRoundLink(finalStatusRaw, currentUserID, finalPaymentStatus, competition) {
+    // 1. Ambil Elemen DOM
+    let finalLink = document.getElementById("Final-Round-Registration");
+    let leaderboardDisplay = document.getElementById("Preliminary-Leaderboard"); 
+    const paymentDisplay = document.getElementById("Final-Payment-Status"); 
 
-// const delMembersNameLogo = {
-// 	0: `<svg style="height: 4rem" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-// 			<path d="M256 112c30.88 0 56-25.12 56-56S286.9 0 256 0S199.1 25.12 199.1 56S225.1 112 256 112zM511.1 197.4c0-5.178-2.509-10.2-7.096-13.26L476.4 168.2c-2.5-1.75-5.497-2.62-8.497-2.62c-5.501 .125-10.63 2.87-13.75 7.245c-9.001 12-23.16 19.13-38.16 19.13c-3.125 0-6.089-.2528-9.089-.8778c-23.13-4.25-38.88-26.25-38.88-49.75C367.1 134 361.1 128 354.6 128h-38.75c-6.001 0-11.63 4-12.88 9.875C298.2 160.1 278.7 176 255.1 176c-22.75 0-42.25-15.88-47-38.12C207.7 132 202.2 128 196.1 128h-38.75C149.1 128 143.1 134 143.1 141.4c0 18.49-13.66 50.62-47.95 50.62c-15.13 0-29.3-7.118-38.3-19.24C54.6 168.4 49.66 165.7 44.15 165.6c-3 0-5.931 .8951-8.432 2.645l-28.63 16C2.509 187.2 0 192.3 0 197.4c0 2.438 .5583 4.901 1.72 7.185L109.9 432h53.13L69.85 236.4C78.35 238.8 87.11 240 95.98 240c2.432 0 56.83 1.503 84.76-52.5C198.1 210.5 226.6 224 255.9 224c29.38 0 57.01-13.38 75.26-36.25C336.1 197.6 360.6 240 416 240c8.751 0 17.5-1.125 26-3.5L349 432h53.13l108.1-227.4C511.4 202.3 511.1 199.8 511.1 197.4zM424 464H87.98c-13.26 0-24 10.75-24 23.1S74.72 512 87.98 512h336c13.26 0 24-10.75 24-23.1S437.3 464 424 464z"/>
-// 		</svg>`,
-// 	1: `<svg style="height: 4rem;" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
-// 			<path d="M360 464H23.1C10.75 464 0 474.7 0 487.1S10.75 512 23.1 512H360C373.3 512 384 501.3 384 488S373.3 464 360 464zM345.1 32h-308C17 32 0 49 0 70v139.4C0 218.8 4 227.5 11 233.6L48 265.8c0 8.885 .0504 17.64 .0504 26.46c0 39.32-1.001 79.96-11.93 139.8h49C94.95 374.3 96.11 333.3 96.11 285.5C96.11 270.7 96 255.1 96 238.2L48 196.5V80h64V128H160V80h64V128h48V80h64v116.5L288 238.2c0 16.77-.1124 32.25-.1124 47.1c0 47.79 1.164 89.15 10.99 146.7h49c-10.92-59.83-11.93-100.6-11.93-139.9C335.9 283.3 336 274.6 336 265.8l37-32.13C380 227.5 384 218.8 384 209.4V70C384 49 367 32 345.1 32zM192 224C174.4 224 160 238.4 160 256v64h64V256C224 238.4 209.6 224 192 224z"/>
-// 		</svg>`,
-// 	2: `<svg style="height: 4rem;" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
-// 			<path d="M44 320.6l14.5 6.5c-17.01 20.24-26.44 45.91-26.44 72.35C32.06 399.7 32.12 432 32.12 432h48v-32c0-24.75 14-47.5 36.13-58.63l38.13-23.37c13.25-6.625 21.75-20.25 21.75-35.13v-58.75l-15.37 9C155.6 235.8 151.9 240.4 150.5 245.9L143 271c-2.25 7.625-8 13.88-15.38 16.75L117.1 292C114 293.3 110.7 293.9 107.4 293.9c-3.626 0-7.263-.7514-10.66-2.254L63.5 276.9C54.12 272.6 48 263.2 48 252.9V140.5c0-5.125 2.125-10.12 5.75-13.88l7.375-7.375L49.5 96C48.5 94.12 48 92 48 89.88C48 84.38 52.38 80 57.88 80h105c86.75 0 156.1 70.38 156.1 157.1V432h48.06l-.0625-194.9C367.9 124 276 32 162.9 32H57.88C25.88 32 0 57.88 0 89.88c0 8.5 1.75 16.88 5.125 24.62C1.75 122.8 0 131.6 0 140.5v112.4C0 282.2 17.25 308.8 44 320.6zM80.12 164c0 11 8.875 20 20 20c11 0 20-9 20-20s-9-20-20-20C89 144 80.12 153 80.12 164zM360 464H23.1C10.75 464 0 474.7 0 487.1S10.75 512 23.1 512H360C373.3 512 384 501.3 384 488S373.3 464 360 464z"/>
-// 		</svg>`,
-// 	3: `<svg style="height: 4rem;" viewBox="0 0 320 512" xmlns="http://www.w3.org/2000/svg">
-// 			<path d="M296 464H23.1C10.75 464 0 474.7 0 487.1S10.75 512 23.1 512h272C309.3 512 320 501.3 320 488S309.3 464 296 464zM0 304c0 51.63 30.12 85.25 64 96v32h48v-67.13l-33.5-10.63C63.75 349.5 48 333.9 48 304c0-84.1 93.2-206.5 112.6-206.5c19.63 0 60.01 67.18 70.28 85.8l-66.13 66.13c-3.125 3.125-4.688 7.219-4.688 11.31S161.6 268.9 164.8 272L176 283.2c3.125 3.125 7.219 4.688 11.31 4.688s8.188-1.562 11.31-4.688L253 229C264.4 256.8 272 283.5 272 304c0 29.88-15.75 45.5-30.5 50.25L208 364.9V432H256v-32c33.88-10.75 64-44.38 64-96c0-73.38-67.75-197.2-120.6-241.5C213.4 59.12 224 47 224 32c0-17.62-14.38-32-32-32H128C110.4 0 96 14.38 96 32c0 15 10.62 27.12 24.62 30.5C67.75 106.8 0 230.6 0 304z"/>
-// 		</svg>`
-// }
+    // Guard Clause: Jika tombol registrasi tidak ada, hentikan fungsi
+    if (!finalLink) return;
 
-// function writeTeamMembersName(leader, members) {
-// 	delTeamMembers.innerHTML = ''
-// 	let teamMarkup = ''
-// 	let leaderMarkup = `
-// 		<div class="col-sm-9 col-md-6 col-lg-4">
-// 			<div class="card shadow pt-3 mb-2" data-bs-toggle="tooltip" data-bs-title="Leader">
-// 				<div class="card-body">
-// 					<div class="text-center">
-// 						<svg style="height: 4rem;" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
-// 							<path d="M391.9 464H55.95c-13.25 0-23.1 10.75-23.1 23.1S42.7 512 55.95 512h335.1c13.25 0 23.1-10.75 23.1-23.1S405.2 464 391.9 464zM448 216c0-11.82-3.783-23.51-11.08-33.17c-10.3-14.39-27-22.88-44.73-22.88L247.9 160V104h31.1c13.2 0 24.06-10.8 24.06-24S293.1 56 279.9 56h-31.1V23.1C247.9 10.8 237.2 0 223.1 0S199.9 10.8 199.9 23.1V56H167.9c-13.2 0-23.97 10.8-23.97 24S154.7 104 167.9 104h31.1V160H55.95C24.72 160 0 185.3 0 215.9C0 221.6 .8893 227.4 2.704 233L68.45 432h50.5L48.33 218.4C48.09 217.6 47.98 216.9 47.98 216.1C47.98 212.3 50.93 208 55.95 208h335.9c6.076 0 8.115 5.494 8.115 8.113c0 .6341-.078 1.269-.2405 1.887L328.8 432h50.62l65.1-199.2C447.2 227.3 448 221.7 448 216z"/>
-// 						</svg>
-// 						<p class="lead text-primary mt-3"></p>
-// 						<h4 class="card-title text-primary fs-3"><span id="del-leader-name">${decomposeDelName(leader.first_name, leader.last_name)}</span></h4>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</div>
-// 	`
+    // -----------------------------------------------------------
+    // BAGIAN 1: LOGIKA LEADERBOARD (VIEW & MODAL)
+    // -----------------------------------------------------------
+    if (leaderboardDisplay) {
+        // Clone node untuk reset event listener lama agar tidak menumpuk
+        const newLeaderboardDisplay = leaderboardDisplay.cloneNode(true);
+        leaderboardDisplay.parentNode.replaceChild(newLeaderboardDisplay, leaderboardDisplay);
+        leaderboardDisplay = newLeaderboardDisplay; // Update referensi variabel
 
-// 	members.forEach((member, index) => {
-// 		teamMarkup += `
-// 			<div class="col-sm-9 col-md-6 col-lg-4">
-// 				<div class="card shadow pt-3 mb-2" data-bs-toggle="tooltip" data-bs-title="Member">
-// 					<div class="card-body">
-// 						<div class="text-center">
-// 							${delMembersNameLogo[(index)]}
-// 							<p class="lead text-primary mt-3"></p>
-// 							<h4 class="card-title text-primary fs-3"><span class="del-member-name">${decomposeDelName(member.first_name, member.last_name)}</span></h4>
-// 						</div>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		`
-// 	})
+        // Waktu Pembukaan: 3 Januari 2026, 11:00 UTC (18:00 WIB)
+        const openTimeUTC = Date.UTC(2026, 0, 3, 11, 0, 0); 
+        const nowUTC = Date.now();
+        const isOpen = nowUTC >= openTimeUTC;
 
-// 	delTeamMembers.innerHTML = (leaderMarkup + teamMarkup)
-// }
+        // Set Tampilan Teks
+        leaderboardDisplay.textContent = "View";
+        leaderboardDisplay.style.textDecoration = "underline";
 
-// function writePaymentStatus(status) {
-// 	delegatePaymentStatus.innerHTML = ''
+        if (!isOpen) {
+            // KONDISI: LEADERBOARD TERKUNCI
+            leaderboardDisplay.style.color = "#9ca3af"; // Abu-abu
+            leaderboardDisplay.style.cursor = "not-allowed";
 
-// 	if (status) {
-// 		delegatePaymentStatus.innerHTML = `
-// 			<div class="alert alert-success alert-dismissible fade show" role="alert">
-// 				<h4 class="alert-heading">Confirmed</h4>
-// 				<p>Your team final payment has been confirmed! <i class="bi bi-emoji-smile"></i></p>
-// 				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-// 				<hr>
-//   				<p class="mb-0">Make sure your liaison officer has invited you to the finalist group.</p>
-// 			</div>
-// 		`
-// 	} else {
-// 		delegatePaymentStatus.innerHTML = `
-// 			<div class="alert alert-warning" role="alert">
-// 				<h4 class="alert-heading">Unconfirmed</h4>
-// 				<p>Your team payment has not been confirmed <i class="bi bi-emoji-frown"></i></p>
-// 				<hr>
-//   				<p class="mb-0">If within 24 hours the status has not changed, please contact us</p>
-// 			</div>
-// 		`
-// 	}
-// }
+            leaderboardDisplay.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                alert("Leaderboard can only be accessed starting January 3, 2026 at 6:00 PM (Jakarta Time, GMT+7)");
+            });
 
-// function confirmedUserFinalPayment(ref) {
-// 	if (!ref.leaderFinalPayData?.confirmed) {
-// 		return false
-// 	}
-// 	for (let i = 0; i < ref.members.length; i++) {
-// 		if (!ref[`member${i+1}FinalPayData`]?.confirmed) {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
+        } else {
+            // KONDISI: LEADERBOARD TERBUKA
+            leaderboardDisplay.style.color = "#4c1d95"; // Ungu gelap
+            leaderboardDisplay.style.cursor = "pointer";
 
-// function havepayUserFinalPayment(ref) {
-// 	if (!ref.leaderFinalPayData?.have_pay) {
-// 		return false
-// 	}
-// 	for (let i = 0; i < ref.members.length; i++) {
-// 		if (!ref[`member${i+1}FinalPayData`]?.have_pay) {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
+            leaderboardDisplay.addEventListener("click", (e) => {
+                e.preventDefault();
+                // Pastikan fungsi handleOpenLeaderboard dibuat nanti
+                if (typeof handleOpenLeaderboard === 'function') {
+                    handleOpenLeaderboard(competition);
+                } else {
+                    console.warn("Function handleOpenLeaderboard is not defined yet.");
+                }
+            });
+        }
+    }
 
-// function showDelegatesFinalStatus(container, status) {
-// 	let alertCont 
+    // -----------------------------------------------------------
+    // BAGIAN 2: LOGIKA PAYMENT SUDAH VERIFIED (PRIORITAS UTAMA)
+    // -----------------------------------------------------------
+    // Jika user sudah bayar dan diverifikasi, tombol registrasi dimatikan
+    if (finalPaymentStatus === "verified") {
+        finalLink.textContent = "Registered";
+        finalLink.style.pointerEvents = "none";
+        finalLink.style.opacity = "0.7";
+        finalLink.removeAttribute("href");
+        
+        if (paymentDisplay) {
+            paymentDisplay.textContent = "Verified";
+            paymentDisplay.style.color = "#198754"; // Hijau bootstrap (opsional visual cue)
+        }
+        return; // Selesai, tidak perlu cek status kelolosan lagi
+    }
 
-// 	if (status !== undefined) {
-// 		if (status) {	
-// 			alertCont = `
-// 				<div class="alert alert-success" role="alert">
-// 					<h4 class="alert-heading fw-bold">PASSED</h4>
-// 					<p>Aww yeah! Congratulations on advancing to the finals—your hard work and dedication have truly paid off, and we're excited to see you shine in this next stage!</p>
-// 					<hr>
-// 					<p>Get your SC Final Booklet <a href="https://firebasestorage.googleapis.com/v0/b/ipfest25web.appspot.com/o/Case%2FSC%2FSC%20Final%20Booklet%202025.docx%20(1).pdf?alt=media&token=c0888335-cf34-4cb0-87c4-c03b77775df8" class="link-info" target="_blank">here</a>!</p>		 
-// 				</div>
-// 			`
-// 		} else {
-// 			alertCont = `
-// 				<div class="alert alert-danger" role="alert">
-// 					<h4 class="alert-heading fw-bold">FAILED</h4>
-// 					<p>Although you didn't make it to the finals, your effort and dedication have been truly commendable—keep striving, as this is just one step in your journey to success!</p>									 
-// 				</div>
-// 			`
-// 		}
-// 	} else {
-// 		alertCont = ''
-// 	}
-// 	container.innerHTML = alertCont
-// }
+    // -----------------------------------------------------------
+    // BAGIAN 3: RESET TOMBOL REGISTRASI (Agar bersih dari event lama)
+    // -----------------------------------------------------------
+    const newFinalLink = finalLink.cloneNode(true);
+    finalLink.parentNode.replaceChild(newFinalLink, finalLink);
+    finalLink = newFinalLink; // Update referensi variabel
 
-// function decomposeDelName(firstname, lastname) {
-// 	return `${firstname} ${lastname}`
-// }
+    // -----------------------------------------------------------
+    // BAGIAN 4: LOGIKA STATUS KELOLOSAN (PASSED / FAILED / PENDING)
+    // -----------------------------------------------------------
 
-// let competitionName = {
-// 	"SC": ["Smart Competition", "https://drive.google.com/file/d/1MH0raIJYni8wuBYUZMx2t9H3zSNUX1Vn/view?usp=drive_link"]
-// }
+    if (finalStatusRaw === true) {
+        // ============================
+        // SKENARIO A: LOLOS (PASSED) -> TOMBOL "REGIST" AKTIF
+        // ============================
+        
+        finalLink.textContent = "Regist";
+        finalLink.style.pointerEvents = "auto";
+        finalLink.style.opacity = "1";
+        finalLink.style.cursor = "pointer";
+        
+        // Reset style ke default CSS (jika sebelumnya ada inline style aneh)
+        finalLink.style.backgroundColor = ""; 
+        finalLink.style.borderColor = "";
+        finalLink.style.color = "";
+        finalLink.removeAttribute("href");
 
-// // Final Payment Handle
-// const paymentStorage = ref(STORAGE, 'Payment')
-// const finalPaymentCont = document.getElementById("del-final-payment")
-// const finalPaymentUploadForm = document.getElementById("final-payment-upload")
-// const finalPayUplBtn = finalPaymentUploadForm.querySelector("button")
-// const leaderFinalPayForm = document.getElementById("leader-final-pay-form")
-// const membersFinalPaySec = document.querySelector(".members-final-pay-form")
+        // Event Listener: Buka Modal Pembayaran
+        finalLink.addEventListener("click", async (e) => {
+            e.preventDefault();
 
-// // Generate form based on how many the team members are
-// function generateTeamEntry(count, membersData) {
-// 	membersFinalPaySec.innerHTML = ''
+            try {
+                // Ambil data terbaru dari Firestore untuk memastikan data akurat saat klik
+                // Pastikan fungsi getDoc dan doc dari firebase sudah diimport
+                const docRef = doc(DB, "Team", currentUserID);
+                const snap = await getDoc(docRef);
 
-// 	for (let i = 0; i < count; i++) {
-// 		let memberName = `<span class"fs-6" style="color: #bc2300">${membersData[i].first_name} ${membersData[i].last_name}</span>`
+                if (!snap.exists()) {
+                    alert("Team data not found.");
+                    return;
+                }
 
-// 		let memberEntry = document.createElement('div')
-// 		memberEntry.id = `member-${i+1}`
-// 		memberEntry.classList.add("member", "mb-3")
+                const teamData = snap.data();
+                
+                // Panggil fungsi modal pembayaran (akan dibuat nanti)
+                if (typeof generateFinalModal === 'function') {
+                     generateFinalModal(teamData); 
+                     
+                     const modalElement = document.getElementById("finalPaymentModal");
+                     if (modalElement) {
+                         const finalModal = new bootstrap.Modal(modalElement);
+                         finalModal.show();
+                     }
+                } else {
+                    console.warn("Function generateFinalModal is not defined yet.");
+                }
+            } catch (error) {
+                console.error("Error fetching team data:", error);
+                alert("An error occurred while loading registration data.");
+            }
+        });
 
-// 		memberEntry.innerHTML = `
-// 			<h4 class="lead fs-5 text-black">Member ${i+1}: ${memberName}</h4>
-// 			<div class="row">
-// 				<div class="col-md-6 col-12">
-// 					<label for="final-member-payment-submit-${i+1}" class="form-label">Upload payment proof</label>
-// 					<input type="file" name="final-member-payment-submit-${i+1}" id="final-member-payment-submit-${i+1}" class="form-control final-member-payment-submit" placeholder="Your Payment Proof" aria-label="Final Payment Proof" required>
-// 					<style>
-// 						#final-member-payment-submit-${i+1}:hover{
-// 							cursor: pointer;
-// 						}
-// 					</style>
-// 				</div>
-// 				<div class="col-md-6 col-12">
-// 					<label for="member-${i+1}-hospitality-type" class="form-label">Hospitality:</label>
-// 					<select name="member-${i+1}-hospitality-type" id="member-${i+1}-hospitality-type" class="form-select member-hospitality-type" required>
-// 						<option value="Full Hospitality">Full Hospitality</option>
-// 						<option value="Excluding Accommodation">Excluding Accommodation</option>
-// 					</select>
-// 				</div>
-// 			</div>
-// 			<div class="row">
-// 				<div class="col-md-6 col-12">
-// 					<label for="member-${i+1}-payment-type" class="form-label mt-3">Payment Scheme:</label>
-// 					<select name="member-${i+1}-payment-type" id="member-${i+1}-payment-type" class="form-select member-payment-type" required disabled>
-// 						<option value="Full" selected>Full Payment</option>
-// 					</select>
-// 					<style>
-// 						#member-${i+1}-payment-type:hover{
-// 							cursor: not-allowed;
-// 						}
-// 					</style>
-// 				</div>
-// 				<div class="col-md-6 col-12">
-// 					<label for="member-${i+1}-payment-method" class="form-label mt-3">Payment Method:</label>
-// 					<select name="member-${i+1}-payment-method" id="member-${i+1}-payment-method" class="form-select member-payment-method" required>
-// 						<option value="Gopay">Gopay</option>
-// 						<option value="Bank Mandiri">Bank Mandiri</option>
-// 						<option value="Paypal">Paypal</option>
-// 					</select>
-// 				</div>
-// 			</div>
-// 			<hr>
-// 		`
-// 		membersFinalPaySec.append(memberEntry)
-// 	}
-// }
+        // Update status text di UI
+        if (paymentDisplay) {
+            let displayText = "Not Paid"; // default
 
-// // Get payment data
-// let leaderPayIMG 
-// let leaderData
-// let members
-// let membersPayIMG
-// let membersPayIMGArchieve
-// let membersData
+            if (finalPaymentStatus === "pending") {
+                displayText = "Pending";
+            } else if (finalPaymentStatus === "down_payment_verified") {
+                displayText = "Down Payment Verified";
+            } else if (finalPaymentStatus === "verified") {
+                displayText = "Verified";
+            }
 
-// async function getTeamFinalPaymentData() {
-// 	leaderPayIMG = leaderFinalPayForm.querySelector('input[name="final-leader-payment-submit"]').files[0]
-// 	leaderData = {
-// 		have_pay:true,
-// 		confirmed: false,
-// 		hospitality: leaderFinalPayForm.querySelector('select[name="leader-hospitality-type"]').value,
-// 		pay_scheme: leaderFinalPayForm.querySelector('select[name="leader-payment-type"]').value,
-// 		pay_method: leaderFinalPayForm.querySelector('select[name="leader-payment-method"]').value,
-// 		pay_dp_category: leaderFinalPayForm.querySelector('select[name="leader-payment-type"]').value == 'Full' ? 'Non-DP' : leaderFinalPayForm.querySelector('select[name="leader-down-payment-category"]').value,
-// 		final_pay_status: leaderFinalPayForm.querySelector('select[name="leader-payment-type"]').value == 'Full',
-// 	}
+            paymentDisplay.textContent = displayText;
+        }
 
-// 	membersPayIMG = []
-// 	membersPayIMGArchieve = []
-// 	membersData = []
-// 	members = membersFinalPaySec.querySelectorAll('.member')
-// 	members.forEach((member, i) => {
-// 		let mpi = member.querySelector(`input[name="final-member-payment-submit-${i+1}"]`).files[0]
-// 		let validMPI = mpi === undefined ? '' : mpi
+    } else if (finalStatusRaw === false) {
+        // ============================
+        // SKENARIO B: TIDAK LOLOS (FAILED) -> TOMBOL PESAN SEMANGAT
+        // ============================
 
-// 		membersPayIMG.push(validMPI)
+        finalLink.textContent = "A Message For You"; 
+        
+        // Styling khusus tombol pesan
+        finalLink.style.pointerEvents = "auto"; 
+        finalLink.style.cursor = "pointer";
+        finalLink.style.backgroundColor = "transparent"; 
+        finalLink.style.borderColor = "rgba(255, 255, 255, 0.6)"; // Outline putih transparan
+        finalLink.style.borderWidth = "1px";
+        finalLink.style.borderStyle = "solid";
+        finalLink.style.color = "#ffffff"; 
+        finalLink.style.opacity = "1"; 
+        finalLink.style.boxShadow = "none";
+        finalLink.removeAttribute("href");
 
-// 		let memberData = {
-// 			have_pay:true,
-// 			confirmed: false,
-// 			hospitality: member.querySelector(`select[name="member-${i+1}-hospitality-type"]`).value,
-// 			pay_scheme: member.querySelector(`select[name="member-${i+1}-payment-type"]`).value,
-// 			pay_method: member.querySelector(`select[name="member-${i+1}-payment-method"]`).value,
-// 			pay_dp_category: member.querySelector(`select[name="member-${i+1}-payment-type"]`).value == 'Full' ? 'Non-DP': member.querySelector(`select[name="member-${i+1}-down-payment-category"]`).value,
-// 			final_pay_status: member.querySelector(`select[name="member-${i+1}-payment-type"]`).value == 'Full'
-// 		}
-// 		membersData.push(memberData)
-// 	})
-// }
+        // Event Listener: Buka Modal Semangat
+        finalLink.addEventListener("click", async (e) => {
+            e.preventDefault();
+            
+            try {
+                const docRef = doc(DB, "Team", currentUserID);
+                const snap = await getDoc(docRef);
+                const teamName = snap.exists() ? snap.data().teamName : "Participant";
+                
+                // Panggil fungsi modal semangat (akan dibuat nanti)
+                if (typeof generateEncouragementModal === 'function') {
+                    generateEncouragementModal(teamName);
+                    
+                    const modalElement = document.getElementById("finalPaymentModal"); 
+                    if (modalElement) {
+                        // Cek instance modal yang sudah ada atau buat baru
+                        let finalModal = bootstrap.Modal.getInstance(modalElement);
+                        if (!finalModal) {
+                            finalModal = new bootstrap.Modal(modalElement);
+                        }
+                        finalModal.show();
+                    }
+                } else {
+                    console.warn("Function generateEncouragementModal is not defined yet.");
+                }
+            } catch (error) {
+                console.error("Error fetching team name:", error);
+            }
+        });
 
-// // Final Payment Form Upload
-// async function uploadFile(storageRef, file) {
-// 	try {
-// 		const snap = await uploadBytes(storageRef, file)
-// 		return await getDownloadURL(snap.ref)
-// 	} catch(err) {
-// 		console.log(`Failed to upload following file: ${file.name}`)
-// 		setToastAlert('danger', `Failed to upload ${file.name}. Please try again or contact us!`)
-// 		throw err
-// 	}
-// }
+        // Kosongkan Status Payment karena tidak lolos
+        if (paymentDisplay) {
+            paymentDisplay.textContent = "-";
+            paymentDisplay.style.opacity = "0.5"; 
+        }
+        
+    } else {
+        // ============================
+        // SKENARIO C: PENDING (NULL/UNDEFINED) -> TAMPILAN STANDAR
+        // ============================
+        
+        finalLink.textContent = "Pending";
+        finalLink.style.pointerEvents = "none"; // Tidak bisa diklik
+        finalLink.style.opacity = "0.5"; // Tampilan redup
+        finalLink.removeAttribute("href");
+        
+        if (paymentDisplay) {
+            paymentDisplay.textContent = "Pending";
+        }
+    }
+}
 
-// finalPaymentUploadForm.addEventListener("submit", async (e) => {
-// 	e.preventDefault()
+// =====================================
+// GENERATE MODAL SEMANGAT (HTML - ORIGINAL STRUCTURE)
+// =====================================
+function generateEncouragementModal(teamName) {
+    const wrapper = document.getElementById("final-payment-wrapper");
 
-// 	if (finalPayUplBtn.disabled) return
+    // --- Hapus Background Putih Bawaan Bootstrap ---
+    // Ini penting agar gradasi CSS Anda (#encourage-modal-card) yang terlihat, bukan kotak putih bootstrap
+    const parentContent = wrapper.closest('.modal-content');
+    if (parentContent) {
+        parentContent.style.backgroundColor = 'transparent';
+        parentContent.style.border = 'none';
+        parentContent.style.boxShadow = 'none';
+    }
+    wrapper.innerHTML = `
+        <div class="modal-content" id="encourage-modal-card">
+            
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn-close" id="encourage-close-icon" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
-// 	finalPayUplBtn.disabled = true
-// 	finalPayUplBtn.innerText = 'Processing...'
+            <div class="modal-body px-4 pb-4 pt-0 text-center">
+                
+                <div id="encourage-icon-wrapper">
+                    <span id="encourage-icon">✨</span>
+                </div>
 
-// 	let bePatient = setTimeout(() => {
-// 		finalPayUplBtn.innerText = 'This may take a few minutes...'
-// 	}, 10000)
+                <h3 id="encourage-title">Dear ${teamName},</h3>
+                
+                <p id="encourage-message">
+                    Thank you for participating. Although you did not proceed to the final round, 
+                    <span id="encourage-message-highlight">we were truly impressed by your effort.</span>
+                </p>
 
-// 	if (finalPaymentUploadForm.checkValidity()) {
-// 		const categorizeFile = (cat, url) => cat === 'Last' ? { last_pay: url } : { first_pay: url }
+                <div id="encourage-quote-box">
+                    <p id="encourage-quote-text">
+                        "Success is not final, failure is not fatal: it is the courage to continue that counts."
+                    </p>
+                    <small id="encourage-quote-author">— Winston Churchill</small>
+                </div>
 
-// 		try {
-// 			await getTeamFinalPaymentData()
+                <p id="encourage-footer">
+                    Keep learning, keep growing! 🚀
+                </p>
 
-// 			// Handle leader payment
-// 			let leaderPayObj = {}
-// 			if (leaderPayIMG) {
-// 				const leaderRef = ref(paymentStorage, `${Date.now()}_${leaderPayIMG.name}`)
-// 				const leaderDownloadUrl = await uploadFile(leaderRef, leaderPayIMG)
-// 				leaderPayObj = categorizeFile(leaderData.pay_dp_category, leaderDownloadUrl)
-// 			} else {
-// 				leaderPayObj = { last_pay: "" }
-// 			}
+                <button type="button" id="encourage-btn-action" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+}
 
-// 			// Handle members payment
-// 			let failedFiles = []
-// 			let uploadPromises = membersPayIMG.map(async (img, i) => {
-// 				if (!img) {
-// 					return { last_pay: '' }
-// 				}
+function generateFinalModal(teamData) {
+    const wrapper = document.getElementById("final-payment-wrapper");
 
-// 				try {
-// 					const imgRef = ref(paymentStorage, `${Date.now()}_${img.name}`)
-// 					const downloadUrl = await uploadFile(imgRef, img)
+    const parentContent = wrapper.closest('.modal-content');
+    if (parentContent) {
+        parentContent.style.backgroundColor = ''; 
+        parentContent.style.border = '';
+        parentContent.style.boxShadow = '';
+    }
 
-// 					return categorizeFile(membersData[i].pay_dp_category, downloadUrl)
-// 				} catch (err) {
-// 					failedFiles.push(img.name)
-// 					return null
-// 				}
-// 			})
+    if (wrapper.innerHTML.trim() !== "") return;
 
-// 			membersPayIMGArchieve = (await Promise.allSettled(uploadPromises))
-// 			.filter(r => r.status === 'fulfilled' && r.value !== null)
-// 			.map(r => r.value)
+    const leaderName = `${teamData.leader.firstName} ${teamData.leader.lastName}`;
 
-// 			let individualMemberData = {}
-// 			membersData.forEach((member, index) => {
-// 				individualMemberData[`member${index + 1}FinalPayData`] = member
-// 			})
+    let memberFormsHTML = "";
+    if (teamData.members && teamData.members.length > 0) {
+        teamData.members.forEach((member, i) => {
+            memberFormsHTML += `
+                <div class="member-final-pay-form">
+                    <div class="form-header-row mb-3">
+                        <div class="icon-box-member me-3">👤</div> <div class="text-group"> <div class="role-label">Member</div> 
+                            <h5 class="name-label">${member.firstName} ${member.lastName}</h5>
+                        </div>
+                    </div>
 
-// 			// Merged old data with the new one
-// 			const teamDocRef = doc(DB, 'Team', currentUserID)
-// 			const teamData = (await getDoc(teamDocRef)).data() || {}
+                    <div class="price-display-box">
+                        <span class="price-label">AMOUNT TO PAY</span>
+                        <span class="price-value" id="member-price-${i}">Calculating...</span>
+                    </div>
+                    
+                    <div id="member-payment-method-info-${i}" class="method-info-box"></div>
 
-// 			const updatedLeaderFinalPayIMG = {
-// 			...(teamData.leaderFinalPayIMG || {}), 
-// 			...leaderPayObj                  
-// 			}
+                    <div class="mb-3">
+                        <label class="form-label">UPLOAD PAYMENT PROOF</label>
+                        <input type="file" class="form-control" id="member-payment-submit-${i}" name="member-payment-submit-${i}">
+                    </div>
 
-// 			const updatedMembersFinalPayIMG = (teamData.membersFinalPayIMG || []).map((img, index) => {
-// 				if (index < membersPayIMGArchieve.length) {
-// 					return {
-// 						...img, 
-// 						...membersPayIMGArchieve[index]
-// 					 };
-// 				}
-// 				return img
-// 			 })
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">HOSPITALITY</label>
+                            <select class="form-select" id="member-hospitality-type-${i}" name="member-hospitality-type-${i}" required>
+                                <option value="Full Hospitality">Full Hospitality</option>
+                                <option value="Excluding Accommodation">Excluding Accommodation</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">PAYMENT METHOD</label>
+                            <select class="form-select" id="member-payment-method-${i}" name="member-payment-method-${i}" required>
+                                <option value="Gopay">Gopay</option>
+                                <option value="Bank BCA">Bank BCA</option>
+                                <option value="Paypal">Paypal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
 
-// 			console.log("Data to update Firestore:", {
-// 				leaderFinalPayIMG: updatedLeaderFinalPayIMG,
-// 				leaderFinalPayData: leaderData,
-// 				membersFinalPayIMG: updatedMembersFinalPayIMG,
-// 				...individualMemberData,
-// 			})
+    wrapper.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">FINAL ROUND REGISTRATION</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-// 			await updateDoc(teamDocRef, {
-// 				leaderFinalPayIMG: updatedLeaderFinalPayIMG,
-// 				leaderFinalPayData: leaderData,
-// 				membersFinalPayIMG: updatedMembersFinalPayIMG,
-// 				...individualMemberData
-// 			})
+            <div class="modal-body"> 
+                <div id="del-final-status"></div>
+                <div id="del-payment-status"></div>
 
-// 			if (failedFiles.length) {
-// 				setToastAlert('danger', `Failed to upload the following files: ${failedFiles.join(', ')}`)
-// 			} else {
-// 				setToastAlert('success', 'Success sending your payment')
-// 			}
-// 			delegatePaymentStatus.classList.remove('d-none')
+                <div id="del-final-payment">
+                    <form id="final-payment-upload">
+                        
+                        <div id="leader-final-pay-form">
+                            
+                            <div class="form-header-row mb-3">
+                                <div class="icon-box-leader me-3">👑</div> <div class="text-group"> <div class="role-label text-leader">Team Leader</div>
+                                    <h5 class="name-label text-leader-name">${leaderName}</h5>
+                                </div>
+                            </div>
+                            
+                            <div class="price-display-box">
+                                <span class="price-label">AMOUNT TO PAY</span>
+                                <span class="price-value" id="final-payment-price">Calculating...</span>
+                            </div>
 
-// 		} catch(err) {
-// 			console.error("Error during payment upload:", err)
-// 			setToastAlert('danger', 'Cannot sending your files! Please contact us!')
-// 		} finally {
-// 			clearTimeout(bePatient);
-// 			finalPayUplBtn.innerText = 'Submit'
-// 			finalPayUplBtn.disabled = false
-// 		}
-// 	} else {
-// 		clearTimeout(bePatient)
-// 		finalPayUplBtn.disabled = false
-// 		finalPayUplBtn.innerText = 'Submit'
-// 		setToastAlert('warning', 'Please complete the form before submitting!')
-// 	}
-// })
+                            <div id="final-payment-method-info" class="method-info-box"></div>
 
-// async function fetchUserData() {
+                            <div class="mb-3">
+                                <label class="form-label">UPLOAD PAYMENT PROOF</label>
+                                <input type="file" id="final-leader-payment-submit" name="final-leader-payment-submit" class="form-control">
+                            </div>
 
-// 	if (currentUserID) {
-// 		const userRef = doc(DB, "Team", currentUserID)
-// 		const userSelection = doc(DB, 'SC_Selection', currentUserID)
+                            <div class="row g-3 mb-2">
+                                <div class="col-6">
+                                    <label class="form-label">HOSPITALITY</label>
+                                    <select id="leader-hospitality-type" name="leader-hospitality-type" class="form-select" required>
+                                        <option value="Full Hospitality">Full Hospitality</option>
+                                        <option value="Excluding Accommodation">Excluding Accommodation</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">PAYMENT SCHEME</label>
+                                    <select id="leader-payment-type" name="leader-payment-type" class="form-select" required>
+                                        <option value="Full">Full Payment</option>
+                                        <option value="DP" selected>Down Payment</option>
+                                    </select>
+                                </div>
+                            </div>
 
-// 		try{
-// 			const userSnap = await getDoc(userRef)
-// 			const selectionSnap = await getDoc(userSelection)
+                            <div class="row g-3"> 
+                                <div class="col-6">
+                                    <label class="form-label">PAYMENT METHOD</label>
+                                    <select id="leader-payment-method" name="leader-payment-method" class="form-select" required>
+                                        <option value="Gopay">Gopay</option>
+                                        <option value="Bank BCA">Bank BCA</option>
+                                        <option value="Paypal">Paypal</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-6" id="down-payment-category-col">
+                                    <label class="form-label">CATEGORY (DP)</label>
+                                    <select id="leader-down-payment-category" name="leader-down-payment-category" class="form-select">
+                                        <option value="First">First Payment</option>
+                                        <option value="Last">Last Payment</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
-// 			if (userSnap.exists() && selectionSnap.exists()) {
-// 				const userData = userSnap.data()
-// 				const selectionData = selectionSnap.data()
+                        ${memberFormsHTML}
 
-// 				// writeRoundStatus()
-// 				delegateTeamName.textContent = userData.team_name
-// 				delCompetition.forEach(del => {
-// 					del.textContent = 'Smart Competition'
-// 				})
-// 				delegateUniv.textContent = userData.university
-				
-// 				// Show or hide del payment status
-// 				if (havepayUserFinalPayment(userData)) {
-// 					delegatePaymentStatus.classList.remove('d-none')
-// 				} else {
-// 					delegatePaymentStatus.classList.add('d-none')
-// 				}
+                        <div class="custom-rules-box mt-3">
+                            <input class="form-check-input" type="checkbox" id="final-rules-check" required>
+                            <label class="custom-rules-label" for="final-rules-check">
+                                I confirm that all data is correct and I have read the 
+                                <a href="#" target="_blank">Finalist Payment Rules</a>.
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-// 				// Write final payment status
-// 				if (confirmedUserFinalPayment(userData)) {
-// 					writePaymentStatus(true)
-// 				} else {
-// 					writePaymentStatus(false)
-// 				}
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel-custom" data-bs-dismiss="modal">Cancel</button>
+                <button id="final-payment-submit-btn" type="submit" form="final-payment-upload">Submit Payment</button>
+            </div>
+        </div>
+    `;
 
-// 				writeTeamMembersName(userData.leader, userData.members)
+    // --- JS LOGIC FIX ---
+    // --- DP CATEGORY VISIBILITY CONTROL (SAFE FIX) ---
 
-// 				showDelegatesFinalStatus(delFinalStatusCont, selectionData.elimination)
+    const paymentTypeSelect = document.getElementById("leader-payment-type");
+    const downPaymentCategoryCol = document.getElementById("down-payment-category-col");
+    const downPaymentCategorySelect = document.getElementById("leader-down-payment-category");
 
-// 				if (selectionData.elimination) {
-// 					generateTeamEntry(userData.members.length, userData.members)
-// 					finalPaymentCont.classList.remove('d-none')
-// 				} else {
-// 					finalPaymentCont.classList.add('d-none')
-// 					delegatePaymentStatus.classList.add("d-none")
-// 				}
-// 			} else {
-// 				console.log("User tidak ditemukan")
-// 				window.location.href = '../../login.html'
-// 			}
-// 		}catch(err){
-// 			console.log("Something wrong during fetching user data", err)
-// 		}
-// 	} else {
-// 		console.log("There is no user logged in")
-// 	}
-// }
+    function toggleDpCategory() {
+        if (!paymentTypeSelect || !downPaymentCategoryCol) return;
+
+        const isDP = paymentTypeSelect.value === "DP";
+
+        // PAKAI HIDDEN (ANTI CSS OVERRIDE)
+        downPaymentCategoryCol.hidden = !isDP;
+
+        if (downPaymentCategorySelect) {
+            downPaymentCategorySelect.disabled = !isDP;
+            downPaymentCategorySelect.required = isDP;
+        }
+    }
+
+    if (paymentTypeSelect) {
+        paymentTypeSelect.addEventListener("change", toggleDpCategory);
+        toggleDpCategory(); // initial state
+    }
+
+
+
+    setTimeout(() => {
+        if (typeof initFinalPaymentBindings === "function") initFinalPaymentBindings(teamData);
+        if (typeof setupFinalSubmitListener === "function") setupFinalSubmitListener(teamData);
+    }, 100);
+}
+
+// =====================================
+// 3. LOGIKA HARGA & BINDING DATA
+// =====================================
+const PRICE_TABLE = {
+    "Full Hospitality": {
+        Full: { "Bank BCA": 700000, "Gopay": 700000, "Paypal": 50 },
+        DP: {
+            First: { "Bank BCA": 400000, "Gopay": 400000, "Paypal": 30 },
+            Last: { "Bank BCA": 300000, "Gopay": 300000, "Paypal": 20 }
+        }
+    },
+    "Excluding Accommodation": {
+        Full: { "Bank BCA": 450000, "Gopay": 450000, "Paypal": 32 },
+        DP: {
+            First: { "Bank BCA": 300000, "Gopay": 300000, "Paypal": 20 },
+            Last: { "Bank BCA": 150000, "Gopay": 150000, "Paypal": 12 }
+        }
+    }
+};
+
+function initFinalPaymentBindings(teamData) {
+    console.log("Initializing Payment Bindings...");
+
+    const leaderHospitality = document.getElementById("leader-hospitality-type");
+    const leaderPaymentScheme = document.getElementById("leader-payment-type");
+    const leaderPaymentMethod = document.getElementById("leader-payment-method");
+    const leaderCategory = document.getElementById("leader-down-payment-category");
+    const downPaymentCategoryCol = document.getElementById("down-payment-category-col"); // Ambil kolom pembungkusnya
+    
+    const leaderPriceSpan = document.getElementById("final-payment-price");
+    const leaderInfoBox = document.getElementById("final-payment-method-info");
+
+    // 1. Fungsi Get Price dari Tabel
+    function getPrice(hosp, scheme, method, category = "First") {
+        if (scheme === "Full") {
+            return PRICE_TABLE[hosp].Full[method];
+        } else {
+            const cat = category || "First"; 
+            return PRICE_TABLE[hosp].DP[cat][method];
+        }
+    }
+
+    // 2. Fungsi Update Info Rekening
+    function updatePaymentMethodInfo(infoBox, method) {
+        let text = "";
+        switch (method) {
+            case "Bank BCA": text = "<strong>BCA</strong> — 2650508800 (Mochammad Rafly Ghazany A)"; break;
+            case "Gopay": text = "085655226900 (Rafly Ghazany)"; break;
+            case "Paypal": text = `<a href="https://www.paypal.me/RaflyGhazany" target="_blank" class="text-primary">paypal.me/RaflyGhazany</a>`; break;
+        }
+        infoBox.innerHTML = `<small>${text}</small>`;
+    }
+
+    // 3. FUNGSI UTAMA: Toggle DP & Update Harga
+    function updateLeaderUI() {
+        // A. Logika Visibilitas Kolom DP
+        if (leaderPaymentScheme.value === "DP") {
+            downPaymentCategoryCol.style.display = "block"; // Munculkan
+            leaderCategory.disabled = false;
+        } else {
+            downPaymentCategoryCol.style.display = "none";  // Sembunyikan (hilang dari layout)
+            leaderCategory.disabled = true;
+        }
+
+        // B. Logika Hitung Harga
+        const hosp = leaderHospitality.value;
+        const scheme = leaderPaymentScheme.value;
+        const method = leaderPaymentMethod.value;
+        const category = leaderCategory.value;
+
+        const price = getPrice(hosp, scheme, method, category);
+        
+        leaderPriceSpan.textContent = method === "Paypal" 
+            ? `$${price.toFixed(2)}` 
+            : `IDR ${price.toLocaleString('id-ID')}`;
+
+        updatePaymentMethodInfo(leaderInfoBox, method);
+    }
+
+    // 4. Event Listeners Leader
+    // Setiap kali ada yang berubah, jalankan updateLeaderUI
+    leaderHospitality.addEventListener("change", () => { updateLeaderUI(); updateAllMemberPrices(); });
+    leaderPaymentScheme.addEventListener("change", () => { updateLeaderUI(); updateAllMemberPrices(); }); // Ini yang mentrigger DP muncul/hilang
+    leaderPaymentMethod.addEventListener("change", () => { updateLeaderUI(); });
+    leaderCategory.addEventListener("change", () => { updateLeaderUI(); updateAllMemberPrices(); });
+
+    // 5. Inisialisasi Awal
+    updateLeaderUI();
+
+    // 6. Fungsi Update Harga Member
+    function updateAllMemberPrices() {
+        if (teamData.members && teamData.members.length > 0) {
+            teamData.members.forEach((member, i) => {
+                const hosp = document.getElementById(`member-hospitality-type-${i}`);
+                const method = document.getElementById(`member-payment-method-${i}`);
+                const priceSpan = document.getElementById(`member-price-${i}`);
+                const infoBox = document.getElementById(`member-payment-method-info-${i}`);
+
+                const hospVal = hosp.value;
+                const methodVal = method.value;
+                // Member mengikuti Scheme & Category dari Leader
+                const scheme = leaderPaymentScheme.value; 
+                const category = leaderCategory.value;    
+
+                const price = getPrice(hospVal, scheme, methodVal, category);
+                
+                priceSpan.textContent = methodVal === "Paypal" 
+                    ? `$${price.toFixed(2)}` 
+                    : `IDR ${price.toLocaleString('id-ID')}`;
+
+                updatePaymentMethodInfo(infoBox, methodVal);
+            });
+        }
+    }
+
+    // 7. Event Listener untuk Member
+    if (teamData.members && teamData.members.length > 0) {
+        teamData.members.forEach((member, i) => {
+            const hosp = document.getElementById(`member-hospitality-type-${i}`);
+            const method = document.getElementById(`member-payment-method-${i}`);
+
+            hosp.addEventListener("change", updateAllMemberPrices);
+            method.addEventListener("change", updateAllMemberPrices);
+        });
+        updateAllMemberPrices();
+    }
+}
+
+// =====================================
+// 4. LISTENER SUBMIT & VALIDASI
+// =====================================
+function setupFinalSubmitListener(teamData) {
+    const finalPaymentSubmitBtn = document.getElementById("final-payment-submit-btn");
+    
+    if (!finalPaymentSubmitBtn) return;
+
+    // Reset event listener agar tidak duplikat (penting jika modal dibuka tutup)
+    const newBtn = finalPaymentSubmitBtn.cloneNode(true);
+    finalPaymentSubmitBtn.parentNode.replaceChild(newBtn, finalPaymentSubmitBtn);
+
+    newBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        // VALIDASI CHECKBOX
+        const checkboxRead = document.getElementById("final-rules-check");
+        if (!checkboxRead.checked) {
+            alert("⚠️ Please read and check the Finalist Payment Rules agreement.");
+            checkboxRead.focus();
+            return;
+        }
+
+        // VALIDASI FILE UPLOAD (Leader & Member)
+        const leaderFile = document.getElementById("final-leader-payment-submit");
+        if (leaderFile.files.length === 0) {
+            alert("⚠️ Leader must upload payment proof.");
+            leaderFile.focus();
+            return;
+        }
+
+        if (teamData.members) {
+            for (let i = 0; i < teamData.members.length; i++) {
+                const memFile = document.getElementById(`member-payment-submit-${i}`);
+                if (memFile.files.length === 0) {
+                    alert(`⚠️ ${teamData.members[i].firstName} must upload payment proof.`);
+                    memFile.focus();
+                    return;
+                }
+            }
+        }
+
+        // PROSES SUBMIT
+        const originalText = newBtn.innerText;
+        newBtn.innerText = "Processing...";
+        newBtn.disabled = true;
+
+        try {
+            const formData = collectFinalFormData(teamData);
+            // Ambil User ID dari object auth atau global variable
+            const currentUserID = AUTH.currentUser.uid; 
+            
+            await submitFinalRegistration(currentUserID, formData, teamData);
+
+            alert("✅ Payment submitted successfully!\nData is under verification. See you at the Final Round!");
+            window.location.reload();
+
+        } catch (err) {
+            console.error(err);
+            alert("❌ Failed to submit data. Please check your connection.");
+            newBtn.innerText = originalText;
+            newBtn.disabled = false;
+        }
+    });
+}
+
+// =====================================
+// 5. HELPER: COLLECT FORM DATA
+// =====================================
+function collectFinalFormData(teamData) {
+    return {
+        leader: {
+            hospitality: document.getElementById("leader-hospitality-type").value,
+            paymentMethod: document.getElementById("leader-payment-method").value,
+            file: document.getElementById("final-leader-payment-submit").files[0],
+        },
+        members: (teamData.members || []).map((m, i) => ({
+            hospitality: document.getElementById(`member-hospitality-type-${i}`).value,
+            paymentMethod: document.getElementById(`member-payment-method-${i}`).value,
+            file: document.getElementById(`member-payment-submit-${i}`).files[0],
+        })),
+        paymentScheme: document.getElementById("leader-payment-type").value,
+        dpCategory: document.getElementById("leader-down-payment-category").value,
+    };
+}
+
+// =====================================
+// SUBMIT KE FIREBASE
+// =====================================
+async function submitFinalRegistration(currentUID, formData, teamData) {
+
+    const teamRef = doc(DB, "Team", currentUID);
+    const snap = await getDoc(teamRef);
+    const timeStamp = Date.now();
+
+    // 1. Upload Leader File
+    let leaderURL = null;
+    if (formData.leader.file) {
+        const leaderPath = `finalreg_submissions/${currentUID}/leader_${timeStamp}`;
+        const leaderRef = ref(STORAGE, leaderPath);
+        const uploadRes = await uploadBytes(leaderRef, formData.leader.file);
+        leaderURL = await getDownloadURL(uploadRes.ref);
+    }
+
+    // 2. Upload Member Files
+    const memberURLs = [];
+    for (let i = 0; i < formData.members.length; i++) {
+        const memFile = formData.members[i].file;
+        if (memFile) {
+            const memPath = `finalreg_submissions/${currentUID}/member_${i}_${timeStamp}`;
+            const memRef = ref(STORAGE, memPath);
+            const uploadRes = await uploadBytes(memRef, memFile);
+            const url = await getDownloadURL(uploadRes.ref);
+            memberURLs.push(url);
+        } else {
+            memberURLs.push(null);
+        }
+    }
+
+    const existing = snap.exists() ? snap.data().final_reg : null;
+    const isDPFirst = formData.paymentScheme === "DP" && formData.dpCategory === "First";
+    const isDPLast = formData.paymentScheme === "DP" && formData.dpCategory === "Last";
+
+    // --- BUILD DATA OBJECT ---
+    let updateData = {};
+
+    if (!existing || formData.paymentScheme === "Full" || isDPFirst) {
+        // OVERWRITE / NEW ENTRY / DP FIRST
+        updateData = {
+            final_reg: {
+                leader: {
+                    hospitality: formData.leader.hospitality,
+                    paymentMethod: formData.leader.paymentMethod,
+                    paymentProof: leaderURL || existing?.leader?.paymentProof || "-", // Pakai URL baru atau lama
+                    lastPayment: existing?.leader?.lastPayment || "-" // Pertahankan data lama jika ada
+                },
+                members: formData.members.map((m, i) => ({
+                    hospitality: m.hospitality,
+                    paymentMethod: m.paymentMethod,
+                    paymentProof: memberURLs[i] || existing?.members?.[i]?.paymentProof || "-",
+                    lastPayment: existing?.members?.[i]?.lastPayment || "-"
+                })),
+                paymentScheme: formData.paymentScheme,
+                dpCategory: formData.dpCategory,
+                createdAt: existing ? existing.createdAt : serverTimestamp(),
+                updatedAt: serverTimestamp(),
+                paymentStatus: "pending" // Selalu reset ke pending saat upload baru
+            }
+        };
+    } else if (isDPLast) {
+        // UPDATE PARTIAL (Hanya update field lastPayment)
+        const updatedLeader = {
+            ...existing.leader,
+            lastPayment: leaderURL || existing.leader.lastPayment // Update kolom lastPayment
+        };
+        
+        const updatedMembers = existing.members.map((m, i) => ({
+            ...m,
+            lastPayment: memberURLs[i] || m.lastPayment
+        }));
+
+        updateData = {
+            "final_reg.leader": updatedLeader,
+            "final_reg.members": updatedMembers,
+            "final_reg.dpCategory": "Last",
+            "final_reg.lastPaymentAt": serverTimestamp(),
+            "final_reg.paymentStatus": "pending"
+        };
+    }
+
+    // Eksekusi Update Firestore
+    await updateDoc(teamRef, updateData);
+}
+
+// =====================================
+// HANDLE OPEN LEADERBOARD (PESERTA VIEW)
+// =====================================
+async function handleOpenLeaderboard(userCompetition) {
+    const tbody = document.getElementById("prelim-table-body");
+    const modalWrapper = document.getElementById("prelim-leaderboard-modal-wrapper");
+    
+    // Validasi parameter
+    if (!userCompetition) {
+        console.error("Error: userCompetition is missing");
+        return;
+    }
+
+    // 1. Reset & Tampilkan Loading
+    if (tbody) {
+        // PERBAIKAN: colspan="5" karena ada 5 kolom di HTML Anda
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center p-5 text-muted">
+                    <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div> 
+                    <div>Loading Leaderboard...</div>
+                </td>
+            </tr>
+        `;
+    }
+    
+    // 2. Buka Modal
+    if (modalWrapper) {
+        // Hapus class hidden dan set display flex
+        modalWrapper.classList.remove("custom-modal-hidden");
+        modalWrapper.style.display = 'flex';
+    }
+
+    try {
+        // 3. Query Firebase
+        const teamsRef = collection(DB, "Team");
+        const q = query(
+            teamsRef, 
+            where("competition", "==", userCompetition) 
+        );
+        
+        const querySnapshot = await getDocs(q);
+        let qualifiedTeams = [];
+
+        // 4. Filtering Data
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const prelim = data.sub_preliminary || {};
+
+            const rankVal = Number(prelim.rank);
+            const scoreVal = Number(prelim.score);
+            
+            // Validasi data valid (punya rank & score)
+            const hasRank = prelim.rank !== null && prelim.rank !== undefined && rankVal > 0;
+            const hasScore = prelim.score !== null && prelim.score !== undefined && !isNaN(scoreVal);
+
+            if (hasRank && hasScore) {
+                qualifiedTeams.push({
+                    id: doc.id,
+                    teamName: data.teamName,
+                    university: data.leader?.university || "-",
+                    rank: rankVal,
+                    score: scoreVal,
+                    finalStatus: prelim.final 
+                });
+            }
+        });
+
+        // 5. Sorting (Rank 1 paling atas)
+        qualifiedTeams.sort((a, b) => a.rank - b.rank);
+
+        // 6. Rendering ke HTML
+        if (tbody) {
+            tbody.innerHTML = ""; // Hapus loading
+
+            // KONDISI: DATA KOSONG
+            if (qualifiedTeams.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center p-5 text-muted" style="font-style: italic;">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">📊</div>
+                            Leaderboard data is not available yet.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            // KONDISI: ADA DATA
+            // Loop dan render (index + 1 sebagai Nomor Urut)
+            qualifiedTeams.forEach((team, index) => {
+                renderLeaderboardRow(tbody, team, index + 1);
+            });
+        }
+
+    } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-danger p-4">
+                        Leaderboard data is not available yet.
+                    </td>
+                </tr>
+            `;
+        }
+    }
+}
+
+/**
+ * RENDER BARIS TABEL (5 KOLOM SESUAI HTML)
+ */
+function renderLeaderboardRow(tbody, team, displayNo) {
+    const row = document.createElement("tr");
+    row.className = "align-middle"; // Agar teks vertikal di tengah
+
+    // A. Label Status Final
+    let statusBadge = `<span class="badge rounded-pill bg-secondary bg-opacity-75 text-white fw-normal px-3">Pending</span>`;
+    if (team.finalStatus === true) {
+        statusBadge = `<span class="badge rounded-pill bg-success bg-opacity-75 text-white fw-normal px-3">Passed</span>`;
+    } else if (team.finalStatus === false) {
+        statusBadge = `<span class="badge rounded-pill bg-danger bg-opacity-75 text-white fw-normal px-3">Failed</span>`;
+    }
+
+    // B. Format Score (2 Desimal)
+    const formattedScore = parseFloat(team.score).toFixed(2);
+
+    // C. Render 5 Kolom: No, Nama, Status, Rank, Score
+    row.innerHTML = `
+        <td class="text-center text-muted fw-bold">
+            ${displayNo}
+        </td>
+        
+        <td>
+            <div style="font-weight:700; color:#334155; font-size:14px;">
+                ${team.teamName || "No Name"}
+            </div>
+            <div style="font-size:11px; color:#94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
+                ${team.university}
+            </div>
+        </td>
+
+        <td class="text-center">${statusBadge}</td>
+
+        <td class="text-center">
+             <div style="
+                width: 30px; height: 30px; line-height: 30px; 
+                border-radius: 50%; 
+                background: ${team.rank <= 3 ? '#FFD700' : '#f1f5f9'}; 
+                color: ${team.rank <= 3 ? '#fff' : '#64748b'}; 
+                font-weight: 800; margin: 0 auto;
+                box-shadow: ${team.rank <= 3 ? '0 2px 5px rgba(255, 215, 0, 0.4)' : 'none'};
+            ">
+                ${team.rank}
+            </div>
+        </td>
+
+        <td class="text-center">
+            <span style="font-weight: 700; color: #4c1d95; font-family: monospace; font-size: 14px;">
+                ${formattedScore}
+            </span>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+}
+
+// =====================================
+// FUNGSI UNTUK MENUTUP MODAL (SESUAI ONCLICK HTML)
+// =====================================
+function closePrelimLeaderboardModal() {
+    const modalWrapper = document.getElementById("prelim-leaderboard-modal-wrapper");
+    if (modalWrapper) {
+        modalWrapper.style.display = 'none';
+        modalWrapper.classList.add("custom-modal-hidden"); // Optional: jika pakai class hidden
+    }
+}
+
+// Tutup jika klik di luar modal (Background gelap)
+window.addEventListener("click", function(event) {
+    const modalWrapper = document.getElementById("prelim-leaderboard-modal-wrapper");
+    if (event.target === modalWrapper) {
+        closePrelimLeaderboardModal();
+    }
+});

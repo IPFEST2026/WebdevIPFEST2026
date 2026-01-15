@@ -1583,7 +1583,7 @@ function generateFinalModal(teamData) {
                             <input class="form-check-input" type="checkbox" id="final-rules-check" required>
                             <label class="custom-rules-label" for="final-rules-check">
                                 I confirm that all data is correct and I have read the 
-                                <a href="https://drive.google.com/file/d/1D-Yj2-X-7yXGZNcrtEVnxp4ztn8v52CG/view?usp=sharing" target="_blank">Finalist Payment Rules</a>.
+                                <a href="" target="_blank">Finalist Payment Rules</a>.
                             </label>
                         </div>
                         <div class="invalid-feedback d-block text-center mt-2" style="color: #ff8ccf; font-weight:bold; display:none;">* You must agree before submitting.</div>
@@ -1731,10 +1731,10 @@ function generateFinalModal(teamData) {
             try {
                 const formData = collectFinalFormData(teamData);
                 await submitFinalRegistration(currentUserID, formData, teamData);
-                
-                alert("Payment submitted! Great job on making it this far. See you at the Final Round, Champions! 🚀");
-                
-                window.location.reload(); 
+
+                alert("Payment submitted successfully and is currently under verification by the organizing committee.\nWell done on reaching the Final Round. We look forward to seeing you there.");
+
+                window.location.reload();
             } catch (err) {
                 console.error(err);
                 alert("Failed to save data! Please check your connection.");
@@ -1754,18 +1754,18 @@ const PRICE_TABLE = {
         Full: {
             "Bank BCA": 700000,
             "Gopay": 700000,
-            "Paypal": 700000 / 16000
+            "Paypal": 50
         },
         DP: {
             First: {
                 "Bank BCA": 400000,
                 "Gopay": 400000,
-                "Paypal": 400000 / 16000
+                "Paypal": 30
             },
             Last: {
                 "Bank BCA": 300000,
                 "Gopay": 300000,
-                "Paypal": 300000 / 16000
+                "Paypal": 20
             }
         }
     },
@@ -1773,18 +1773,18 @@ const PRICE_TABLE = {
         Full: {
             "Bank BCA": 450000,
             "Gopay": 450000,
-            "Paypal": 450000 / 16000
+            "Paypal": 32
         },
         DP: {
             First: {
                 "Bank BCA": 300000,
                 "Gopay": 300000,
-                "Paypal": 300000 / 16000
+                "Paypal": 20
             },
             Last: {
                 "Bank BCA": 150000,
                 "Gopay": 150000,
-                "Paypal": 150000 / 16000
+                "Paypal": 12
             }
         }
     }
@@ -2069,19 +2069,39 @@ async function submitFinalRegistration(currentUID, formData, teamData) {
 
 
 
-
 function setupFinalTab(finalStatus) {
     const finalTab = document.getElementById("nav-contact-tab");
 
     if (!finalTab) return;
 
-    // Hanya enable tab jika status "verified" atau "down_payment_verified"
+    // Buka Tab untuk Verified & DP Verified
     if (finalStatus === "verified" || finalStatus === "down_payment_verified") {
         finalTab.style.pointerEvents = "auto";
         finalTab.style.opacity = "1";
         finalTab.style.cursor = "pointer";
+
+        // Kita kunci tombolnya HANYA jika statusnya "down_payment_verified"
+        if (finalStatus === "down_payment_verified") {
+            const finalSubmitBtn = document.getElementById("final-submit-btn");
+            const finalFileInput = document.getElementById("final-submit");
+
+            // 1. Matikan input file
+            if (finalFileInput) {
+                finalFileInput.disabled = true;
+            }
+
+            // 2. Cegah tombol submit dengan Alert
+            if (finalSubmitBtn) {
+                finalSubmitBtn.onclick = function (e) {
+                    e.preventDefault();
+                    alert("⚠️ Please complete your full payment to submit the file.");
+                };
+            }
+        }
+        // --- SELESAI TAMBAHAN ---
+
     } else {
-        // Disable tab untuk status lain
+        // Logic untuk yang belum bayar sama sekali
         finalTab.style.pointerEvents = "none";
         finalTab.style.opacity = "0.5";
         finalTab.style.cursor = "not-allowed";
@@ -2139,11 +2159,7 @@ function checkSubmissionStatus(finalsubstatus,finalsubfileURL,finalsubsubmittedA
         }
 
     } else {
-        // Jika finalsubstatus kosong (Falsy), artinya user BELUM submit
-        // 1. Tampilkan Form
         formElement.classList.remove('d-none');
-        
-        // 2. Sembunyikan Summary
         summaryElement.classList.add('d-none');
     }
 }

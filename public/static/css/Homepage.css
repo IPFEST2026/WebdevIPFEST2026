@@ -144,7 +144,7 @@ button {
 
 #hero-guide-book:hover {
 	transform: translateY(-2px);
-	S box-shadow: 0 15px 35px rgba(76, 65, 169, 0.35);
+	box-shadow: 0 15px 35px rgba(76, 65, 169, 0.35);
 }
 
 .hero {
@@ -308,4 +308,388 @@ body:not(.dashboard-theme) footer img:hover {
 	/* Warna ungu */
 	font-weight: 500 !important;
 	opacity: 0.8 !important;
+}
+
+/* --- Perbaikan hero bar --- */
+@media (max-width: 991px) {
+
+    /* 1. BERSIHKAN DEKORASI LAMA */
+    .rotate-img, .rotate-sty-2, img[src*="sty-1.png"],
+    .hero-header::before, .hero-header::after {
+        display: none !important;
+    }
+
+    /* 2. BACKGROUND GRADIENT (MIDNIGHT BLUE -> DEEP VIOLET) */
+    .hero-header {
+        /* Gradasi:
+           0% (Atas)   = #05081c (Biru Sangat Gelap/Hampir Hitam)
+           100% (Bawah)= #160840 (Ungu Pilihan Anda) 
+        */
+        background: linear-gradient(180deg, #05081c 0%, #160840 60%) !important;
+        
+        padding-top: 140px !important;
+        padding-bottom: 80px !important;
+        min-height: 100vh;
+    }
+
+    /* 3. JUDUL & TEKS (PUTIH BERSIH) */
+	.hero-header h1 {
+        /* JURUS ANTI GAGAL: Flexbox Vertical */
+        display: flex !important;
+        flex-direction: column !important; /* Susun atas-bawah */
+        align-items: center !important;    /* Rata tengah horizontal */
+        justify-content: center !important;
+        
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        margin-bottom: 20px !important;
+        font-size: 30px; /* Sesuaikan ukuran jika masih terlalu besar di layar 325px */
+        line-height: 1.2 !important;
+        
+        /* Pastikan tidak ada wrapping aneh */
+        white-space: normal !important; 
+    }
+    
+    .hero-header h1 span {
+        color: #ff5ca0 !important;
+        font-size: 30px;
+        
+        /* Pastikan span dianggap sebagai item flex yang utuh */
+        display: block !important; 
+        margin-top: 5px !important; /* Jarak sedikit biar tidak terlalu nempel */
+    }
+
+    .hero-header p {
+        color: #ffffff !important;
+        opacity: 0.9;
+        font-weight: 400 !important;
+        text-align: center !important;
+        line-height: 1.6 !important;
+        margin-bottom: 30px !important;
+    }
+
+	#hero-paragraph {
+		font-size: 16px !important;
+	}
+
+    /* 4. TOMBOL (SOLID PUTIH) */
+    .hero-header .btn {
+        background-color: #ffffff !important;
+        color: #160840 !important; /* Teks tombol ikut warna ungu bawah biar serasi */
+        border: none !important;
+        font-weight: 700 !important;
+        margin: 20px auto 50px auto !important;
+        display: inline-block !important;
+        padding: 12px 35px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    /* 5. LAYOUT & LOGO */
+    .hero-header .row {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .hero-header img.ms-5 {
+        margin: 0 auto !important;
+        width: 140px !important;
+        display: block !important;
+    }
+}
+
+
+/* animasi cricle khusu mobile */
+	
+.circles {
+    display: none;
+}
+
+@media (max-width: 991px) {
+
+    /* 1. CONTAINER HERO */
+    .hero-header {
+        position: relative; 
+        overflow: hidden !important;
+        /* Gradasi Background Tetap Gelap & Elegan */
+        background: linear-gradient(180deg, #05081c 0%, #160840 100%) !important;
+        padding-top: 140px !important;
+        padding-bottom: 80px !important;
+        min-height: 100vh;
+    }
+
+    /* Hapus elemen lama */
+    .rotate-img, .rotate-sty-2, img[src*="sty-1.png"],
+    .hero-header::before, .hero-header::after {
+        display: none !important;
+    }
+
+    /* 2. BASE CIRCLES */
+    .circles {
+        display: block !important;
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        overflow: hidden; margin: 0; padding: 0;
+        z-index: 0; pointer-events: none;
+    }
+
+    .circles li {
+        position: absolute; display: block; list-style: none;
+        bottom: -150px; border-radius: 50%;
+        
+        /* REVISI PENTING: WARNA LEBIH TIPIS (SOFT) */
+        /* Opasitas warna diturunkan ke 0.3 (30%) agar seperti kaca tipis */
+        background: linear-gradient(135deg, 
+            rgba(243, 144, 111, 0.3) 0%,   
+            rgba(233, 78, 119, 0.3) 33%,
+            rgba(112, 0, 255, 0.3) 66%,
+            rgba(0, 242, 255, 0.3) 100%
+        );
+        
+        filter: blur(3px); /* Blur ditambah dikit biar makin smooth */
+        /* Animasi default (akan di-override di bawah) */
+        animation: riseUpSlow 25s linear infinite; 
+    }
+
+    /* --- PENGATURAN GRUP (VARIAN UKURAN & KEJELASAN) --- */
+
+    /* KELOMPOK 1: BESAR & REDUP (Background filler) */
+    /* Kita pakai animasi 'riseUpSlow' yang max opacity-nya cuma 0.3 */
+    .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-duration: 25s; animation-name: riseUpSlow; }
+    .circles li:nth-child(2) { left: 10%; width: 90px; height: 90px; animation-duration: 22s; animation-delay: 4s; animation-name: riseUpSlow; }
+    .circles li:nth-child(3) { left: 70%; width: 70px; height: 70px; animation-duration: 28s; animation-delay: 8s; animation-name: riseUpSlow; }
+    .circles li:nth-child(4) { left: 85%; width: 100px; height: 100px; animation-duration: 24s; animation-delay: 2s; animation-name: riseUpSlow; }
+    .circles li:nth-child(5) { left: 45%; width: 60px; height: 60px; animation-duration: 30s; animation-delay: 10s; animation-name: riseUpSlow; }
+
+    /* KELOMPOK 2: SEDANG (Agak terlihat) */
+    /* Animasi 'riseUpMedium' max opacity 0.5 */
+    .circles li:nth-child(6) { left: 5%; width: 40px; height: 40px; animation-duration: 15s; animation-delay: 1s; animation-name: riseUpMedium; }
+    .circles li:nth-child(7) { left: 35%; width: 50px; height: 50px; animation-duration: 18s; animation-delay: 5s; animation-name: riseUpMedium; }
+    .circles li:nth-child(8) { left: 55%; width: 35px; height: 35px; animation-duration: 16s; animation-delay: 9s; animation-name: riseUpMedium; }
+    .circles li:nth-child(9) { left: 75%; width: 45px; height: 45px; animation-duration: 14s; animation-delay: 3s; animation-name: riseUpMedium; }
+    .circles li:nth-child(10){ left: 95%; width: 30px; height: 30px; animation-duration: 19s; animation-delay: 7s; animation-name: riseUpMedium; }
+
+    /* KELOMPOK 3: KECIL & TERANG (Sparkle/Fizz effect) */
+    /* Animasi 'riseUpFast' max opacity 0.8 (Paling jelas tapi kecil) */
+    .circles li:nth-child(11){ left: 15%; width: 15px; height: 15px; animation-duration: 10s; animation-delay: 0s; animation-name: riseUpFast; }
+    .circles li:nth-child(12){ left: 30%; width: 20px; height: 20px; animation-duration: 12s; animation-delay: 2s; animation-name: riseUpFast; }
+    .circles li:nth-child(13){ left: 50%; width: 10px; height: 10px; animation-duration: 8s; animation-delay: 4s; animation-name: riseUpFast; }
+    .circles li:nth-child(14){ left: 65%; width: 25px; height: 25px; animation-duration: 11s; animation-delay: 1s; animation-name: riseUpFast; }
+    .circles li:nth-child(15){ left: 80%; width: 15px; height: 15px; animation-duration: 9s; animation-delay: 3s; animation-name: riseUpFast; }
+
+    /* KELOMPOK 4: LONJONG (Medium) */
+    .circles li:nth-child(16){ left: 20%; width: 20px; height: 40px; animation-duration: 14s; animation-delay: 5s; animation-name: riseUpMedium; }
+    .circles li:nth-child(17){ left: 40%; width: 30px; height: 50px; animation-duration: 16s; animation-delay: 1s; animation-name: riseUpMedium; }
+    .circles li:nth-child(18){ left: 60%; width: 25px; height: 45px; animation-duration: 13s; animation-delay: 6s; animation-name: riseUpMedium; }
+    .circles li:nth-child(19){ left: 90%; width: 15px; height: 30px; animation-duration: 11s; animation-delay: 2s; animation-name: riseUpMedium; }
+    .circles li:nth-child(20){ left: 50%; width: 40px; height: 60px; animation-duration: 20s; animation-delay: 8s; animation-name: riseUpSlow; }
+
+
+    /* --- 3 LEVEL ANIMASI UNTUK KEDALAMAN VISUAL --- */
+
+    /* 1. Slow & Faint (Untuk gelembung besar background) */
+    @keyframes riseUpSlow {
+        0% { transform: translateY(0) scale(1); opacity: 0; border-radius: 50%; }
+        20% { opacity: 0.3; } /* Muncul dikit aja */
+        80% { opacity: 0.2; }
+        100% { transform: translateY(-1300px) scale(0.5); opacity: 0; border-radius: 50%; }
+    }
+
+    /* 2. Medium (Normal) */
+    @keyframes riseUpMedium {
+        0% { transform: translateY(0) scale(1); opacity: 0; border-radius: 50%; }
+        15% { opacity: 0.5; } /* Setengah jelas */
+        80% { opacity: 0.4; }
+        100% { transform: translateY(-1300px) scale(0.5); opacity: 0; border-radius: 50%; }
+    }
+
+    /* 3. Fast & Bright (Untuk gelembung kecil biar 'pop') */
+    @keyframes riseUpFast {
+        0% { transform: translateY(0) scale(1); opacity: 0; border-radius: 50%; }
+        10% { opacity: 0.8; } /* Cukup terang */
+        80% { opacity: 0.6; }
+        100% { transform: translateY(-1300px) scale(0.5); opacity: 0; border-radius: 50%; }
+    }
+
+
+    /* 3. KONTEN & TEKS (Tetap di atas) */
+    .hero-header h1 {
+        color: #ffffff !important; font-weight: 800 !important; text-align: center !important;
+        margin-bottom: 20px !important; position: relative; z-index: 10;
+    }
+    .hero-header h1 span { color: #ff5ca0 !important; }
+    .hero-header p {
+        color: #ffffff !important; opacity: 0.95; font-weight: 400 !important;
+        text-align: center !important; margin-bottom: 30px !important; position: relative; z-index: 10;
+    }
+    .hero-header .btn {
+        background-color: #ffffff !important; color: #160840 !important;
+        border: none !important; font-weight: 700 !important;
+        margin: 20px auto 50px auto !important; display: inline-block !important;
+        padding: 12px 35px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        position: relative; z-index: 11;
+    }
+    .hero-header .d-flex { display: block !important; text-align: center !important; }
+    .hero-header .row {
+        display: flex !important; flex-direction: column !important; align-items: center !important; position: relative; z-index: 10;
+    }
+    .hero-header img.ms-5 {
+        margin: 0 auto !important; width: 140px !important; display: block !important;
+    }
+}
+
+/* Styling Judul */
+.organized-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;          /* Ukuran pas, tidak terlalu besar */
+    text-transform: uppercase;   /* Huruf kapital semua */
+    letter-spacing: 4px;         /* Spasi antar huruf lebar */
+    color: rgba(255, 255, 255, 0.8); 
+    font-weight: 600;
+    position: relative;
+    display: inline-block;       /* Agar garis di sampingnya nempel pas */
+    margin-bottom: 10px;         /* Jarak ke logo di bawahnya */
+}
+
+/* Garis Hiasan Kiri-Kanan (Opsional, kalau mau polos hapus bagian ini) */
+.organized-title::before,
+.organized-title::after {
+    content: "";
+    display: inline-block;
+    width: 40px;                 /* Panjang garis */
+    height: 1px;                 /* Ketebalan garis */
+    background: rgba(255, 255, 255, 0.4);
+    vertical-align: middle;
+    margin: 0 15px;              /* Jarak garis ke teks */
+}
+
+/* Styling Kapsul Logo */
+.logo-capsule {
+    background: #ffffff;
+    border-radius: 50px;
+    padding: 15px 50px;          /* Padding proporsional */
+    
+    display: flex;               /* Pastikan flex agar logo sejajar */
+    align-items: center;
+    justify-content: center;
+    gap: 35px;                   /* Jarak antar logo */
+    
+    box-shadow: 0 5px 25px rgba(255, 255, 255, 0.15); /* Glow halus */
+    transition: transform 0.3s ease;
+}
+
+.logo-capsule:hover {
+    transform: translateY(-5px);
+}
+
+.logo-capsule img {
+    height: 60px;                /* Ukuran logo diperkecil dikit biar balance sama teks */
+    width: auto;
+    object-fit: contain;
+}
+
+/* Sponsor
+
+/* Container Besar Sponsor */
+.sponsor-box {
+    background: #ffffff;
+    /* Radius sedikit lebih kecil dari kapsul karena ini kotak besar, tapi tetap tumpul */
+    border-radius: 40px; 
+    
+    /* Padding lega biar logo ga mepet pinggir */
+    padding: 40px 30px; 
+    
+    /* Batasi lebar biar ga terlalu lebar di layar besar */
+    max-width: 900px; 
+    margin: 50px auto 0 auto;
+    
+    /* Shadow sama persis dengan Organized By */
+    box-shadow: 0 5px 25px rgba(255, 255, 255, 0.15);
+    
+    transition: transform 0.3s ease;
+}
+
+.sponsor-box:hover {
+    transform: translateY(-5px); /* Efek melayang saat hover */
+}
+
+/* Pengaturan Gambar Umum di dalam Sponsor Box */
+.sponsor-box img {
+    /* Biar semua gambar hitam putih/abu dulu? (Opsional, hapus filter kalau mau berwarna terus) */
+    /* filter: grayscale(100%); */
+    
+    opacity: 0.9;
+    transition: all 0.3s ease;
+    max-height: 70px; /* Batas tinggi logo umum biar seragam */
+    width: auto;
+    object-fit: contain;
+}
+
+.sponsor-box img:hover {
+    /* filter: grayscale(0%); */
+    opacity: 1;
+    transform: scale(1.1); /* Zoom effect */
+}
+
+/* KHUSUS Sponsor Utama (PHR & BP) biar lebih besar */
+.sponsor-box img.main-sponsor {
+    max-height: 100px; /* Lebih tinggi dari yang lain */
+}
+
+img.sponsor-exxon {
+    max-height: 80px; /* Lebih besar dari bronze biasa (60px) biar teksnya kebaca */
+    width: auto;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: transform 0.3s;
+}
+
+img.sponsor-exxon:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+/* Tweak Mobile: Biar di HP Exxon ga kegedean banget */
+@media (max-width: 768px) {
+    img.sponsor-exxon {
+        max-height: 60px; /* Di HP disamakan normal */
+    }
+}
+
+/* Sponsor Modal */
+    
+/* 1. Atur Ukuran Box Modal */
+#sponsorModal .modal-dialog {
+    margin: 1.5rem auto;       /* Beri jarak lebih lega dari tepi layar */
+    max-width: 75% !important; /* Paksa lebar cuma 85% layar HP */
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 3rem);
+}
+
+/* 2. Atur Tinggi Maksimal Konten */
+#sponsorModal .modal-content {
+    max-height: 60vh; /* Tinggi mentok 75% layar (sisanya buat background gelap) */
+    border-radius: 15px !important; /* Radius diperhalus */
+}
+
+/* 3. Kecilkan Padding di dalam */
+#sponsorModal .modal-body {
+    padding: 20px !important; /* Padding dikurangi biar space lebih luas */
+}
+
+/* 4. Kecilkan Ukuran Logo di dalam Modal */
+#sponsorModal #modalImage {
+    max-height: 60px !important; /* Logo jangan kegedean */
+}
+
+/* 5. Kecilkan Ukuran Font Judul & Deskripsi */
+#sponsorModal h3#modalTitle {
+    font-size: 1.2rem; /* Judul lebih kecil */
+    margin-bottom: 10px !important;
+}
+
+#sponsorModal p#modalDesc {
+    font-size: 0.85rem; /* Teks paragraf lebih kecil & enak dibaca */
+    line-height: 1.5;   /* Spasi antar baris dirapatkan sedikit */
 }

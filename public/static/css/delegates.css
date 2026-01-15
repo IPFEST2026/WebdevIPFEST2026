@@ -1222,7 +1222,6 @@ Styling untuk Modal Semangat
    ========================================= */
 
 /* 1. WRAPPER (Backdrop Gelap & Blur) */
-/* 1. WRAPPER (Backdrop Gelap & Blur Tipis) */
 .custom-modal-hidden {
     display: none; /* Default Hidden */
     position: fixed;
